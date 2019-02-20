@@ -1,0 +1,1640 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * GuestsEntryPanel.java
+ *
+ * Created on May 19, 2009, 3:51:07 PM
+ */
+package com.openbravo.pos.clubmang;
+
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.gui.ComboBoxValModel;
+import com.openbravo.data.gui.MessageInf;
+import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.PreparedSentence;
+//import com.openbravo.data.loader.SerializerReadBasic;
+import com.openbravo.data.loader.SerializerReadBasic;
+import com.openbravo.data.loader.SerializerReadInteger;
+import com.openbravo.data.loader.SerializerReadString;
+import com.openbravo.data.loader.SerializerWriteBasic;
+//import com.openbravo.data.loader.SerializerWriteString;
+import com.openbravo.data.loader.SerializerWriteString;
+import com.openbravo.data.loader.StaticSentence;
+import com.openbravo.data.loader.Transaction;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CardReader;
+import com.openbravo.pos.customers.CustomerInfo;
+import com.openbravo.pos.customers.CustomerInfoExt;
+import com.openbravo.pos.customers.DataLogicCustomers;
+import com.openbravo.pos.customers.JCustomerFinder;
+import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.BeanFactoryApp;
+import com.openbravo.pos.forms.BeanFactoryException;
+import com.openbravo.pos.forms.CardSwipeNotifier;
+import com.openbravo.pos.forms.DataLogicSales;
+import com.openbravo.pos.forms.DataLogicSystem;
+import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.LookupUtilityImpl;
+import com.openbravo.pos.mant.WaiterInfo;
+import com.openbravo.pos.payment.JPaymentSelect;
+import com.openbravo.pos.payment.JPaymentSelectReceipt;
+import com.openbravo.pos.payment.PaymentInfo;
+import com.openbravo.pos.payment.PaymentInfoTicket;
+import com.openbravo.pos.printer.TicketParser;
+import com.openbravo.pos.printer.TicketPrinterException;
+import com.openbravo.pos.sales.BillInfo;
+import com.openbravo.pos.sales.BillLogic;
+import com.openbravo.pos.scripting.ScriptEngine;
+import com.openbravo.pos.scripting.ScriptException;
+import com.openbravo.pos.scripting.ScriptFactory;
+import com.openbravo.pos.sms.CardReader1;
+import com.openbravo.pos.sms.SerialConnectionException;
+import com.openbravo.pos.util.StringUtils;
+import gnu.io.PortInUseException;
+import gnu.io.UnsupportedCommOperationException;
+import java.awt.Color;
+import java.awt.Component;
+import com.openbravo.pos.sales.restaurant.BillList;
+import com.openbravo.pos.sales.restaurant.DebtBillList;
+//import java.awt.event.KeyEvent;
+import java.awt.HeadlessException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.AbstractListModel;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+//import javax.swing.ListModel;
+import javax.swing.JTextField;
+import javax.swing.table.TableCellRenderer;
+//import sun.util.calendar.Gregorian;
+   
+/**
+ *
+ * @author swathi
+ */
+          
+
+
+     
+public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, BeanFactoryApp, CardSwipeNotifier {
+
+  
+   
+    /** Creates new form GuestsEntryPanel */
+    private DataLogicCustomers dlCustomers;
+    private CustomerInfo customerInfo;
+    private AppView m_App;
+    private DataLogicFacilities dmang;
+    // private ComboBoxValModel model;
+    private ComboBoxValModel gcatmodel;
+    private List gnames = new ArrayList();
+    private GuestListModel gmodel;
+    private GuestlistTableModel gtablemodel;
+    private DataLogicSales m_dlSales;
+    private DataLogicSystem dlsystem;
+    private TicketParser ttp;
+    private CardReader cr;
+    private guestlisttable2 gtablemodel2;
+
+    public GuestsEntryPanel() {
+        initComponents();
+    }
+
+    public void init(AppView app) throws BeanFactoryException {
+        m_App = app;
+        dlCustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomersCreate");
+        dmang = (DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
+        m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
+        dlsystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystemCreate");
+        ttp = new TicketParser(app.getDeviceTicket(), dlsystem);
+      
+    // app.getReader().setCardRederPanelObject(this);
+    //cr = new CardReader("COM5");
+    //try {
+    // cr.ConfigurePort();
+    //  } catch (Exception ex) {
+    //     Logger.getLogger(GuestsEntryPanel.class.getName()).log(Level.SEVERE, null, ex);
+    //  }
+
+
+    }
+
+    public Object getBean() {
+        return this;
+    }
+
+    public JComponent getComponent() {
+        return this;
+    }
+
+    public String getTitle() {
+        return null;
+    }
+
+    public void activate() throws BasicException {
+        
+        memno.setText(null);
+        startCardReader();
+        Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT INITCONTROL FROM FACILITY WHERE NAME='Guest Entry' AND ACTIVE=TRUE", null, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find();
+//        Boolean bool = false;
+//        if (obj != null) {
+//            bool = Boolean.getBoolean(obj[0].toString());
+//        }
+        if ((Boolean) obj[0]) {
+            memno.setEnabled(false);
+            mname.setEnabled(false);
+         jButton1.setVisible(false);
+           
+        } else {
+            memno.setEnabled(true);
+            mname.setEnabled(true);
+            jButton1.setVisible(true);
+            
+        }
+        loadData();
+    }
+    private void loadData() throws BasicException {
+        detail_panel.setVisible(false);
+        try {
+            //jButton2.setVisible(false);
+         
+            mname.setText(null);
+            cardno.setText(null);         
+            gcatmodel = new ComboBoxValModel(dmang.getGuestCategory());
+            jComboBox2.setModel(gcatmodel);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        reset();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+              //akshatha:to read a card from card reader without port num
+                  String portNumber = m_App.getProperties().getProperty("card.portnumber");
+                if (portNumber == null || portNumber.trim().length() == 0) {
+                    cardno.requestFocus();
+                     cardno.setEditable(true);
+                    cardno.setVisible(true);
+                    jButton10.setVisible(true);
+                    jLabel9.setVisible(true);
+                }else
+                {
+                   memno.requestFocus();
+                   cardno.setEditable(false);
+                    cardno.setVisible(false);
+                    jButton10.setVisible(false);
+                     jLabel9.setVisible(true);
+                    
+                }
+
+            }
+        });
+    }
+
+    private void reset() {
+        guestno.setText(null);
+        jList1.setModel(new GuestListModel(new ArrayList()));
+        gnames = new ArrayList();
+        jComboBox2.setSelectedIndex(-1);
+        maxguestlimit.setText(null);
+        amount.setText(null);
+        availableguestlimit.setText(null);
+        detail_panel.setVisible (false);   
+        jTable2.setVisible(false);
+      
+         //  jPanel1.setVisible(false);
+        
+    }
+   
+        public boolean deactivate() {
+        return true;
+    }
+      
+
+    public void execute(String card) {
+        card = String.valueOf(m_App.getReader().getVariance() + Double.valueOf(card));
+
+    }
+
+    public void cardswiped(WaiterInfo waiter) {
+        //praveen: no need to implement this method
+    }
+
+
+    private class GuestListModel extends AbstractListModel {
+
+        private java.util.List guest;
+
+        public GuestListModel(java.util.List guest) {
+            this.guest = guest;
+        }
+
+        public int getSize() {
+            return guest.size();
+        }
+
+        public Object getElementAt(int i) {
+            return guest.get(i);
+        }
+
+        public void remove(int i) {
+            guest.remove(i);
+        }
+    }
+
+    private Date getdate() {
+        Date dnow = new Date();
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTimeInMillis(dnow.getTime());
+        cal.set(Calendar.HOUR_OF_DAY, 00);
+        cal.set(Calendar.SECOND, 00);
+        cal.set(Calendar.MINUTE, 00);
+        cal.set(Calendar.MILLISECOND, 00);
+        dnow.setTime(cal.getTimeInMillis());
+        return dnow;
+    }
+
+    private Date getNextdate(Date d) {
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTimeInMillis(d.getTime());
+        cal.add(Calendar.DATE, 1);
+        d.setTime(cal.getTimeInMillis());
+        return d;
+    }
+
+    private void printTicket(List names, String receiptno, String cname, List<PaymentInfo> pinfo, Double amount, GuestCategory gcat, int gno, String skey) {
+
+        String sresource = LookupUtilityImpl.getInstance(null).getDataLogicSystem().getResourceAsXML("Printer.GuestReceipt");
+        if (sresource == null) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"));
+            msg.show(this);
+        } else {
+            try {
+                String gcatname = StringUtils.encodeXML(gcat.getname());
+                int i = 0;
+                for (Object line : names) {
+                    names.set(i, StringUtils.encodeXML(line.toString()));
+                    i++;
+
+
+                }
+                ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+                script.put("createdby", m_App.getAppUserView().getUser().getName());
+                String x = m_App.getAppUserView().getUser().getRole();
+                script.put("role", LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
+                script.put("host", m_App.getProperties().getHost());
+                script.put("pinfo", pinfo);
+                script.put("total", amount);
+                script.put("qty", String.valueOf(gno));
+                script.put("rate", gcat.getrate());
+                script.put("guestcat", gcatname);
+                script.put("cname", cname);
+                script.put("date", Formats.TIMESTAMP.formatValue(new Date()));
+                script.put("name", names);
+                script.put("receipt", receiptno);
+                script.put("ckey", skey);
+                script.put("eoe", StringUtils.encodeXML("E&OE"));
+                ttp.printTicket(script.eval(sresource).toString());
+            } catch (ScriptException e) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+                msg.show(this);
+            } catch (TicketPrinterException e) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+                msg.show(this);
+            } catch (Exception e1) {
+                new MessageInf(e1).show(this);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 =  new javax.swing.JTable(){public Component prepareRenderer(TableCellRenderer renderer,
+            int rowIndex, int vColIndex) {
+            Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
+            if (c instanceof JComponent) {
+                JComponent jc = (JComponent)c;
+                jc.setToolTipText(String.valueOf(getValueAt(rowIndex, vColIndex)));
+
+                if (rowIndex % 2 == 0 && !isCellSelected(rowIndex, vColIndex)) {
+                    jc.setBackground(Color.lightGray);
+                }
+                else {
+                    jc.setBackground(Color.white);
+                }
+                if(isCellSelected(rowIndex, vColIndex))
+                jc.setBackground(Color.cyan);
+            }
+            return c;
+        }};
+        jButton4 = new javax.swing.JButton();
+        jParamsDatesInterval1 = new com.openbravo.pos.reports.JParamsDatesInterval();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        memno = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        mname = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jComboBox2 = new javax.swing.JComboBox();
+        jLabel4 = new javax.swing.JLabel();
+        guestno = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        gname = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
+        jButton3 = new javax.swing.JButton();
+        Pay = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        amount = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        maxguestlimit = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        cardno = new javax.swing.JTextField();
+        jButton10 = new javax.swing.JButton();
+        agt = new javax.swing.JLabel();
+        Detail = new javax.swing.JButton();
+        availableguestlimit = new javax.swing.JTextField();
+        detail_panel = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable(){public Component prepareRenderer(TableCellRenderer renderer,
+            int rowIndex, int vColIndex) {
+            Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
+            if (c instanceof JComponent) {
+                JComponent jc = (JComponent)c;
+                jc.setToolTipText(String.valueOf(getValueAt(rowIndex, vColIndex)));
+
+                if (rowIndex % 2 == 0 && !isCellSelected(rowIndex, vColIndex)) {
+                    jc.setBackground(Color.lightGray);
+                }
+                else {
+                    jc.setBackground(Color.white);
+                }
+                if(isCellSelected(rowIndex, vColIndex))
+                jc.setBackground(Color.cyan);
+            }
+            return c;
+        }};
+
+        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane1StateChanged(evt);
+            }
+        });
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(jTable1);
+
+        jButton4.setText("Execute");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(jParamsDatesInterval1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                            .addGap(22, 22, 22)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 737, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(27, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jParamsDatesInterval1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(47, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("List View", jPanel2);
+
+        jPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPanel1KeyPressed(evt);
+            }
+        });
+
+        jLabel1.setText("Mem No");
+
+        memno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                memnoActionPerformed(evt);
+            }
+        });
+        memno.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                memnoCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
+        memno.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                memnoKeyPressed(evt);
+            }
+        });
+
+        jLabel2.setText("Mem Name");
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Guest Category ");
+
+        jComboBox2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComboBox2MouseClicked(evt);
+            }
+        });
+        jComboBox2.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox2ItemStateChanged(evt);
+            }
+        });
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
+        jComboBox2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jComboBox2KeyPressed(evt);
+            }
+        });
+
+        jLabel4.setText("Number of Guest");
+
+        guestno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guestnoActionPerformed(evt);
+            }
+        });
+        guestno.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                guestnoKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                guestnoKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                guestnoKeyTyped(evt);
+            }
+        });
+
+        jLabel5.setText("Guest Name");
+
+        gname.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                gnameKeyPressed(evt);
+            }
+        });
+
+        jLabel6.setText("Guest List :");
+
+        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        jScrollPane1.setViewportView(jList1);
+
+        jButton3.setText("Remove");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        Pay.setText("Pay");
+        Pay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PayActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("Amount");
+
+        amount.setEditable(false);
+
+        jLabel8.setText("Max limit");
+
+        maxguestlimit.setEditable(false);
+        maxguestlimit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                maxguestlimitActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Debit Bill");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jLabel9.setText("Card No");
+
+        cardno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cardnoActionPerformed(evt);
+            }
+        });
+
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/reload.png"))); // NOI18N
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+
+        agt.setText("Available Guest Limit");
+
+        Detail.setText("Detail");
+        Detail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DetailActionPerformed(evt);
+            }
+        });
+        Detail.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                DetailKeyPressed(evt);
+            }
+        });
+
+        availableguestlimit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                availableguestlimitActionPerformed(evt);
+            }
+        });
+        availableguestlimit.setEditable(false);
+
+        jScrollPane3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jScrollPane3MouseClicked(evt);
+            }
+        });
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Date", "Guestcat", "Amount", "ReceiptNo", "Num"
+            }
+        ));
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable2MouseClicked(evt);
+            }
+        });
+        jTable2.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                jTable2ComponentHidden(evt);
+            }
+        });
+        jScrollPane3.setViewportView(jTable2);
+
+        javax.swing.GroupLayout detail_panelLayout = new javax.swing.GroupLayout(detail_panel);
+        detail_panel.setLayout(detail_panelLayout);
+        detail_panelLayout.setHorizontalGroup(
+            detail_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(detail_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        detail_panelLayout.setVerticalGroup(
+            detail_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(detail_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(26, 26, 26))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(guestno, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(gname, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jComboBox2, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                    .addComponent(cardno, javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(memno, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(6, 6, 6)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButton3)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addGap(10, 10, 10)
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                                                .addComponent(jLabel7)))))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                                .addComponent(amount, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(250, 250, 250)
+                                                .addComponent(Detail, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(mname, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addComponent(maxguestlimit, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(agt)))
+                                                .addGap(62, 62, 62)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                    .addComponent(jButton1)
+                                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addComponent(availableguestlimit, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGap(21, 21, 21))))))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(detail_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(291, 291, 291)
+                        .addComponent(Pay, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton2)))
+                .addGap(310, 310, 310))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(76, 76, 76)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(memno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(mname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1))
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGap(34, 34, 34)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel8)
+                                        .addComponent(maxguestlimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGap(15, 15, 15)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(cardno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel9)))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(agt)
+                                    .addComponent(availableguestlimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(3, 3, 3))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(75, 75, 75)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addGap(15, 15, 15)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel7)
+                                .addComponent(amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel3))
+                            .addGap(18, 18, 18)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel4)
+                                .addComponent(guestno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(Detail)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(gname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(94, 94, 94))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(detail_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(11, 11, 11)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Pay, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(48, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Creat New", jPanel1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 791, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane1)
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        JCustomerFinder finder = JCustomerFinder.getCustomerFinder(this, dlCustomers);
+        //finder.search(m_oTicket.getCustomer());
+        finder.setVisible(true);
+        //  CustomerInfoExt customer;
+        customerInfo = finder.getSelectedCustomer();
+        if (customerInfo != null) {
+            try {
+                reset();
+                // customer = dlSales.loadCustomerExt(customerInfo.getId());
+                mname.setText(customerInfo.toString());
+                memno.setText(customerInfo.getSearchkey());
+               // availableguestlimit.setText(null); 
+            } catch (Exception e) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"), e);
+                msg.show(this);
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+    
+    private int limit3=0;
+     private int limit2=0;
+      private int Billed_OverAllGuest= 0;
+      private int AvailableOverAllGuest=0;
+      public int OverAllGuestLimitFlag = 0;
+      
+      //private int available=0;
+    private void memnoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_memnoKeyPressed
+    if (evt.getKeyText(evt.getKeyCode()).equals("Enter")){
+        
+        try 
+         {
+           
+             Object[] obj = dmang.getMamberbySkey(memno.getText().toUpperCase());
+                if (obj == null) {
+                    JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.custnotpresent"), AppLocal.getIntString("message.custtitle"), JOptionPane.WARNING_MESSAGE);
+                    
+                } else {
+                    reset();
+                    customerInfo = new CustomerInfo(obj[0].toString());
+                    customerInfo.setName(obj[1].toString());
+                    customerInfo.setSearchkey(memno.getText().toUpperCase());
+                    //  customerInfo.setMemType(obj[2]);
+                    // customerInfo.setId(obj[0].toString());
+                    mname.setText(obj[1].toString());
+                
+                int pregno = 0;
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis((new Date()).getTime());
+                cal.set(Calendar.HOUR_OF_DAY, 00);
+                cal.set(Calendar.MINUTE, 00);
+                cal.set(Calendar.SECOND, 00);
+                Date d = new Date();
+                d.setTime(cal.getTimeInMillis());
+                Date d1 = new Date();
+                cal.add(Calendar.DATE, 1);
+                d1.setTime(cal.getTimeInMillis());
+                System.out.println(d);
+                System.out.println(d1);
+             //  GuestCategory gcat = (GuestCategory) jComboBox2.getSelectedItem();
+             
+                   try {
+                   // Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT SUM(NUM) FROM GUESTLOG WHERE MEMNO=?", null, new SerializerReadBasic(new Datas[]{Datas.INT})).find();
+                   //Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT SUM(NUM) FROM GUESTLOG WHERE MEMNO=? ", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.TIMESTAMP}), new SerializerReadBasic(new Datas[]{Datas.INT})).find(new Object[]{customerInfo.getId(), gcat.getid(), d, d1});
+                  reset();
+                    System.out.println(customerInfo.getId());
+                   // System.out.println(gcat.getid());
+                  
+                    Object obj1 =  new StaticSentence(m_App.getSession(), "SELECT SUM(NUM) FROM GUESTLOG WHERE MEMNO=?  AND DATE>? AND DATE<?", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.TIMESTAMP, Datas.TIMESTAMP}), SerializerReadString.INSTANCE).find(new Object[]{customerInfo.getId(), d, d1});
+                    // for(Object[] obj:objlist){
+                          if (obj1 != null) {
+                              String x = obj1.toString();
+                            Billed_OverAllGuest = Integer.parseInt(x);
+                         
+                          
+                     }else{
+                           Billed_OverAllGuest=0;   
+                     }
+                          
+                         
+                   Object[] obj10 = (Object[]) new StaticSentence(m_App.getSession(), "select VALUE from GENERALTABLE WHERE NAME='OVERALL GUEST LIMIT'",null, new SerializerReadBasic(new Datas[]{Datas.STRING})).find();
+                   String value=null;
+                   
+                   if (obj10 != null) {
+                   
+                       
+                       value = obj10[0].toString();
+                       if(value.equals("NO")){
+                       
+                          OverAllGuestLimitFlag = 0; 
+                       
+                        }
+                       else{
+                            OverAllGuestLimitFlag = 1; 
+                            limit3=Integer.parseInt(obj10[0].toString());
+                            AvailableOverAllGuest = limit3;
+                        
+                            detail_panel.setVisible(false);   
+                            jTable2.setVisible(false);
+
+                            int Curr_Limit = AvailableOverAllGuest - Billed_OverAllGuest;
+                            availableguestlimit.setText(""+Curr_Limit); 
+                       }
+                       }
+                       else{
+                      JOptionPane.showMessageDialog(this, "No Value Set In General Table", null, JOptionPane.WARNING_MESSAGE); 
+                       }    
+                     }
+                   catch (Exception e) {
+                    e.printStackTrace();
+                }
+             
+           } 
+             
+         }     
+        
+         catch (Exception e) {
+                    e.printStackTrace();
+                }
+        }
+   
+    }//GEN-LAST:event_memnoKeyPressed
+    
+    private void PayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PayActionPerformed
+        // TODO add your handling code here:
+        try {
+            Transaction t = new Transaction(m_App.getSession()) {
+
+                @Override
+                protected Object transact() throws BasicException {
+                    String name = "";
+                    List<PaymentInfo> pinfo = new ArrayList<PaymentInfo>();
+                    List lnames = new ArrayList();
+                    if (jComboBox2.getSelectedIndex() != -1 && customerInfo != null && guestno.getText().length() > 0) {
+                        if (Integer.parseInt(guestno.getText()) == gnames.size()) {
+                            Date d = new Date();
+                            GuestCategory gcat = (GuestCategory) jComboBox2.getSelectedItem();
+
+                            int gno = Integer.parseInt(guestno.getText());
+                            //*/
+                            if (gno == gmodel.getSize()) {
+                                CustomerInfoExt cinfo = new CustomerInfoExt(customerInfo.getId());
+                                cinfo.setSearchkey(customerInfo.getSearchkey());
+                                cinfo.setName(customerInfo.getName());
+                                JPaymentSelect paymentdialog = JPaymentSelectReceipt.getDialog(new JFrame());
+                                paymentdialog.init(m_App);
+                                boolean flag = paymentdialog.showDialog(Double.parseDouble(amount.getText()), cinfo, m_App.getAppUserView().getUser().getName(), true);
+                                if (flag == true) {
+                                    pinfo = paymentdialog.getSelectedPayments();
+                                    BillInfo ticket = new BillInfo();
+                                    ticket.setID(UUID.randomUUID().toString());
+                                    ticket.setPayments(pinfo);
+                                    ticket.setCustomer(cinfo);
+                                    ticket.setCreatedBy(m_App.getAppUserView().getUser().getName());
+                                    ticket.setCreatedDate(getdate());
+                                    ticket.setActiveCash(m_App.getActiveCashIndex());
+                                    ticket.setFloor("Guest Entry");
+                                    //Guest cat changes-start
+                                    ticket.setPlace(gcat.getid());
+                                    //Guest cat changes-end
+                                    String rnum = m_dlSales.payaccount(ticket, m_App.getInventoryLocation(), true);
+                                    //  }
+                                    if (!(rnum == null 
+                                            || rnum.equals("false"))) {
+                                        String nametemp = null;
+                                        int i = 0;
+                                        for (i = 0; i < gmodel.getSize(); i++) {
+                                            String tempname = gmodel.getElementAt(i).toString();
+                                            if (name.equals("")) {
+                                                name = tempname;
+                                            } else {
+                                                name += ":" + tempname;
+                                            }
+                                            if (nametemp == null) {
+                                                nametemp = tempname;
+                                            } else {
+                                                nametemp = nametemp + " , " + tempname;
+                                                if ((i + 1) % 3 == 0) {
+                                                    lnames.add(nametemp);
+                                                    nametemp = null;
+                                                }
+                                            }
+
+                                        }
+                                        if (i % 3 != 0) {
+                                            lnames.add(nametemp);
+                                        }
+
+                                        Double amt = gcat.getrate() * gno;
+                                        // try{
+                                        Object[] value = new Object[]{UUID.randomUUID().toString(), customerInfo.getId(), d, gcat.getid(), amt, gno, name, rnum, m_App.getAppUserView().getUser().getName()};
+                                        new PreparedSentence(m_App.getSession(), "INSERT INTO GUESTLOG(ID,MEMNO,DATE,GUESTCAT,AMOUNT,NUM,NAMES,RECEIPTNO,CREATEDBY) VALUES (?,?,?,?,?,?,?,?,?)", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.DOUBLE, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING})).exec(value);
+                                        printTicket(lnames, rnum, cinfo.getName(), pinfo, amt, gcat, gno, cinfo.getSearchkey());
+                                        loadData();
+                                        memno.setText(null);
+                                    //}
+                                    } else {
+                                        if (rnum.equals("false")) {
+                                            JOptionPane.showMessageDialog(null, "Please reset the system time or consult your system admin", "Sorry Cannot Create Receipt", JOptionPane.OK_OPTION);
+                                        } else {
+                                            JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.OK_OPTION);
+                                        }
+                                    }
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "The Guest limit exceeds for the category", "Guest Limit Exceeds", JOptionPane.WARNING_MESSAGE);
+
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "The Guest list does not match with guest number", null, JOptionPane.WARNING_MESSAGE);
+                        }
+                    } else {
+                        //exceeds
+                        JOptionPane.showMessageDialog(null, "Please Fill the form completely", null, JOptionPane.WARNING_MESSAGE);
+                    }
+                    return null;
+                }
+            };
+            t.execute();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error", null, JOptionPane.WARNING_MESSAGE);
+        }
+}//GEN-LAST:event_PayActionPerformed
+
+    private void gnameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_gnameKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyText(evt.getKeyCode()).equals("Enter")) {
+            if (gname.getText().length() > 0) {
+
+                if (gnames.size() < Integer.parseInt(guestno.getText())) {
+                    gnames.add(gname.getText());
+                    gmodel = new GuestListModel(gnames);
+                    jList1.setModel(gmodel);
+                    gname.setText(null);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Guest list exceeds the number of guest specified", "Exceeds the specified number", JOptionPane.OK_OPTION);
+                    gname.setText(null);
+                }
+            }
+
+        }
+    }//GEN-LAST:event_gnameKeyPressed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        int row = jList1.getSelectedIndex();
+        if (row >= 0) {
+            gnames.remove(row);
+            gmodel = new GuestListModel(gnames);
+
+            jList1.setModel(gmodel);
+
+
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
+        // TODO add your handling code here:
+        javax.swing.JTabbedPane tabpane = (javax.swing.JTabbedPane) evt.getSource();
+        int tabno = tabpane.getSelectedIndex();
+        if (tabno == 1) {  
+            Date sdate = getdate();
+            Date d = new Date();
+            d.setTime(sdate.getTime());
+            Date edate = getNextdate(d);
+            jParamsDatesInterval1.setStartDate(sdate);
+            jParamsDatesInterval1.setEndDate(edate);
+            
+        }
+           
+        
+    }//GEN-LAST:event_jTabbedPane1StateChanged
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        try {
+            Date sdate = (Date) Formats.TIMESTAMP.parseValue(jParamsDatesInterval1.getStartDate());
+            Date edate = (Date) Formats.TIMESTAMP.parseValue(jParamsDatesInterval1.getEndDate());
+            gtablemodel = GuestlistTableModel.loadInstance(m_App, sdate, edate);
+            jTable1.setModel(gtablemodel.getTableModel());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void guestnoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_guestnoKeyReleased
+  
+// TODO add your handling code here:
+        try {
+                if (guestno.getText().length() > 0) {
+                int num = Integer.valueOf(guestno.getText());
+                //int num1= Integer.valueOf(guestno.getText());
+                GuestCategory gcat = (GuestCategory) jComboBox2.getSelectedItem();
+                int max_guest = Integer.parseInt(maxguestlimit.getText());
+                int avail_guest_limit =0;
+                if(availableguestlimit.getText()!=null && availableguestlimit.getText().trim().length()>0 ){
+                    avail_guest_limit  = Integer.parseInt(availableguestlimit.getText());
+                }
+               
+             
+                if(OverAllGuestLimitFlag==0){
+                     if (num > max_guest ) {
+              
+                    JOptionPane.showMessageDialog(this, "The guest number exceeds the maximum", null, JOptionPane.OK_OPTION);
+                    guestno.setText(null);      
+                   
+                       } 
+                    else {
+                    amount.setText(String.valueOf(num * gcat.getrate()));      
+                    }  
+                }
+                else{
+                    
+                  if (num > max_guest || num > avail_guest_limit) {
+              
+                    JOptionPane.showMessageDialog(this, "The guest number exceeds the maximum", null, JOptionPane.OK_OPTION);
+                    guestno.setText(null);      
+                   
+                  } 
+                 else {
+                    amount.setText(String.valueOf(num * gcat.getrate()));      
+                  }  
+                    
+                }
+                
+               
+                
+                
+              
+                } 
+                else {
+                    amount.setText("0.0");
+            }
+           
+        } catch (NumberFormatException ex) {
+           //guestno.setFocusable(false);
+           JOptionPane.showMessageDialog(this, "Enter a valid number", "Wrong number Format", JOptionPane.OK_OPTION);
+           // guestno.setText(null);
+              //guestno.setFocusable(true);
+              
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+   
+    if (evt.getKeyText(evt.getKeyCode()).equals("Enter")){
+         gname.setFocusable(true);
+         gname.requestFocusInWindow();
+        
+    }
+    }//GEN-LAST:event_guestnoKeyReleased
+    
+   
+   
+   
+    private int  availableguestlimit1=0;
+    private void jComboBox2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox2ItemStateChanged
+        // TODO add your handling code here:
+       // guestnum = 0;
+        try{
+        //  if (mname.getText().length() > 0) {
+          //  if (jComboBox2.getSelectedIndex() != -1) {
+                 
+   
+               int pregno = 0;
+               // int  availableguestlimit1=0;
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis((new Date()).getTime());
+                cal.set(Calendar.HOUR_OF_DAY, 00);
+                cal.set(Calendar.MINUTE, 00);
+                cal.set(Calendar.SECOND, 00);
+                Date d = new Date();
+                d.setTime(cal.getTimeInMillis());
+                Date d1 = new Date();
+                cal.add(Calendar.DATE, 1);
+                d1.setTime(cal.getTimeInMillis());
+                System.out.println(d);
+
+
+                System.out.println(d1);
+                GuestCategory gcat = (GuestCategory) jComboBox2.getSelectedItem();
+                 // int availableguestlimit1=0;
+               // int x = Integer.parseInt(availableguestlimit.getText());
+               // AvailableOverAllGuest = x;
+                 
+              
+            //   maxguestlimit.setText(String.valueOf(gcat.getmaxguest()));
+                   
+                try{ 
+              
+                  
+                   
+                  int value = gcat.getmaxguest();
+                  Object obj4 =  new StaticSentence(m_App.getSession(), "SELECT SUM(NUM) FROM GUESTLOG WHERE MEMNO=? AND GUESTCAT=? AND DATE>? AND DATE<?", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING , Datas.TIMESTAMP, Datas.TIMESTAMP}), SerializerReadString.INSTANCE).find(new Object[]{customerInfo.getId(),gcat.getid(), d, d1});
+                     if(obj4!=null){  
+                        String x1 = obj4.toString();
+                        value = gcat.getmaxguest() - Integer.parseInt(x1);
+                        
+                    } 
+                     else{
+                         value = gcat.getmaxguest();
+                     }
+                    
+                 maxguestlimit.setText(""+value);
+                 
+                }
+                catch (Exception e) {
+                e.printStackTrace();
+                             }
+                      
+              guestno.requestFocusInWindow();
+              }
+               catch (Exception e) {
+                e.printStackTrace();
+            }
+ // TODO add your handling code here:}                              
+    }//GEN-LAST:event_jComboBox2ItemStateChanged
+    
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            if (JOptionPane.showConfirmDialog(this, "do u need to create a debit bill", "Cinfirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                Transaction t = new Transaction(m_App.getSession()) {
+
+                    @Override
+                    protected Object transact() throws BasicException {
+                        String name = "";
+                        List<PaymentInfo> pinfo = new ArrayList<PaymentInfo>();
+                        List lnames = new ArrayList();
+                        if (jComboBox2.getSelectedIndex() != -1 && customerInfo != null && guestno.getText().length() > 0) {
+                            if (Integer.parseInt(guestno.getText()) == gnames.size()) {
+                                Date d = new Date();
+                                GuestCategory gcat = (GuestCategory) jComboBox2.getSelectedItem();
+
+                                int gno = Integer.parseInt(guestno.getText());
+                                //*/
+                                if (gno == gmodel.getSize()) {
+                                    CustomerInfoExt cinfo = new CustomerInfoExt(customerInfo.getId());
+                                    cinfo.setSearchkey(customerInfo.getSearchkey());
+                                    cinfo.setName(customerInfo.getName());
+                                    JPaymentSelect paymentdialog = JPaymentSelectReceipt.getDialog(new JFrame());
+                                    paymentdialog.init(m_App);
+                                    // boolean flag=paymentdialog.showDialog(Double.parseDouble(amount.getText()), cinfo, m_App.getAppUserView().getUser().getName(),true);
+                                    //  if(flag==true){
+                                    PaymentInfoTicket payment = new PaymentInfoTicket(Double.parseDouble(amount.getText()), "debt");
+
+                                    pinfo.add(payment);
+                                    BillInfo ticket = new BillInfo();
+                                    ticket.setID(UUID.randomUUID().toString());
+                                    ticket.setPayments(pinfo);
+                                    ticket.setCustomer(cinfo);
+                                    ticket.setCreatedBy(m_App.getAppUserView().getUser().getName());
+                                    ticket.setCreatedDate(getdate());
+                                    ticket.setActiveCash(m_App.getActiveCashIndex());
+                                    ticket.setFloor("Guest Entry");
+                                    //Guest cat changes-start
+                                    ticket.setPlace(gcat.getid());
+                                    //Guest cat changes-end
+                                    String rnum = m_dlSales.payaccount(ticket, m_App.getInventoryLocation(), true);
+                                    //  }
+                                    if (!(rnum == null || rnum.equals("false"))) {
+                                        String nametemp = null;
+                                        int i = 0;
+                                        for (i = 0; i < gmodel.getSize(); i++) {
+                                            String tempname = gmodel.getElementAt(i).toString();
+                                            if (name.equals("")) {
+                                                name = tempname;
+                                            } else {
+                                                name += ":" + tempname;
+                                            }
+                                            if (nametemp == null) {
+                                                nametemp = tempname;
+                                            } else {
+                                                nametemp = nametemp + " , " + tempname;
+                                                if ((i + 1) % 3 == 0) {
+                                                    lnames.add(nametemp);
+                                                    nametemp = null;
+                                                }
+                                            }
+
+                                        }
+                                        if (i % 3 != 0) {
+                                            lnames.add(nametemp);
+                                        }
+
+                                        Double amt = gcat.getrate() * gno;
+                                        String tid = UUID.randomUUID().toString();
+                                        Date dnow = new Date();
+                                        String custAcc = null;
+                                        Object obj = new PreparedSentence(m_App.getSession(), "SELECT ACCOUNT FROM CUSTOMERS WHERE ID=?", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE).find(customerInfo.getId());
+                                        if (obj != null) {
+                                            custAcc = obj.toString();
+                                        }
+                                        Object[] value = new Object[]{UUID.randomUUID().toString(), customerInfo.getId(), d, gcat.getid(), amt, gno, name, rnum, m_App.getAppUserView().getUser().getName()};
+                                        new PreparedSentence(m_App.getSession(), "INSERT INTO GUESTLOG(ID,MEMNO,DATE,GUESTCAT,AMOUNT,NUM,NAMES,RECEIPTNO,CREATEDBY) VALUES (?,?,?,?,?,?,?,?,?)", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.DOUBLE, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING})).exec(value);
+                                        Object[] value1 = new Object[]{UUID.randomUUID().toString(), tid, dnow, "C", "Guest Entry", "GE", amt, dnow, true, m_App.getAppUserView().getUser().getName(), m_App.getProperties().getHost(), "Guest Fee", gcat.getAccount(), 0.0, dnow, true};
+                                        dmang.insertintoaccjoutnal1(value1);
+                                        Object[] value2 = new Object[]{UUID.randomUUID().toString(), tid, customerInfo.getId(), dnow, "D", "Guest Entry", "GE", amt, dnow, false, m_App.getAppUserView().getUser().getName(), m_App.getProperties().getHost(), "Guest Fee", custAcc, amt, true};
+                                        dmang.insertintoaccjoutnal(value2);
+                                        //TODO add the accountjournal entry here
+
+                                        printTicket(lnames, rnum, cinfo.getName(), pinfo, amt, gcat, gno, cinfo.getSearchkey());
+                                        loadData();
+                                    } else {
+                                        if (rnum.equals("false")) {
+                                            JOptionPane.showMessageDialog(null, "Please reset the system time or consult your system admin", "Sorry Cannot Create Receipt", JOptionPane.OK_OPTION);
+                                        } else {
+                                            JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.OK_OPTION);
+                                        }
+                                    }
+                                // }
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "The Guest limit exceeds for the category", "Guest Limit Exceeds", JOptionPane.WARNING_MESSAGE);
+
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "The Guest list does not match with guest number", null, JOptionPane.WARNING_MESSAGE);
+                            }
+                        } else {
+                            //exceeds
+                            JOptionPane.showMessageDialog(null, "Please Fill the form completely", null, JOptionPane.WARNING_MESSAGE);
+                        }
+                        return null;
+                    }
+                };
+                t.execute();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        // TODO add your handling code here:
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+
+                cardno.requestFocus();
+                cardno.setText(null);
+
+            }
+
+        }); //akshatha:to read a card from card reader without port num
+}//GEN-LAST:event_jButton10ActionPerformed
+
+    private void cardnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cardnoActionPerformed
+        // TODO add your handling code here:
+        String custoid;
+        String card = cardno.getText();
+        if (card.length() > 0) {
+            try {
+                Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT C.ID,C.SEARCHKEY,C.NAME,M.CARD,M.ID  FROM CUSTOMERS C,MEMDEPENDENT M WHERE M.MEMNO=C.ID AND M.CARD=?   UNION ALL  SELECT C.ID,C.SEARCHKEY,C.NAME,C.CARD,C.ID  FROM CUSTOMERS C WHERE C.CARD=?",
+                        new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING})).find(new Object[]{card, card});
+                if (obj == null) {
+                    JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.custnotpresent"), AppLocal.getIntString("message.custtitle"), JOptionPane.WARNING_MESSAGE);
+                } else {
+                    custoid = obj[0].toString();
+                    customerInfo = m_dlSales.loadCustomerExt(custoid);
+                    memno.setText(obj[1].toString());
+                    mname.setText(obj[2].toString());
+                    
+                    
+                int pregno = 0;
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis((new Date()).getTime());
+                cal.set(Calendar.HOUR_OF_DAY, 00);
+                cal.set(Calendar.MINUTE, 00);
+                cal.set(Calendar.SECOND, 00);
+                Date d = new Date();
+                d.setTime(cal.getTimeInMillis());
+                Date d1 = new Date();
+                cal.add(Calendar.DATE, 1);
+                d1.setTime(cal.getTimeInMillis());
+                System.out.println(d);
+                System.out.println(d1);
+                    
+                    
+                    
+                    
+                    
+                    Object obj1 =  new StaticSentence(m_App.getSession(), "SELECT SUM(NUM) FROM GUESTLOG WHERE MEMNO=?  AND DATE>? AND DATE<?", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.TIMESTAMP, Datas.TIMESTAMP}), SerializerReadString.INSTANCE).find(new Object[]{customerInfo.getId(), d, d1});
+                    // for(Object[] obj:objlist){
+                          if (obj1 != null) {
+                              String x = obj1.toString();
+                            Billed_OverAllGuest = Integer.parseInt(x);
+                         
+                          
+                     }else{
+                           Billed_OverAllGuest=0;   
+                     }
+                    
+                    
+                    
+                   Object[] obj10 = (Object[]) new StaticSentence(m_App.getSession(), "select VALUE from GENERALTABLE WHERE NAME='OVERALL GUEST LIMIT'",null, new SerializerReadBasic(new Datas[]{Datas.STRING})).find();
+                   String value=null;
+                   
+                   if (obj10 != null) {
+                   
+                       
+                       value = obj10[0].toString();
+                       if(value.equals("NO")){
+                       
+                          OverAllGuestLimitFlag = 0; 
+                       
+                        }
+                       else{
+                            OverAllGuestLimitFlag = 1; 
+                            limit3=Integer.parseInt(obj10[0].toString());
+                            AvailableOverAllGuest = limit3;
+                        
+                            detail_panel.setVisible(false);   
+                            jTable2.setVisible(false);
+
+                            int Curr_Limit = AvailableOverAllGuest - Billed_OverAllGuest;
+                            availableguestlimit.setText(""+Curr_Limit); 
+                       }
+                       }
+                       else{
+                      JOptionPane.showMessageDialog(this, "No Value Set In General Table", null, JOptionPane.WARNING_MESSAGE); 
+                       }      
+                    
+                    
+                    
+                    
+                    
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "swipe a card");
+        }
+ //akshatha:to read a card from card reader without port num
+    }//GEN-LAST:event_cardnoActionPerformed
+
+private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+// TODO add your handling code here:
+}//GEN-LAST:event_jComboBox2ActionPerformed
+
+private void guestnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guestnoActionPerformed
+                 //TODO add your handling code here:
+}//GEN-LAST:event_guestnoActionPerformed
+
+    private void maxguestlimitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxguestlimitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_maxguestlimitActionPerformed
+      
+    private void jComboBox2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jComboBox2KeyPressed
+
+    }//GEN-LAST:event_jComboBox2KeyPressed
+            
+    private void jComboBox2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComboBox2MouseClicked
+     
+     // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox2MouseClicked
+
+    private void availableguestlimitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_availableguestlimitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_availableguestlimitActionPerformed
+
+    private void memnoCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_memnoCaretPositionChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_memnoCaretPositionChanged
+
+    private void guestnoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_guestnoKeyPressed
+
+    }//GEN-LAST:event_guestnoKeyPressed
+
+    private void jTable2ComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTable2ComponentHidden
+                    // TODO add your handling code here:
+    }//GEN-LAST:event_jTable2ComponentHidden
+
+    private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
+ //TODO add your handling code here:
+    }//GEN-LAST:event_jTable2MouseClicked
+
+    private void memnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_memnoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_memnoActionPerformed
+
+    private void guestnoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_guestnoKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_guestnoKeyTyped
+
+    private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
+           // TODO add your handling code here:
+    }//GEN-LAST:event_jPanel1KeyPressed
+
+    private void jScrollPane3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane3MouseClicked
+        // TODO add your handling code here:
+    // 
+    }//GEN-LAST:event_jScrollPane3MouseClicked
+
+    private void DetailKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_DetailKeyPressed
+
+    }//GEN-LAST:event_DetailKeyPressed
+
+    private void DetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DetailActionPerformed
+ try {
+            Date sdate = (Date) Formats.TIMESTAMP.parseValue(jParamsDatesInterval1.getStartDate());
+            Date edate = (Date) Formats.TIMESTAMP.parseValue(jParamsDatesInterval1.getEndDate());
+            String MemNo = customerInfo.getId();
+            
+             gtablemodel2 = guestlisttable2.loadInstance(m_App, sdate, edate , MemNo);
+             
+             jTable2.setModel(gtablemodel2.getTableModel());
+              detail_panel.setVisible(true); 
+              jTable2.setVisible(true);
+            
+             
+ 
+ 
+      } catch (Exception e) {
+               e.printStackTrace();
+        }         
+    }//GEN-LAST:event_DetailActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Detail;
+    private javax.swing.JButton Pay;
+    private javax.swing.JLabel agt;
+    private javax.swing.JTextField amount;
+    private javax.swing.JTextField availableguestlimit;
+    private javax.swing.JTextField cardno;
+    private javax.swing.JPanel detail_panel;
+    private javax.swing.JTextField gname;
+    private javax.swing.JTextField guestno;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JComboBox jComboBox2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JList jList1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private com.openbravo.pos.reports.JParamsDatesInterval jParamsDatesInterval1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTextField maxguestlimit;
+    private javax.swing.JTextField memno;
+    private javax.swing.JTextField mname;
+    // End of variables declaration//GEN-END:variables
+
+    public void loadMemberDetails(String card) throws BasicException {
+        // TODO add your handling code here:
+        String custoid;
+        //String card = cr.getData();
+        if (card.length() > 0) {
+            try {
+                Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT C.ID,C.SEARCHKEY,C.NAME,M.CARD,M.ID  FROM CUSTOMERS C,MEMDEPENDENT M WHERE M.MEMNO=C.ID AND M.CARD=?   UNION ALL  SELECT C.ID,C.SEARCHKEY,C.NAME,C.CARD,C.ID  FROM CUSTOMERS C WHERE C.CARD=?",
+                        new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING})).find(new Object[]{card, card});
+                if (obj == null) {
+                    JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.custnotpresent"), AppLocal.getIntString("message.custtitle"), JOptionPane.WARNING_MESSAGE);
+                } else {
+                    custoid = obj[0].toString();
+                    customerInfo = m_dlSales.loadCustomerExt(custoid);
+                    memno.setText(obj[1].toString());
+                    mname.setText(obj[2].toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "swipe a card");
+        }
+    }
+
+    public void cardswiped(String custCard) {
+        try {
+            loadMemberDetails(custCard);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void startCardReader() {
+        try {
+            String portNumber = m_App.getProperties().getProperty("card.portnumber");
+            boolean cardAccessOnlyFlag = false;
+            if (m_App.getProperties().getProperty("cardAccessOnly") != null) {
+                cardAccessOnlyFlag = Boolean.valueOf(m_App.getProperties().getProperty("cardAccessOnly"));
+            }
+            cr = new CardReader(portNumber, cardAccessOnlyFlag);
+            cr.setCardSwipeNotifier(this);
+            System.out.println(portNumber);
+            cr.ConfigurePort();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+}

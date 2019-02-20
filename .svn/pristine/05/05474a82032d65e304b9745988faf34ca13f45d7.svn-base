@@ -1,0 +1,1054 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * ConsumableProd.java
+ *
+ * Created on 20-Jan-2012, 11:59:16
+ */
+package com.openbravo.pos.sales;
+
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.gui.ComboBoxValModel;
+import com.openbravo.data.gui.MessageInf;
+import com.openbravo.data.loader.DataRead;
+import com.openbravo.data.loader.DataWrite;
+import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.PreparedSentence;
+import com.openbravo.data.loader.SerializableRead;
+import com.openbravo.data.loader.SerializerReadBasic;
+import com.openbravo.data.loader.SerializerReadClass;
+import com.openbravo.data.loader.SerializerReadString;
+import com.openbravo.data.loader.SerializerWriteBasic;
+import com.openbravo.data.loader.SerializerWriteBasicExt;
+import com.openbravo.data.loader.SerializerWriteInteger;
+import com.openbravo.data.loader.SerializerWriteString;
+import com.openbravo.data.loader.StaticSentence;
+import com.openbravo.data.loader.Transaction;
+import com.openbravo.pos.catalog.CatalogSelector;
+import com.openbravo.pos.catalog.JCatalog;
+import com.openbravo.pos.clubmang.DataLogicFacilities;
+import com.openbravo.pos.clubmang.Facility;
+import com.openbravo.pos.clubmang.GuestlistTableModel;
+import com.openbravo.pos.customers.CustomerInfo;
+import com.openbravo.pos.customers.DataLogicCustomers;
+import com.openbravo.pos.customers.JCustomerFinder;
+import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.BeanFactoryApp;
+import com.openbravo.pos.forms.BeanFactoryException;
+import com.openbravo.pos.forms.DataLogicSales;
+import com.openbravo.pos.forms.DataLogicSystem;
+import com.openbravo.pos.sales.DataConstants;
+import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.JPrincipalApp;
+import com.openbravo.pos.inventory.InventoryLine;
+import com.openbravo.pos.inventory.InventoryRecord;
+import com.openbravo.pos.inventory.JInventoryLines;
+import com.openbravo.pos.printer.TicketParser;
+import com.openbravo.pos.sales.ConsumableProductList;
+import com.openbravo.pos.sales.DataConstants;
+import com.openbravo.pos.sms.CardReader1;
+import com.openbravo.pos.ticket.CategoryInfo;
+import com.openbravo.pos.ticket.ProductInfoExt;
+import com.openbravo.pos.inventory.InventoryLine;
+import com.openbravo.pos.sales.ConsumableDialog;
+import com.openbravo.pos.sales.restaurant.QTList;
+import com.openbravo.pos.ticket.TaxInfo;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author user
+ */
+public class ConsumableProd extends javax.swing.JPanel implements JPanelView, BeanFactoryApp {
+
+    private DataLogicReceipts dlReceipts;
+    private DataLogicCustomers dlCustomers;
+    private DataLogicSales dlSales = null;
+    protected Qticket qTicket;
+    private CustomerInfo customerInfo;
+    private AppView m_App;
+    private javax.swing.JRadioButton mem;
+    private DataLogicFacilities dmang;
+    private CatalogSelector m_cat;
+    private Component component;
+    // private ComboBoxValModel model;
+    private javax.swing.JLabel editIndicator;
+    private ComboBoxValModel gcatmodel;
+    private List gnames = new ArrayList();
+    private GuestlistTableModel gtablemodel;
+    private DataLogicSales m_dlSales;
+    private DataLogicSystem dlsystem;
+    private TicketParser ttp;
+    private CardReader1 cr;
+    //private ComboBoxValModel facilitytable1;
+    private ComboBoxValModel facilitytable;
+    private ComboBoxValModel depMemModel;
+    private javax.swing.JComboBox m_depnamelist;
+    private Object facilitytype;
+    public int lindex;
+    private JInventoryLines m_invlines;
+    private ComboBoxValModel typemodel;
+    private String initiator;
+    private Department1 d;
+    private ArrayList<ConsumableProductList> c;
+    private Consumable cp;
+    private TaxesLogic taxeslogic;
+
+    public String getInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(String initiator) {
+        this.initiator = initiator;
+    }
+
+    /** Creates new form ConsumableProd */
+    public ConsumableProd() {
+        initComponents();
+    }
+
+    public String getTitle() {
+        return "Consumable Products List";
+    }
+
+    @Override
+    public void activate() throws BasicException {
+        MemPanel.setVisible(false);
+        List li = new ArrayList();
+        li.add("Internal");
+        li.add("Billing");
+        typemodel = new ComboBoxValModel(li);
+        typecmbox.setModel(typemodel);
+        typecmbox.setSelectedIndex(0);
+        List<CategoryInfo> categories = new ArrayList<CategoryInfo>();
+        categories = m_dlSales.getRootCategories();
+        m_cat.loadCatalog(categories);
+        depMemModel = new ComboBoxValModel(m_dlSales.getActiveDepartments());
+        DepartmentCmb.setModel(depMemModel);
+        m_invlines = new JInventoryLines();
+        jPanel5.add(m_invlines, BorderLayout.CENTER);
+        taxeslogic = new TaxesLogic(m_dlSales.getTaxList().list());
+
+    }
+
+    public boolean deactivate() {
+        return true;
+    }
+
+    public JComponent getComponent() {
+        return this;
+    }
+
+    public void init(AppView app) throws BeanFactoryException {
+        m_App = app;
+        dlReceipts = (DataLogicReceipts) app.getBean("com.openbravo.pos.sales.DataLogicReceipts");
+        dlCustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomersCreate");
+        dmang = (DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
+        m_dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
+        dlsystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystemCreate");
+        m_cat = new JCatalog(m_dlSales);
+        m_cat.getComponent().setPreferredSize(new Dimension(0, 245));
+        m_cat.addActionListener(new CatalogListener());
+        component = m_cat.getComponent();
+        jPanel2.add(component, BorderLayout.CENTER);
+        typemodel = new ComboBoxValModel();
+        depMemModel = new ComboBoxValModel();
+    }
+
+    private void loadMember(String mem) {
+        try {
+            Object[] obj = dmang.getMamberbySkey(mem);
+            if (obj == null) {
+                JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.custnotpresent"), AppLocal.getIntString("message.custtitle"), JOptionPane.WARNING_MESSAGE);
+            } else {
+                //reset();
+                customerInfo = new CustomerInfo(obj[0].toString());
+                customerInfo.setName(obj[1].toString());
+                customerInfo.setSearchkey(mem.toUpperCase());
+                //  customerInfo.setMemType(obj[2]);
+                // customerInfo.setId(obj[0].toString());
+                mname.setText(obj[1].toString());
+                memno.setText(mem.toUpperCase());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class CatalogListener implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            incProduct(1.0, (ProductInfoExt) e.getSource());
+        }
+    }
+
+    private void incProduct(double dPor, ProductInfoExt prod) {
+        if (prod != null) {
+            addLine(prod, dPor, prod.getPriceSell());
+        }
+    }
+
+    private void addLine(ProductInfoExt oProduct, double dpor, double dprice) {
+        m_invlines.addLine(new InventoryLine(oProduct, dpor, dprice, lindex));
+        lindex++;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Object getBean() {
+        return this;
+    }
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        typecmbox = new javax.swing.JComboBox();
+        jPanel3 = new javax.swing.JPanel();
+        Savebttn = new javax.swing.JButton();
+        Removebttn = new javax.swing.JButton();
+        billBtn = new javax.swing.JButton();
+        Listbttn = new javax.swing.JButton();
+        jNumberKeys1 = new com.openbravo.beans.JNumberKeys();
+        jLabel4 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        Enterbttn = new javax.swing.JButton();
+        DepartmentPnl = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        DepartmentCmb = new javax.swing.JComboBox();
+        MemPanel = new javax.swing.JPanel();
+        CashRbttn = new javax.swing.JRadioButton();
+        CreditRbttn = new javax.swing.JRadioButton();
+        jLabel1 = new javax.swing.JLabel();
+        mname = new javax.swing.JTextField();
+        jButton5 = new javax.swing.JButton();
+        memno = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+
+        typecmbox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Internal", "Billing" }));
+        typecmbox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                typecmboxItemStateChanged(evt);
+            }
+        });
+        typecmbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                typecmboxActionPerformed(evt);
+            }
+        });
+
+        Savebttn.setText("Save");
+        Savebttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SavebttnActionPerformed(evt);
+            }
+        });
+
+        Removebttn.setText("Remove");
+        Removebttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RemovebttnActionPerformed(evt);
+            }
+        });
+
+        billBtn.setText("Bill");
+        billBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                billBtnActionPerformed(evt);
+            }
+        });
+
+        Listbttn.setText("List");
+        Listbttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ListbttnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Listbttn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
+                    .addComponent(billBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
+                    .addComponent(Savebttn, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
+                    .addComponent(Removebttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(Savebttn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(Removebttn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(billBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(Listbttn)
+                .addContainerGap(18, Short.MAX_VALUE))
+        );
+
+        jNumberKeys1.addJNumberEventListener(new com.openbravo.beans.JNumberEventListener() {
+            public void keyPerformed(com.openbravo.beans.JNumberEvent evt) {
+                jNumberKeys1KeyPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Type");
+
+        jTextField1.setFont(new java.awt.Font("Tahoma", 0, 12));
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
+        Enterbttn.setText("Enter");
+        Enterbttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EnterbttnActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Department");
+
+        javax.swing.GroupLayout DepartmentPnlLayout = new javax.swing.GroupLayout(DepartmentPnl);
+        DepartmentPnl.setLayout(DepartmentPnlLayout);
+        DepartmentPnlLayout.setHorizontalGroup(
+            DepartmentPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DepartmentPnlLayout.createSequentialGroup()
+                .addGroup(DepartmentPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(DepartmentPnlLayout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(jLabel3))
+                    .addGroup(DepartmentPnlLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(DepartmentCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        DepartmentPnlLayout.setVerticalGroup(
+            DepartmentPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DepartmentPnlLayout.createSequentialGroup()
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(DepartmentCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        CashRbttn.setText("Cash");
+        CashRbttn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                CashRbttnStateChanged(evt);
+            }
+        });
+        CashRbttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CashRbttnActionPerformed(evt);
+            }
+        });
+
+        CreditRbttn.setText("Credit");
+        CreditRbttn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                CreditRbttnStateChanged(evt);
+            }
+        });
+        CreditRbttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CreditRbttnActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Mem No");
+
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/kdmconfig.png"))); // NOI18N
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        memno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                memnoActionPerformed(evt);
+            }
+        });
+        memno.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                memnoKeyPressed(evt);
+            }
+        });
+
+        jLabel2.setText("Mem Name");
+
+        javax.swing.GroupLayout MemPanelLayout = new javax.swing.GroupLayout(MemPanel);
+        MemPanel.setLayout(MemPanelLayout);
+        MemPanelLayout.setHorizontalGroup(
+            MemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(MemPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(MemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(MemPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(memno, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(mname, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(110, 110, 110))
+                    .addGroup(MemPanelLayout.createSequentialGroup()
+                        .addComponent(CashRbttn, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(CreditRbttn)
+                        .addContainerGap())))
+        );
+        MemPanelLayout.setVerticalGroup(
+            MemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(MemPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(MemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(MemPanelLayout.createSequentialGroup()
+                        .addGroup(MemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(memno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
+                            .addComponent(mname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(MemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(CashRbttn)
+                            .addComponent(CreditRbttn))))
+                .addContainerGap())
+        );
+
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        jPanel5.setLayout(new java.awt.BorderLayout());
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGap(25, 25, 25)
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(35, 35, 35)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(Enterbttn))
+                                    .addComponent(jNumberKeys1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(typecmbox, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(59, 59, 59)
+                                .addComponent(DepartmentPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(MemPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 451, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 680, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(112, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(11, 11, 11)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4)
+                        .addComponent(typecmbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(DepartmentPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(MemPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jNumberKeys1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Enterbttn, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(32, 32, 32)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)
+                .addGap(42, 42, 42))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+    private void memnoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_memnoKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyText(evt.getKeyCode()).equals("Enter")) {
+            loadMember(memno.getText().toUpperCase());
+        }
+}//GEN-LAST:event_memnoKeyPressed
+
+    private void reset() {
+    }
+
+    private void jNumberKeys1KeyPerformed(com.openbravo.beans.JNumberEvent evt) {//GEN-FIRST:event_jNumberKeys1KeyPerformed
+        // TODO add your handling code here:
+        stateTransition(evt.getKey());
+}//GEN-LAST:event_jNumberKeys1KeyPerformed
+
+    private void typecmboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typecmboxActionPerformed
+    // TODO add your handling code here:
+}//GEN-LAST:event_typecmboxActionPerformed
+
+    private void typecmboxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_typecmboxItemStateChanged
+        try {
+            // TODO add your handling code here:
+            if (typecmbox.getSelectedIndex() == 0) {
+                MemPanel.setVisible(false);
+                DepartmentPnl.setVisible(true);
+            } else if (typecmbox.getSelectedIndex() == 1) {
+                MemPanel.setVisible(true);
+                DepartmentPnl.setVisible(false);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_typecmboxItemStateChanged
+    private void EnterbttnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_EnterbttnActionPerformed
+    {//GEN-HEADEREND:event_EnterbttnActionPerformed
+        // TODO add your handling code here:
+        try {
+            DecimalFormat dFormat = new DecimalFormat("#.##");
+            Double i = Double.parseDouble(jTextField1.getText());
+            addUnits(i);
+            jTextField1.setText(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+}//GEN-LAST:event_EnterbttnActionPerformed
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        JCustomerFinder finder = JCustomerFinder.getCustomerFinder(this, dlCustomers);
+        finder.setVisible(true);
+        customerInfo = finder.getSelectedCustomer();
+        if (customerInfo != null) {
+            try {
+                mname.setText(customerInfo.toString());
+                memno.setText(customerInfo.getSearchkey());
+
+
+            } catch (Exception e) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"), e);
+                msg.show(this);
+            }
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+    private void CashRbttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CashRbttnActionPerformed
+    // TODO add your handling code here:
+}//GEN-LAST:event_CashRbttnActionPerformed
+    private void CreditRbttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreditRbttnActionPerformed
+    // TODO add your handling code here:
+}//GEN-LAST:event_CreditRbttnActionPerformed
+    private void CreditRbttnStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_CreditRbttnStateChanged
+        // TODO add your handling code here:
+        if (CreditRbttn.isSelected() == true) {
+            CashRbttn.setSelected(false);
+        } else if (CreditRbttn.isSelected() == false) {
+            CashRbttn.setSelected(true);
+        }
+}//GEN-LAST:event_CreditRbttnStateChanged
+    private void CashRbttnStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_CashRbttnStateChanged
+        // TODO add your handling code here:
+        if (CashRbttn.isSelected() == true) {
+            CreditRbttn.setSelected(false);
+        } else if (CashRbttn.isSelected() == false) {
+            CreditRbttn.setSelected(true);
+        }
+
+    }//GEN-LAST:event_CashRbttnStateChanged
+    private void SavebttnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SavebttnActionPerformed
+    {//GEN-HEADEREND:event_SavebttnActionPerformed
+        // TODO add your handling code here:
+        try {
+            if (typecmbox.getSelectedIndex() == 1) {
+                if (customerInfo != null) {
+                    String sharedTicketId = UUID.randomUUID().toString();
+                    cp = new Consumable();
+                    cp.setSharedTicketId(sharedTicketId);
+                    cp.setDeptName(customerInfo.getSearchkey());
+                    cp.setCreatedBy(m_App.getAppUserView().getUser().getName());
+                    cp.setCreatedDate(new Date());
+                    cp.setBillType(1);
+                    List<ConsumableProductList> cpList = new ArrayList<ConsumableProductList>();
+                    List<InventoryLine> inventoryLines = m_invlines.getLines();
+                    ConsumableProductList consumableProductList = null;
+                    for (InventoryLine inventoryLine : inventoryLines) {
+                        consumableProductList = new ConsumableProductList(inventoryLine.getProductID(), inventoryLine.getProductName(), 1);
+                        cpList.add(consumableProductList);
+                    }
+                    cp.setCpList(cpList);
+                    insertSharedTicket1(sharedTicketId, customerInfo.getId(), cp, m_App.getAppUserView().getUser().getRole(), customerInfo.getId(), customerInfo.getSearchkey(), DataConstants.CONSUMABLEPRODUCTS);
+                    m_invlines.clear();
+                    clear();
+                    activate();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Enter the member details");
+                }
+            } else if (typecmbox.getSelectedIndex() == 0) {
+                if (DepartmentCmb.getSelectedIndex() != -1) {
+                    String sharedTicketId = UUID.randomUUID().toString();
+                    cp = new Consumable();
+                    Department1 d1 = (Department1) depMemModel.getSelectedItem();
+                    cp.setSharedTicketId(sharedTicketId);
+                    cp.setDeptName(d1.getName());
+                    cp.setCreatedBy(m_App.getAppUserView().getUser().getName());
+                    cp.setCreatedDate(new Date());
+                    cp.setBillType(0);
+                    List<ConsumableProductList> cpList = new ArrayList<ConsumableProductList>();
+                    List<InventoryLine> inventoryLines = m_invlines.getLines();
+                    ConsumableProductList consumableProductList = null;
+                    for (InventoryLine inventoryLine : inventoryLines) {
+                        consumableProductList = new ConsumableProductList(inventoryLine.getProductID(), inventoryLine.getProductName(), 1);
+                        cpList.add(consumableProductList);
+                    }
+                    cp.setCpList(cpList);
+                    insertSharedTicket1(sharedTicketId, d1.getId(), cp, m_App.getAppUserView().getUser().getRole(), null, null, DataConstants.CONSUMABLEPRODUCTS);
+                    m_invlines.clear();
+                    clear();
+                    activate();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Enter the department");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+}//GEN-LAST:event_SavebttnActionPerformed
+
+    public final void insertSharedTicket1(final String sharedTicketId, final String id, final Consumable ticket, final String counter, final String initiator, final String searchkey, final int t) throws BasicException {
+        if (searchkey == null) {
+            if (new PreparedSentence(m_App.getSession(), "DELETE FROM  SHAREDTICKETS WHERE CID=? AND COUNTER=?", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), null).exec(new Object[]{id, counter}) >= 0) {
+                Object[] values = new Object[]{
+                    sharedTicketId, id, ticket, counter, initiator, t
+                };
+                Datas[] datas = new Datas[]{
+                    Datas.STRING, Datas.STRING, Datas.SERIALIZABLE, Datas.STRING, Datas.STRING, Datas.INT
+                };
+
+                new PreparedSentence(m_App.getSession(), "INSERT INTO SHAREDTICKETS (ID,CID,CONTENT,COUNTER,INITIATOR,TYPE) VALUES (?,?,?,?,?,?)", new SerializerWriteBasicExt(datas, new int[]{
+                    0, 1, 2, 3, 4, 5
+                })).exec(values);
+            }
+        } else if (searchkey != null) {
+            if (new PreparedSentence(m_App.getSession(), "DELETE FROM  SHAREDTICKETS WHERE CID=? AND COUNTER=?", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), null).exec(new Object[]{id, counter}) >= 0) {
+                Object[] values = new Object[]{
+                    sharedTicketId, id, searchkey, ticket, counter, initiator, t
+                };
+                Datas[] datas = new Datas[]{
+                    Datas.STRING, Datas.STRING, Datas.STRING, Datas.SERIALIZABLE, Datas.STRING, Datas.STRING, Datas.INT
+                };
+
+                new PreparedSentence(m_App.getSession(), "INSERT INTO SHAREDTICKETS (ID,CID, NAME,CONTENT,COUNTER,INITIATOR,TYPE) VALUES (?,?,?,?,?,?,?)", new SerializerWriteBasicExt(datas, new int[]{
+                    0, 1, 2, 3, 4, 5, 6
+                })).exec(values);
+            }
+        }
+    }
+
+    public void clear() {
+        memno.setText(null);
+        mname.setText(null);
+        jPanel5.removeAll();
+    }
+
+    private void RemovebttnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_RemovebttnActionPerformed
+    {//GEN-HEADEREND:event_RemovebttnActionPerformed
+        // TODO add your handling code here:
+        deleteLine(m_invlines.getSelectedRow());
+}//GEN-LAST:event_RemovebttnActionPerformed
+
+    private void deleteLine(int index) {
+        if (index < 0) {
+            Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
+        } else {
+            m_invlines.deleteLine(index);
+        }
+    }
+
+    private void billBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_billBtnActionPerformed
+        // TODO add your handling code here:
+        try {
+            if (typecmbox.getSelectedIndex() == 0 && DepartmentCmb.getSelectedIndex() != -1) {
+                bill(0);
+            } else if (typecmbox.getSelectedIndex() == 1 && customerInfo != null) {
+                bill(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+}//GEN-LAST:event_billBtnActionPerformed
+    private void ListbttnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ListbttnActionPerformed
+    {//GEN-HEADEREND:event_ListbttnActionPerformed
+        // TODO add your handling code here:
+        //typeOfBilling=0 for internal
+        //typeOfBilling=1 for billing
+        try {
+            ConsumableDialog cd = ConsumableDialog.getDialog(this, m_App);
+            if (typecmbox.getSelectedIndex() == 1) {
+                cd.showDialog(m_dlSales, dlReceipts, 1);
+            } else if (typecmbox.getSelectedIndex() == 0) {
+                cd.showDialog(m_dlSales, dlReceipts, 0);
+            }
+            if (cd.getLoaded()) {
+                Consumable c = cd.getConsumable();
+                for (ConsumableProductList cplist : c.getCpList()) {
+                    ProductInfoExt p = m_dlSales.getProductInfo(cplist.getProductId());
+                    incProduct(cplist.getQty(), p);
+                }
+                if (c.getBillType() == 1) {
+                    loadMember(c.getDeptName());
+                } else {
+                    //depMemModel.setSelectedKey(c.getDeptName());
+                    DepartmentCmb.setSelectedItem(c.getDeptName());
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+}//GEN-LAST:event_ListbttnActionPerformed
+
+    public final List<Consumable> getSharedTicketList(String counter, int type) throws BasicException {
+
+        return (List<Consumable>) new StaticSentence(m_App.getSession(), "SELECT CID, NAME FROM SHAREDTICKETS WHERE COUNTER=? AND TYPE=? ORDER BY NAME", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.INT}), new SerializerReadClass(Consumable.class)).list(new Object[]{counter, type});
+    }
+
+    public final Consumable getSharedTicket1(String Id, String counter) throws BasicException {
+        if (Id == null) {
+            return null;
+        } else {
+            Object[] record = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CONTENT FROM SHAREDTICKETS WHERE CID = ? AND COUNTER=?", new SerializerWriteBasic(new Datas[]{
+                Datas.STRING, Datas.STRING
+            }), new SerializerReadBasic(new Datas[]{
+                Datas.SERIALIZABLE
+            })).find(new Object[]{
+                Id, counter
+            });
+            return record == null ? null : (Consumable) record[0];
+        }
+    }
+
+    public final Consumable getSharedTicket2(String DeptId, String counter) throws BasicException {
+        if (DeptId == null) {
+            return null;
+        } else {
+            Object[] record = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CONTENT FROM SHAREDTICKETS WHERE CID = ? AND COUNTER=?", new SerializerWriteBasic(new Datas[]{
+                Datas.STRING, Datas.STRING
+            }), new SerializerReadBasic(new Datas[]{
+                Datas.SERIALIZABLE
+            })).find(new Object[]{
+                DeptId, counter
+            });
+            return record == null ? null : (Consumable) record[0];
+        }
+    }
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jTextField1ActionPerformed
+    {//GEN-HEADEREND:event_jTextField1ActionPerformed
+    // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void memnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_memnoActionPerformed
+    // TODO add your handling code here:
+    }//GEN-LAST:event_memnoActionPerformed
+
+    private void stateTransition(char cTrans) {
+        if (cTrans == '\u007f') {
+            jTextField1.setText(null);
+        } else if (cTrans == '+' || cTrans == '-') {
+        } else if (cTrans == ' ' || cTrans == '=') {
+        } else {
+            jTextField1.setText(jTextField1.getText() + cTrans);
+        }
+    }
+
+    private void addUnits(double dUnits) {
+        int i = m_invlines.getSelectedRow();
+        if (i >= 0) {
+            InventoryLine inv = m_invlines.getLine(i);
+            dUnits = Math.round(dUnits);
+            double d = inv.getMultiply();
+            double dunits = inv.getMultiply() + dUnits - d;
+            if (dunits == 0.0) {
+                deleteLine(i);
+            } else if (dunits < 0) {
+                JOptionPane.showMessageDialog(null, "Total Quantity should be greater than 0");
+            } else {
+                inv.setMultiply(inv.getMultiply() + dUnits - d);
+                m_invlines.setLine(i, inv);
+            }
+        }
+    }
+
+    private boolean isAlpha(String s) {
+        s = s.toUpperCase();
+        for (int i = 0; i < s.length(); i++) {
+            int c = (int) s.charAt(i);
+            if ((c < 65 || c > 90) && (c < 47 || c > 58)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void bill(final int selectedIndex) throws BasicException {
+        Transaction t = new Transaction(m_App.getSession()) {
+
+            @Override
+            protected Object transact() throws BasicException {
+                Map<String, Double> taxMap = new HashMap<String, Double>();
+                Map<String, Double> amountMap = new HashMap<String, Double>();
+                List<String> li = new ArrayList<String>();
+                double billAmt = 0;
+                double taxValue = 0;
+                double price = 0;
+                double amount = 0;
+                double taxamount = 0;
+                String paymentType = null;
+                List<ConsumableTax> conTax = new ArrayList<ConsumableTax>();
+                List<InventoryLine> inventoryLines = m_invlines.getLines();
+                Object objId = new StaticSentence(m_App.getSession(), "SELECT VALUE FROM CPBILLID WHERE BILLNAME='CPBILLNO'", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE).find();
+                String cpBillID = null;
+                int i = 0;
+                if (objId != null) {
+                    i = Integer.valueOf(objId.toString());
+                    cpBillID = "CP" + i;
+                }
+                int j = 0;
+                int size = inventoryLines.size();
+                while (j < size) {
+                    InventoryLine inventoryLine = inventoryLines.get(j);
+                    ConsumableTax c = new ConsumableTax();
+                    double qty;
+                    String s = inventoryLine.getProductID();
+                    ProductInfoExt pin = m_dlSales.getProductInfo(s);
+                    TaxInfo tax = taxeslogic.getTaxInfo(pin.getTaxCategoryInfo());
+                    if (li == null) {
+                        li.add(tax.getId());
+                        taxMap.put(tax.getId(), 0.0);
+                        amountMap.put(tax.getId(), 0.0);
+                    } else if (!li.contains(tax.getId())) {
+                        li.add(tax.getId());
+                        taxMap.put(tax.getId(), 0.0);
+                        amountMap.put(tax.getId(), 0.0);
+                    }
+
+                    Object[] obj1 = null;
+                    if (pin.isIsStockMaintainRequired()) {
+                        Object o = m_dlSales.getStockVolume(pin.getID());
+                        Double sqty = 0.0;
+                        if (o != null) {
+                            sqty = Double.parseDouble(o.toString());
+                        }
+                        if (sqty >= inventoryLine.getMultiply()) {
+                            m_dlSales.updateStockVolume1(-inventoryLine.getMultiply(), pin.getID());
+                            price = pin.getPriceSell();
+                            amount = inventoryLine.getMultiply() * price;
+                            billAmt = billAmt + amount;
+                            taxamount = amount * tax.getRate();
+                            taxValue = taxamount + taxValue;
+                            if (taxamount > 0) {
+                                Double d = taxMap.get(tax.getId());
+                                Double d1 = amountMap.get(tax.getId());
+                                d = d + taxamount;
+                                d1 = d1 + amount;
+                                taxMap.remove(tax.getId());
+                                amountMap.remove(tax.getId());
+                                taxMap.put(tax.getId(), d);
+                                amountMap.put(tax.getId(), d1);
+                            }
+                            j++;
+                        } else {
+                            if (sqty == 0.0) {
+                                JOptionPane.showMessageDialog(null, "\"" + pin.getName() + " \" is Empty.Cannot prepare QT for it", "Stock Empty", JOptionPane.WARNING_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(null, "QT quantity Exceed the quantity in stock for \"" + pin.getName() + " \"", "Cannot Prepare QT", JOptionPane.WARNING_MESSAGE);
+                            }
+                            inventoryLines.remove(j);
+                            size--;
+                            j++;
+                        }
+                    }
+                }
+                if (selectedIndex == 1 && billAmt > 0) {
+                    if (CashRbttn.isSelected()) {
+                        paymentType = "cash";
+                    } else if (CreditRbttn.isSelected()) {
+                        paymentType = "debt";
+                    }
+
+                    Object[] values = new Object[]{
+                        //cpBillID should be used in 1 argument, random number is used for test purpose
+                        cpBillID, customerInfo.getId(), billAmt, taxValue, paymentType, m_App.getAppUserView().getUser().getId(), m_App.getAppUserView().getUser().getRole(), new Date(), selectedIndex
+                    };
+                    Datas[] datas = new Datas[]{
+                        Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.INT
+                    };
+                    new PreparedSentence(m_App.getSession(), "INSERT INTO CPBILL (ID,MEMID,AMOUNT,TAXAMOUNT,PAYMENTTYPE,CREATEDBY,USERROLE,CREATEDDATE,BILLTYPE) VALUES (?,?,?,?,?,?,?,?,?)", new SerializerWriteBasicExt(datas, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8})).exec(values);
+                    for (InventoryLine inventoryLine : inventoryLines) {
+                        ProductInfoExt pin = m_dlSales.getProductInfo(inventoryLine.getProductID());
+                        TaxInfo tax = taxeslogic.getTaxInfo(pin.getTaxCategoryInfo());
+                        Object[] values1 = new Object[]{
+                            //cpBillID should be used for 2nd argument
+                            UUID.randomUUID().toString(), cpBillID, inventoryLine.getProductID(), inventoryLine.getMultiply(), pin.getPriceSell(), tax.getRate()
+                        };
+                        Datas[] datas1 = new Datas[]{
+                            Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.DOUBLE
+                        };
+                        new PreparedSentence(m_App.getSession(), "INSERT INTO CPBILLITEM (ID,BILLID,PRODUCTID,QTY,RATE,TAXVALUE) VALUES (?,?,?,?,?,?)", new SerializerWriteBasicExt(datas1, new int[]{0, 1, 2, 3, 4, 5})).exec(values1);
+                    }
+                    i = i + 1;
+                    new StaticSentence(m_App.getSession(), "UPDATE CPBILLID SET VALUE=? WHERE BILLNAME='CPBILLNO'", SerializerWriteInteger.INSTANCE, null).exec(i);
+                    new PreparedSentence(m_App.getSession(), "DELETE FROM  SHAREDTICKETS WHERE CID=? AND COUNTER=?", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), null).exec(new Object[]{customerInfo.getId(), m_App.getAppUserView().getUser().getRole()});
+                } else if (selectedIndex == 0 && billAmt > 0) {
+                    Department1 d2 = (Department1) depMemModel.getSelectedItem();
+                    Object[] values = new Object[]{
+                        cpBillID, d2.getId(), billAmt, taxValue, paymentType, m_App.getAppUserView().getUser().getId(), m_App.getAppUserView().getUser().getRole(), new Date(), selectedIndex
+                    };
+                    Datas[] datas = new Datas[]{
+                        Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.INT
+                    };
+                    new PreparedSentence(m_App.getSession(), "INSERT INTO CPBILL (ID,DEPTID,AMOUNT,TAXAMOUNT,PAYMENTTYPE,CREATEDBY,USERROLE,CREATEDDATE,BILLTYPE) VALUES (?,?,?,?,?,?,?,?,?)", new SerializerWriteBasicExt(datas, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8})).exec(values);
+
+                    for (InventoryLine inventoryLine : inventoryLines) {
+                        ProductInfoExt pin = m_dlSales.getProductInfo(inventoryLine.getProductID());
+                        TaxInfo tax = taxeslogic.getTaxInfo(pin.getTaxCategoryInfo());
+                        Object[] values1 = new Object[]{
+                            UUID.randomUUID().toString(), cpBillID, inventoryLine.getProductID(), inventoryLine.getMultiply(), pin.getPriceSell(), tax.getRate()
+                        };
+                        Datas[] datas1 = new Datas[]{
+                            Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.DOUBLE
+                        };
+                        new PreparedSentence(m_App.getSession(), "INSERT INTO CPBILLITEM (ID,BILLID,PRODUCTID,QTY,RATE,TAXVALUE) VALUES (?,?,?,?,?,?)", new SerializerWriteBasicExt(datas1, new int[]{0, 1, 2, 3, 4, 5})).exec(values1);
+                    }
+                    i = i + 1;
+                    new StaticSentence(m_App.getSession(), "UPDATE CPBILLID SET VALUE=? WHERE BILLNAME='CPBILLNO'", SerializerWriteInteger.INSTANCE, null).exec(i);
+                    new PreparedSentence(m_App.getSession(), "DELETE FROM  SHAREDTICKETS WHERE CID=? AND COUNTER=?", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), null).exec(new Object[]{d2.getId(), m_App.getAppUserView().getUser().getRole()});
+
+                }
+
+                for (String s : li) {
+                    if (taxMap.get(s) > 0) {
+                        Object[] val = new Object[]{UUID.randomUUID().toString(), UUID.randomUUID().toString(), s, amountMap.get(s), taxMap.get(s)};
+                        Datas[] datas1 = new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE};
+                        new PreparedSentence(m_App.getSession(), "INSERT INTO TAXLINES (ID, RECEIPT, TAXID, BASE, AMOUNT)  VALUES (?, ?, ?, ?, ?)", new SerializerWriteBasicExt(datas1, new int[]{0, 1, 2, 3, 4})).exec(val);
+                    }
+                }
+                return null;
+            }
+        };
+        t.execute();
+        m_invlines.clear();
+    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton CashRbttn;
+    private javax.swing.JRadioButton CreditRbttn;
+    private javax.swing.JComboBox DepartmentCmb;
+    private javax.swing.JPanel DepartmentPnl;
+    private javax.swing.JButton Enterbttn;
+    private javax.swing.JButton Listbttn;
+    private javax.swing.JPanel MemPanel;
+    private javax.swing.JButton Removebttn;
+    private javax.swing.JButton Savebttn;
+    private javax.swing.JButton billBtn;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private com.openbravo.beans.JNumberKeys jNumberKeys1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField memno;
+    private javax.swing.JTextField mname;
+    private javax.swing.JComboBox typecmbox;
+    // End of variables declaration//GEN-END:variables
+    public static class ConsumableTax {
+
+        private String taxCatId;
+        private Double subTotal;
+        private Double taxAmount;
+
+        public Double getSubTotal() {
+            return subTotal;
+        }
+
+        public void setSubTotal(Double subTotal) {
+            this.subTotal = subTotal;
+        }
+
+        public Double getTaxAmount() {
+            return taxAmount;
+        }
+
+        public void setTaxAmount(Double taxAmount) {
+            this.taxAmount = taxAmount;
+        }
+
+        public String getTaxCatId() {
+            return taxCatId;
+        }
+
+        public void setTaxCatId(String taxCatId) {
+            this.taxCatId = taxCatId;
+        }
+    }
+}

@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew
+END
+CardReader.class
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/CardReader.class
+END
+MainCard.class
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/MainCard.class
+END
+SerialConnectionException.class
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/SerialConnectionException.class
+END
+SerialConnection.class
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/SerialConnection.class
+END
+cardReaderMain.class
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/cardReaderMain.class
+END
+SerialParameters.class
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/SerialParameters.class
+END
+cardReaderMain$1.class
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/cardReaderMain$1.class
+END
+cardReaderMain$2.class
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/cardReaderMain$2.class
+END
+cardReaderMain$3.class
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/cardReaderMain$3.class
+END
+SerialConnection$KeyHandler.class
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/repository/!svn/ver/474/Projects/BCI/build/classes/rfidCardReaderNew/SerialConnection$KeyHandler.class
+END

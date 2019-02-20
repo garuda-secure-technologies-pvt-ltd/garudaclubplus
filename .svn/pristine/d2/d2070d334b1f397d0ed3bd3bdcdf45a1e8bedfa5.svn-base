@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="false" />
+
+    <package name="default" namespace="/" extends="struts-default">
+    
+    <interceptors>
+    	<interceptor name="auth" class="com.openbravo.pos.pda.struts.AuthenticationInterceptor"></interceptor>
+    		<interceptor-stack name="authStack">
+    			<interceptor-ref name="auth"></interceptor-ref>
+    			<interceptor-ref name="defaultStack"></interceptor-ref>
+    		</interceptor-stack>
+    </interceptors>
+		
+	<default-interceptor-ref name="authStack"/>
+	
+	<global-results>
+        	<result name ="login">Index.jsp</result>
+        </global-results>
+    
+        <action name="homePage" class="com.loki.FriendIt.LoginAction">
+		
+			<interceptor-ref name="defaultStack"/>
+	        <result name="success">Welcome.jsp</result>
+        	<result name="input">HomePage.jsp</result>
+        	<result name="error">HomePage.jsp</result>
+
+		</action>	
+    	
+    	
+    	
+    </package>
+
+    
+
+</struts>

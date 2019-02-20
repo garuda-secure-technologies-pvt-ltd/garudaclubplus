@@ -1,0 +1,80 @@
+10
+
+dir
+496
+http://192.168.1.154:8080/svn/repository/Projects/BCI/build/classes
+http://192.168.1.154:8080/svn/repository
+
+
+
+2011-11-02T12:58:15.333488Z
+474
+garuda
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+f3daffa6-910e-244e-a245-cdbee9e1ae6d
+
+.netbeans_automatic_build
+file
+
+
+
+
+2011-11-03T09:45:59.750000Z
+d41d8cd98f00b204e9800998ecf8427e
+2011-11-02T12:58:15.333488Z
+474
+garuda
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+
+DAO
+dir
+
+DBConnection
+dir
+
+bciListeners
+dir
+
+serialNumber
+dir
+
+rfidCardReaderNew
+dir
+
+bci
+dir
+

@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/repository/!svn/ver/485/Projects/BCI/src/rfidCardReaderNew
+END
+SerialConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/repository/!svn/ver/485/Projects/BCI/src/rfidCardReaderNew/SerialConnection.java
+END
+cardReaderMain.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/repository/!svn/ver/485/Projects/BCI/src/rfidCardReaderNew/cardReaderMain.java
+END
+SerialParameters.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/repository/!svn/ver/485/Projects/BCI/src/rfidCardReaderNew/SerialParameters.java
+END
+cardReaderMain.form
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/repository/!svn/ver/485/Projects/BCI/src/rfidCardReaderNew/cardReaderMain.form
+END
+CardReader.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/repository/!svn/ver/485/Projects/BCI/src/rfidCardReaderNew/CardReader.java
+END
+MainCard.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/repository/!svn/ver/485/Projects/BCI/src/rfidCardReaderNew/MainCard.java
+END
+SerialConnectionException.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/repository/!svn/ver/485/Projects/BCI/src/rfidCardReaderNew/SerialConnectionException.java
+END

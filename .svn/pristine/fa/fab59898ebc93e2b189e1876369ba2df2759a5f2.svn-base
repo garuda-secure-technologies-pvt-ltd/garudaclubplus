@@ -1,0 +1,1069 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * GeneralSettingsAccounting.java
+ *
+ * Created on May 12, 2009, 10:15:45 AM
+ */
+
+package com.openbravo.pos.clubmang;
+
+import com.openbravo.pos.Accounts.AccountMasterExt;
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.gui.ComboBoxValModel;
+import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.PreparedSentence;
+import com.openbravo.data.loader.SerializerReadBasic;
+import com.openbravo.data.loader.SerializerWriteBasic;
+import com.openbravo.data.loader.SerializerWriteString;
+import com.openbravo.data.loader.StaticSentence;
+import com.openbravo.pos.admin.PeopleInfo;
+import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.BeanFactoryApp;
+import com.openbravo.pos.forms.BeanFactoryException;
+import com.openbravo.pos.forms.DataLogicSales;
+import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.LookupUtilityImpl;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+//import java.util.Map;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
+import javax.swing.ButtonGroup;
+
+/**
+ *
+ * @author swathi
+ */
+public class GeneralSettingsAccounting extends javax.swing.JPanel implements JPanelView,BeanFactoryApp {
+
+    /** Creates new form GeneralSettingsAccounting */
+    private AppView m_App;
+    private List arr;
+    private ComboBoxValModel clmodel;
+    private ComboBoxValModel stmodel;
+    private ComboBoxValModel pcmodel;
+    private ComboBoxValModel pcmodel1;
+    private ComboBoxValModel pcmodel2;
+    private ComboBoxValModel inventorycraccountmodel;
+    private ComboBoxValModel inventorydraccountmodel;
+    private ComboBoxValModel peoplemodel;
+    private ComboBoxValModel kioskmodel;
+    private DataLogicFacilities dlfac;
+    private String clevyp=null;
+    private String clacc=null;
+    private String stacc=null;
+    private String pettycashacc=null;
+    private String pettycashincharge=null;
+    private String previousYearIncomeHead = null;
+    private String nextYearIncomeHead = null;
+    private String memberkioskincharge = null;
+    private String inventoryAccountDebt = null;
+    private String inventoryAccountCr = null;
+    private String Demo = null;
+   
+      
+    private JTextComponent editor;
+    private JTextComponent servtaxeditor;
+    private DataLogicSales m_dlSales;
+    private Map<String, GeneralSettingInfo> GeneralSettingsMap = new HashMap<String, GeneralSettingInfo>();
+    public GeneralSettingsAccounting() {
+        initComponents();
+    }
+
+    public void init(AppView app) throws BeanFactoryException {
+       m_App=app;
+       dlfac=(DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
+       m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
+		groupButton();
+                groupButton1();
+                groupButton2();
+                groupButton3();
+                groupButton4();
+                 try {
+            Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM GENERALTABLE where NAME='Credit check for QT'", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find();
+             Boolean v = (Boolean)obj[0];
+                     if(v==true){
+                         jRadioButton1.setSelected(true);
+                         jLabel8.setVisible(true);
+                         jRadioButton3.setVisible(true);
+                         jRadioButton4.setVisible(true);
+                         jRadioButton9.setVisible(true);
+             Object[] obj1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM GENERALTABLE where NAME='Credit check for Guests'", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find();
+             Boolean v1 = (Boolean)obj1[0];
+                     if(v1==true){
+                         jRadioButton3.setSelected(true);
+                     }else{
+                         jRadioButton4.setSelected(true);
+                     }
+                     }else{
+                         jRadioButton2.setSelected(true);
+                         jRadioButton10.setSelected(true);
+                         jLabel8.setVisible(false);
+                         jRadioButton3.setVisible(false);
+                         jRadioButton4.setVisible(false);
+                     }
+                     
+                     Object[] obj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM GENERALTABLE where NAME='Credit Check for Guest Entry Through Member Kiosk'", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find();
+                      Boolean v2 = (Boolean)obj2[0];
+                     if(v2==true){
+                         jRadioButton5.setSelected(true);
+                     }else{
+                         jRadioButton6.setSelected(true);
+                     }
+                     
+                      Object[] obj1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM GENERALTABLE where NAME='Reports To Use Manual Inventory Entry'", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find();
+             Boolean v1 = (Boolean)obj1[0];
+                    jRadioButton7.setSelected(v1);
+                    jRadioButton10.setSelected(v1);
+                 } catch (BasicException ex) {
+            Logger.getLogger(GeneralSettingsAccounting.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+     public String getTitle() {
+       return "General Settings";
+    }
+
+    public void activate() throws BasicException {
+        List<PeopleInfo> plist=m_dlSales.getPeopleList().list();
+        peoplemodel=new ComboBoxValModel(plist);
+        kioskmodel = new ComboBoxValModel(plist);
+        kioskincharge.setModel(kioskmodel);
+        kioskincharge.setSelectedIndex(-1);
+        pcincharge.setModel(peoplemodel);
+        pcincharge.setSelectedIndex(-1);
+        List<AccountMasterExt> sacclist=dlfac.getaccounts();
+        clmodel=new ComboBoxValModel(sacclist);
+        claccount.setModel(clmodel);
+        claccount.setSelectedIndex(-1);
+        pcmodel=new ComboBoxValModel(sacclist);
+        pcmodel1=new ComboBoxValModel(sacclist);
+        pcmodel2=new ComboBoxValModel(sacclist);
+        inventorycraccountmodel = new ComboBoxValModel(sacclist);
+        inventorydraccountmodel = new ComboBoxValModel(sacclist);
+        inventoryDebtAcc.setModel(inventorydraccountmodel);
+        inventoryCrAcc.setModel(inventorycraccountmodel);
+        inventoryDebtAcc.setSelectedIndex(-1);
+        inventoryCrAcc.setSelectedIndex(-1);
+        pcaccount.setModel(pcmodel);
+        pcaccount.setSelectedIndex(-1);
+        pYearIncomeHead.setModel(pcmodel1);
+        nYearIncomeHead.setModel(pcmodel2);
+        pYearIncomeHead.setSelectedIndex(-1);
+        nYearIncomeHead.setSelectedIndex(-1);
+        editor=(JTextComponent)claccount.getEditor().getEditorComponent();
+        editor.setText(null);
+        editor.addKeyListener(new Comboboxlistenner());
+        stmodel=new ComboBoxValModel(sacclist);
+        staxacc.setModel(stmodel);
+        staxacc.setSelectedIndex(-1);
+        servtaxeditor=(JTextComponent)staxacc.getEditor().getEditorComponent();
+        servtaxeditor.setText(null);
+        servtaxeditor.addKeyListener(new Comboboxlistenner1());
+        arr=new ArrayList();
+        
+       /* List<Object[]> data=new StaticSentence(m_App.getSession()
+                , "SELECT NAME,VALUE FROM GENERALTABLE "
+                ,null
+                , new SerializerReadBasic(new Datas[]{Datas.STRING,Datas.STRING})).list();*/
+        LookupUtilityImpl.getInstance(null).refresh();
+       GeneralSettingsMap=LookupUtilityImpl.getInstance(null).getGeneralSettingsMap();
+       // Object[] detail=(Object[])data.get(0);
+       // for(int i=0;i<GeneralSettingsMap.size();i++){
+         GeneralSettingInfo detail=GeneralSettingsMap.get("Canteen Levy");
+         if(detail !=null && detail.getName().equals("Canteen Levy")){
+           clevy.setText(detail.getValue());
+           clevyp=detail.getValue();
+         }
+         detail=GeneralSettingsMap.get("Canteen Levy Account");
+         if(detail !=null && detail.getName().equals("Canteen Levy Account")){
+           clmodel.setSelectedKey(detail.getValue());
+           clacc=detail.getValue();
+         }
+         detail=GeneralSettingsMap.get("Service Tax Account");
+         if(detail !=null && detail.getName().equals("Service Tax Account")){
+            stmodel.setSelectedKey(detail.getValue());
+            stacc=detail.getValue();
+         }
+         detail=GeneralSettingsMap.get("Petty Cash Account");
+         if(detail !=null && detail.getName().equals("Petty Cash Account")){
+            pcmodel.setSelectedKey(detail.getValue());
+            pettycashacc=detail.getValue();
+         }
+         detail=GeneralSettingsMap.get("Petty Cash Incharge");
+         if(detail !=null && detail.getName().equals("Petty Cash Incharge")){
+            peoplemodel.setSelectedKey(detail.getValue());
+            pettycashincharge=detail.getValue();
+         }
+         detail=GeneralSettingsMap.get("prevFySubIncome");
+         if(detail !=null && detail.getName().equals("prevFySubIncome")){
+            pcmodel1.setSelectedKey(detail.getValue());
+            previousYearIncomeHead=detail.getValue();
+         }
+         detail=GeneralSettingsMap.get("nextFySubIncome");
+         if(detail !=null && detail.getName().equals("nextFySubIncome")){
+            pcmodel2.setSelectedKey(detail.getValue());
+            nextYearIncomeHead=detail.getValue();
+         }
+         
+         detail=GeneralSettingsMap.get("Member Kiosk Incharge");
+         if(detail !=null && detail.getName().equals("Member Kiosk Incharge")){
+            kioskmodel.setSelectedKey(detail.getValue());
+            memberkioskincharge=detail.getValue();
+         }
+         
+        
+         
+         detail=GeneralSettingsMap.get("Accout Debit (Inventory)");
+         if(detail !=null && detail.getName().equals("Accout Debit (Inventory)")){
+            inventorydraccountmodel.setSelectedKey(detail.getValue());
+            inventoryAccountDebt=detail.getValue();
+         }
+         
+         detail=GeneralSettingsMap.get("Account Credit (Income and Expand)");
+         if(detail !=null && detail.getName().equals("Account Credit (Income and Expand)")){
+            inventorycraccountmodel.setSelectedKey(detail.getValue());
+            inventoryAccountCr=detail.getValue();
+         }
+         
+         
+         
+       // }
+       
+    }
+     private boolean isAlpha(String s)
+    {
+       s = s.toUpperCase();
+      for (int i = 0; i < s.length(); i ++)
+      {
+       int c = (int) s.charAt(i);
+      if ((c < 65 || c > 90) && (c<47 || c>58) )
+       return false;
+      }
+        return true;
+     }
+
+    private void memnoKeyPressed() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+     public class Comboboxlistenner extends  KeyAdapter{
+         public void keyReleased(KeyEvent e) {
+             try{
+                 //!e.getKeyText(e.getKeyCode()).equals("Enter")
+
+                 String text=editor.getText();
+                 if(isAlpha(String.valueOf(e.getKeyChar())) || e.getKeyText(e.getKeyCode()).equals("Backspace")){//|| !e.getKeyText(e.getKeyCode()).equals("Backspace")){
+                   clmodel=new ComboBoxValModel(dlfac.getsubAccounts(text.toUpperCase()));
+                   claccount.setModel(clmodel);
+                   editor.setText(text);
+                   claccount.showPopup();
+
+                 }else if(e.getKeyText(e.getKeyCode()).equals("Enter")){
+                    if(clmodel.getSize()<=0){
+                       editor.setText(null);
+                    }
+                 }
+             }
+             catch(Exception e1){
+               e1.printStackTrace();
+             }
+         }
+     }
+     public class Comboboxlistenner1 extends  KeyAdapter{
+         public void keyReleased(KeyEvent e) {
+             try{
+                 String text=servtaxeditor.getText();
+                 if(isAlpha(String.valueOf(e.getKeyChar())) || e.getKeyText(e.getKeyCode()).equals("Backspace")){//|| !e.getKeyText(e.getKeyCode()).equals("Backspace")){
+                   stmodel=new ComboBoxValModel(dlfac.getsubAccounts(text.toUpperCase()));
+                   staxacc.setModel(stmodel);
+                   servtaxeditor.setText(text);
+                   staxacc.showPopup();
+
+                 }else if(e.getKeyText(e.getKeyCode()).equals("Enter")){
+                    if(stmodel.getSize()<=0){
+                       servtaxeditor.setText(null);
+                    }
+                 }
+             }
+             catch(Exception e1){
+               e1.printStackTrace();
+             }
+         }
+     }
+    public boolean deactivate() {
+        return true;
+    }
+
+    public JComponent getComponent() {
+        return this;
+    }
+
+    public Object getBean() {
+       return this;
+    }
+    
+   private void groupButton() {
+        ButtonGroup bg1 = new ButtonGroup();
+        bg1.add(jRadioButton1);
+        bg1.add(jRadioButton2);
+    }
+    private void groupButton2() {
+        ButtonGroup bg1 = new ButtonGroup();
+        bg1.add(jRadioButton5);
+        bg1.add(jRadioButton6);
+    }
+   private void groupButton1() {
+        ButtonGroup bg2 = new ButtonGroup();
+        bg2.add(jRadioButton3);
+        bg2.add(jRadioButton4);
+    }
+   private void groupButton3() {
+        ButtonGroup bg2 = new ButtonGroup();
+        bg2.add(jRadioButton7);
+        bg2.add(jRadioButton8);
+    }
+    private void groupButton4() {
+        ButtonGroup bg2 = new ButtonGroup();
+        bg2.add(jRadioButton9);
+        bg2.add(jRadioButton10);
+    }
+   
+   
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        kioskincharge = new javax.swing.JComboBox();
+        pcaccount = new javax.swing.JComboBox();
+        nYearIncomeHead = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jRadioButton6 = new javax.swing.JRadioButton();
+        jLabel4 = new javax.swing.JLabel();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        pcincharge = new javax.swing.JComboBox();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jRadioButton3 = new javax.swing.JRadioButton();
+        jLabel7 = new javax.swing.JLabel();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        claccount = new javax.swing.JComboBox();
+        clevy = new javax.swing.JTextField();
+        jRadioButton5 = new javax.swing.JRadioButton();
+        jLabel12 = new javax.swing.JLabel();
+        pYearIncomeHead = new javax.swing.JComboBox();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jRadioButton4 = new javax.swing.JRadioButton();
+        jButton1 = new javax.swing.JButton();
+        staxacc = new javax.swing.JComboBox();
+        jLabel16 = new javax.swing.JLabel();
+        jRadioButton9 = new javax.swing.JRadioButton();
+        jRadioButton10 = new javax.swing.JRadioButton();
+        jLabel17 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        jRadioButton7 = new javax.swing.JRadioButton();
+        jRadioButton8 = new javax.swing.JRadioButton();
+        jButton2 = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        inventoryDebtAcc = new javax.swing.JComboBox();
+        jLabel15 = new javax.swing.JLabel();
+        inventoryCrAcc = new javax.swing.JComboBox();
+
+        jLabel10.setText("Next Year Income Head");
+
+        kioskincharge.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        pcaccount.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        nYearIncomeHead.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel3.setText("Canteen Levy Account :");
+
+        jLabel1.setText("Canteen Levy :");
+
+        jRadioButton6.setText("No");
+        jRadioButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton6ActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Service tax account");
+
+        jRadioButton1.setText("Yes");
+        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton1ActionPerformed(evt);
+            }
+        });
+
+        pcincharge.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel2.setText("%");
+
+        jLabel5.setText("Petty Cash Account");
+
+        jRadioButton3.setText("Yes");
+        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton3ActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("Do Credit balance check while creating QT:");
+
+        jRadioButton2.setText("No");
+        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton2ActionPerformed(evt);
+            }
+        });
+
+        jRadioButton5.setText("Yes");
+        jRadioButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton5ActionPerformed(evt);
+            }
+        });
+
+        jLabel12.setText("Do Cr balance check for GE Through KIOSK ");
+
+        pYearIncomeHead.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel11.setText("Member Kiosk Incharge");
+
+        jLabel6.setText("Petty Cash Incharge");
+
+        jLabel9.setText("Previous Year Income Head");
+
+        jLabel8.setText("Do Credit balance check for Guests:");
+
+        jRadioButton4.setText("No");
+
+        jButton1.setText("Save");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel16.setText("Daily Overall Guest Limit");
+
+        jRadioButton9.setText("Yes");
+        jRadioButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton9ActionPerformed(evt);
+            }
+        });
+
+        jRadioButton10.setText("No");
+        jRadioButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton10ActionPerformed(evt);
+            }
+        });
+
+        jLabel17.setText("Enter Daily Overall Limit");
+        jLabel17.addContainerListener(new java.awt.event.ContainerAdapter() {
+            public void componentRemoved(java.awt.event.ContainerEvent evt) {
+                jLabel17ComponentRemoved(evt);
+            }
+        });
+
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel12)
+                            .addComponent(jLabel16)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel11))
+                        .addGap(17, 17, 17)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jRadioButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jRadioButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jRadioButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jRadioButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(15, 15, 15)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(jRadioButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jRadioButton2))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jRadioButton10)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jLabel17)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE))
+                                            .addComponent(jRadioButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE))
+                                        .addGap(64, 64, 64)))
+                                .addGap(252, 252, 252))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(29, 29, 29)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(clevy, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(29, 29, 29)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(claccount, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(staxacc, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(pcaccount, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(pcincharge, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(pYearIncomeHead, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(kioskincharge, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(nYearIncomeHead, javax.swing.GroupLayout.Alignment.TRAILING, 0, 286, Short.MAX_VALUE)))))
+                        .addContainerGap(177, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(358, 358, 358))))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel6)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(clevy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(claccount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(staxacc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(pcaccount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(pcincharge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(pYearIncomeHead, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10)
+                    .addComponent(nYearIncomeHead, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(kioskincharge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jRadioButton2)
+                    .addComponent(jRadioButton1))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(jRadioButton4)
+                    .addComponent(jRadioButton3))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(jRadioButton6)
+                    .addComponent(jRadioButton5))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jRadioButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jRadioButton10)
+                        .addComponent(jLabel17)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(9, 9, 9)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(33, Short.MAX_VALUE))
+        );
+
+        //jTextField1.setEditable(false);
+
+        jTabbedPane1.addTab("One", jPanel1);
+
+        jLabel13.setText("Reports To Use Manual Inventory Entry");
+
+        jRadioButton7.setText("Yes");
+        jRadioButton7.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButton7ItemStateChanged(evt);
+            }
+        });
+        jRadioButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton7ActionPerformed(evt);
+            }
+        });
+
+        jRadioButton8.setText("No");
+        jRadioButton8.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButton8ItemStateChanged(evt);
+            }
+        });
+
+        jButton2.setText("Save");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jLabel14.setText("Account Debt(Inventory)");
+
+        inventoryDebtAcc.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel15.setText("Account Credit(Income & Exp)");
+
+        inventoryCrAcc.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel15))
+                .addGap(43, 43, 43)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jRadioButton7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jRadioButton8))
+                    .addComponent(inventoryCrAcc, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(inventoryDebtAcc, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(407, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(604, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addGap(335, 335, 335))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(jRadioButton7)
+                    .addComponent(jRadioButton8))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(inventoryDebtAcc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
+                    .addComponent(inventoryCrAcc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addComponent(jButton2)
+                .addContainerGap(369, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Two", jPanel2);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        try{
+        
+        
+        if(!pcaccount.getSelectedItem().equals(pettycashacc)){
+            AccountMasterExt acc=(AccountMasterExt) pcmodel.getSelectedItem();
+            if( new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE=? WHERE NAME=?"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING})).exec(new Object[]{acc.getid(),"Petty Cash Account"})<=0){
+
+                new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING})).exec(new Object[]{UUID.randomUUID().toString(),"Petty Cash Account",acc.getid()});
+            }
+        }
+        
+        if(!nYearIncomeHead.getSelectedItem().equals(nextYearIncomeHead)){
+            AccountMasterExt acc=(AccountMasterExt) pcmodel2.getSelectedItem();
+            if( new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE=? WHERE NAME=?"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING})).exec(new Object[]{acc.getid(),"nextFySubIncome"})<=0){
+
+                new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING})).exec(new Object[]{UUID.randomUUID().toString(),"nextFySubIncome",acc.getid()});
+            }
+        }
+        
+        
+        if(!pYearIncomeHead.getSelectedItem().equals(previousYearIncomeHead)){
+            AccountMasterExt acc=(AccountMasterExt) pcmodel1.getSelectedItem();
+            if( new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE=? WHERE NAME=?"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING})).exec(new Object[]{acc.getid(),"prevFySubIncome"})<=0){
+
+                new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING})).exec(new Object[]{UUID.randomUUID().toString(),"prevFySubIncome",acc.getid()});
+            }
+        }
+        
+         if( !pcincharge.getSelectedItem().equals(pettycashincharge)){
+            PeopleInfo pinfo=(PeopleInfo) peoplemodel.getSelectedItem();
+             if(new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE=? WHERE NAME=?"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING})).exec(new Object[]{pinfo.getID(),"Petty Cash Incharge"})<=0){
+
+                 new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING})).exec(new Object[]{UUID.randomUUID().toString(),"Petty Cash Incharge",pinfo.getID()});
+             }
+        }
+
+         if( !kioskincharge.getSelectedItem().equals(memberkioskincharge)){
+            PeopleInfo pinfo=(PeopleInfo) kioskmodel.getSelectedItem();
+             if(new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE=? WHERE NAME=?"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING})).exec(new Object[]{pinfo.getID(),"Member Kiosk Incharge"})<=0){
+
+                 new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING})).exec(new Object[]{UUID.randomUUID().toString(),"Member Kiosk Incharge",pinfo.getID()});
+             }
+        }
+         
+    if(jRadioButton1.isSelected()){
+//        jRadioButton1.setSelected(true);
+//         new PreparedSentence(m_App.getSession()
+//                , "UPDATE GENERALTABLE SET  VALUE=? where NAME='Credit check for QT'"
+//                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{1});
+         
+         if(jRadioButton3.isSelected()){
+             jRadioButton3.setSelected(true);
+         new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET  VALUE=? where NAME='Credit check for Guests'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{1});
+///         
+         jRadioButton1.setSelected(true);
+         new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET  VALUE=? where NAME='Credit check for QT'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{1});
+///
+         }else
+         if(jRadioButton4.isSelected()){
+              jRadioButton4.setSelected(true);
+         new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE =? where NAME='Credit check for Guests'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{0});
+///         
+         jRadioButton1.setSelected(true);
+         new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET  VALUE=? where NAME='Credit check for QT'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{1});
+///
+         
+         }else{
+            JOptionPane.showMessageDialog(this, "Please select 'Yes' or 'NO'", "Fill Correctly", JOptionPane.WARNING_MESSAGE);
+         }
+
+         }else
+        if(jRadioButton2.isSelected()){
+            jRadioButton2.setSelected(true);
+         new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE =? where NAME='Credit check for QT'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{0});
+         
+             jRadioButton4.setSelected(true);
+         new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE =? where NAME='Credit check for Guests'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{0});
+
+         }else{
+            JOptionPane.showMessageDialog(this, "Please select QT checkbox,'Yes' or 'NO'", "Fill the Checkbox", JOptionPane.WARNING_MESSAGE);
+        }
+        
+    if(jRadioButton5.isSelected())
+    {
+        new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE =? where NAME='Credit Check for Guest Entry Through Member Kiosk'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{1});
+    }
+    else
+    {
+         new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE =? where NAME='Credit Check for Guest Entry Through Member Kiosk'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{0});
+    }
+    if(jRadioButton9.isSelected())
+            {  
+            String i=jTextField1.getText();
+                 int s=Integer.parseInt(i);
+              /*displaying integer value agn to textfield or any other label */
+                  jTextField1.setText(i);
+    
+         
+                new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE =? where NAME='Overall Guest Limit'"
+                , new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{s});
+            }
+    else
+    {
+        String s="no";
+        new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE =? where NAME='Overall Guest Limit'"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING})).exec(new Object[]{"NO"});
+  }
+    JOptionPane.showMessageDialog(this, "Update Success", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }catch(NumberFormatException e1){
+           JOptionPane.showMessageDialog(this, "Please enter a vaild number", null, JOptionPane.OK_OPTION);
+        }
+        catch(Exception e){
+          e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+// TODO add your handling code here:
+                jLabel8.setVisible(true);
+                jRadioButton3.setVisible(true);
+                jRadioButton4.setVisible(true);
+}//GEN-LAST:event_jRadioButton1ActionPerformed
+
+private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+// TODO add your handling code here:
+                jLabel8.setVisible(false);
+                jRadioButton3.setVisible(false);
+                jRadioButton4.setVisible(false);
+}//GEN-LAST:event_jRadioButton2ActionPerformed
+
+    private void jRadioButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton5ActionPerformed
+
+    private void jRadioButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton6ActionPerformed
+
+    private void jRadioButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton7ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton7ActionPerformed
+
+    private void jRadioButton7ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButton7ItemStateChanged
+      
+    }//GEN-LAST:event_jRadioButton7ItemStateChanged
+
+    private void jRadioButton8ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButton8ItemStateChanged
+       
+    }//GEN-LAST:event_jRadioButton8ItemStateChanged
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try{
+        
+        
+        if(!inventoryDebtAcc.getSelectedItem().equals(inventoryAccountDebt)){
+            AccountMasterExt acc=(AccountMasterExt) inventorydraccountmodel.getSelectedItem();
+            if( new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE=? WHERE NAME=?"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING})).exec(new Object[]{acc.getid(),"Accout Debit (Inventory)"})<=0){
+
+                new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING})).exec(new Object[]{UUID.randomUUID().toString(),"Accout Debit (Inventory)",acc.getid()});
+            }
+        }
+        
+        if(!inventoryCrAcc.getSelectedItem().equals(inventoryAccountCr)){
+            AccountMasterExt acc=(AccountMasterExt) inventorycraccountmodel.getSelectedItem();
+            if( new PreparedSentence(m_App.getSession()
+                , "UPDATE GENERALTABLE SET VALUE=? WHERE NAME=?"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING})).exec(new Object[]{acc.getid(),"Account Credit (Income and Expand)"})<=0){
+
+                new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING})).exec(new Object[]{UUID.randomUUID().toString(),"Account Credit (Income and Expand)",acc.getid()});
+            }
+        }
+      
+         
+    if(jRadioButton7.isSelected())
+    {
+     
+        if( new PreparedSentence(m_App.getSession()
+                ,  "UPDATE GENERALTABLE SET VALUE =? where NAME='Reports To Use Manual Inventory Entry'"
+                ,new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{1})<=0){
+
+                new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.INT})).exec(new Object[]{UUID.randomUUID().toString(),"Reports To Use Manual Inventory Entry",1});
+            }
+    }
+    else
+    {
+         if( new PreparedSentence(m_App.getSession()
+                ,  "UPDATE GENERALTABLE SET VALUE =? where NAME='Reports To Use Manual Inventory Entry'"
+                ,new SerializerWriteBasic(new Datas[]{Datas.INT})).exec(new Object[]{0})<=0){
+
+                new PreparedSentence(m_App.getSession()
+                , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING})).exec(new Object[]{UUID.randomUUID().toString(),"Reports To Use Manual Inventory Entry",0});
+            }
+    }
+    
+  JOptionPane.showMessageDialog(this, "Update Success", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch(Exception e){
+          e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jRadioButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton9ActionPerformed
+     
+        JOptionPane.showMessageDialog(this, "Enter Daily Overall Limit", "GuestLimit", JOptionPane.INFORMATION_MESSAGE);
+       
+         jTextField1.requestFocusInWindow();
+         jTextField1.setVisible (true);
+           jLabel17.setVisible(true);
+         
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton9ActionPerformed
+
+    private void jRadioButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton10ActionPerformed
+         jTextField1.setVisible(false);
+         jLabel17.setVisible(false);
+         // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton10ActionPerformed
+
+    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton3ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+  
+  // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jLabel17ComponentRemoved(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_jLabel17ComponentRemoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel17ComponentRemoved
+
+
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox claccount;
+    private javax.swing.JTextField clevy;
+    private javax.swing.JComboBox inventoryCrAcc;
+    private javax.swing.JComboBox inventoryDebtAcc;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton10;
+    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JRadioButton jRadioButton4;
+    private javax.swing.JRadioButton jRadioButton5;
+    private javax.swing.JRadioButton jRadioButton6;
+    private javax.swing.JRadioButton jRadioButton7;
+    private javax.swing.JRadioButton jRadioButton8;
+    private javax.swing.JRadioButton jRadioButton9;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JComboBox kioskincharge;
+    private javax.swing.JComboBox nYearIncomeHead;
+    private javax.swing.JComboBox pYearIncomeHead;
+    private javax.swing.JComboBox pcaccount;
+    private javax.swing.JComboBox pcincharge;
+    private javax.swing.JComboBox staxacc;
+    // End of variables declaration//GEN-END:variables
+
+}

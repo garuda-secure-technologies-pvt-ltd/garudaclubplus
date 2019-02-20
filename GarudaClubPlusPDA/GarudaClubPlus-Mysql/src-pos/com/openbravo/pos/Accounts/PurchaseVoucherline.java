@@ -1,0 +1,143 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.openbravo.pos.Accounts;
+
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.DataRead;
+import com.openbravo.data.loader.SerializableRead;
+
+/**
+ *
+ * @author swathi
+ */
+public  class PurchaseVoucherline implements SerializableRead{
+    private String item;
+    private int qty;
+    private double rate=0;
+    private double amount=0;
+    private String taxcat;
+    private String taxcatId;
+    private double tax=0;
+    private double totalAmount=0;
+    private double pdttaxvalue=0;
+    private String account;
+    private String itemid;
+
+
+    public void readValues(DataRead dr) throws BasicException
+    {
+       /* item=dr.getString(1);
+        qty=dr.getInt(2);
+        rate=dr.getDouble(3);
+        amount=dr.getDouble(4);
+        taxcat=dr.getString(5);
+        tax=dr.getDouble(6);
+        totalAmount=dr.getDouble(7);
+        pdttaxvalue=dr.getDouble(8);
+        account=dr.getString(9);
+        itemid=dr.getString(10);*/
+        item=dr.getString(1);
+        qty=dr.getInt(2);
+        rate=dr.getDouble(3);
+        amount=dr.getDouble(4);
+        taxcat=null;
+        tax=dr.getDouble(5);
+        totalAmount=amount+tax;
+        pdttaxvalue=tax/qty;
+        account=dr.getString(6);
+        itemid=dr.getString(7);
+        taxcatId=null;
+   }
+    public PurchaseVoucherline getCopy(){
+        PurchaseVoucherline p=new PurchaseVoucherline();
+        p.item=item;
+        p.qty=qty;
+        p.rate=rate;
+        p.amount=amount;
+        p.taxcat=taxcat;
+        p.tax=tax;
+        p.totalAmount=totalAmount;
+        p.pdttaxvalue=pdttaxvalue;
+        p.account=account;
+        p.itemid=itemid;
+        p.taxcatId=taxcatId;
+        return p;
+    }
+
+    public String getTaxcatId() {
+        return taxcatId;
+    }
+
+    public void setTaxcatId(String taxcatId) {
+        this.taxcatId = taxcatId;
+    }
+
+
+    public String getAccount(){
+      return account;
+    }
+    public void setAccount(String acc){
+     account=acc;
+    }
+    public Double getpdttaxvalue(){
+      return pdttaxvalue;
+    }
+    public void setpdttaxvalue(Object tax){
+      pdttaxvalue=Double.valueOf(tax.toString());
+    }
+    public String getitem(){
+      return item;
+    }
+    public String getitemid(){
+      return itemid;
+    }
+
+    public int getQty(){
+       return qty;
+    }
+
+    public void setitem( Object name){
+        item=name.toString();
+    }
+    public void setitemid( Object id){
+        itemid=id.toString();
+    }
+     public void setQty( Object Qty){
+        qty=Integer.valueOf(Qty.toString());
+    }
+
+    public double getRate(){
+      return rate;
+    }
+    public void setRate(Object Rate){
+       rate=Double.valueOf(Rate.toString());
+    }
+
+    public double getamount(){
+      return amount;
+    }
+    public void setamount(Object amt){
+     amount=Double.valueOf(amt.toString());
+    }
+   public String getTaxcat(){
+     return taxcat;
+   }
+   public void setTaxcat(Object taxcatname){
+    taxcat=taxcatname.toString();
+   }
+   public double getTax(){
+    return tax;
+   }
+    public void setTax(Object taxamt){
+      tax=Double.valueOf(taxamt.toString());;
+    }
+    public double getTotalAmount(){
+      return totalAmount;
+    }
+    public void setTotalAmount(Object amt){
+     totalAmount=Double.valueOf(amt.toString());
+    }
+ }

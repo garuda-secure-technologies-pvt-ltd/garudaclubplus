@@ -1,0 +1,963 @@
+
+package com.openbravo.pos.Booking;
+
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.gui.MessageInf;
+import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.PreparedSentence;
+import com.openbravo.data.loader.SerializerReadBasic;
+import com.openbravo.data.loader.SerializerWriteBasic;
+import com.openbravo.data.loader.SerializerWriteString;
+import com.openbravo.data.loader.StaticSentence;
+import com.openbravo.data.loader.Transaction;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.customers.CustomerInfoExt;
+import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.DataLogicSales;
+import com.openbravo.pos.forms.LookupUtilityImpl;
+import com.openbravo.pos.payment.JPaymentSelect;
+import com.openbravo.pos.payment.JPaymentSelectReceipt;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.TableCellRenderer;
+import com.openbravo.pos.payment.JPaymentSelect;
+import com.openbravo.pos.printer.TicketParser;
+import com.openbravo.pos.printer.TicketPrinterException;
+import com.openbravo.pos.scripting.ScriptEngine;
+import com.openbravo.pos.scripting.ScriptException;
+import com.openbravo.pos.scripting.ScriptFactory;
+import com.openbravo.pos.util.StringUtils;
+import java.text.DecimalFormat;
+import java.util.Calendar;
+
+public class Billpage extends javax.swing.JDialog {
+
+     private BookedRoomStatusTableModel.Room_StatusInfo rsi;
+     private BookedHallStatusTableModel.HallStatusInfo hsi;
+     Date CurrentDate = new Date();
+     private BillTableModel BillModel;
+     private DataLogicSales m_dlSales;
+     private AppView m_App;
+     private String custId;
+     private double Final_Amount;
+     private JPaymentSelect paymentdialogrefund;
+     private JPaymentSelect paymentdialogreceipt;
+     private CustomerInfoExt Customer;
+     DecimalFormat decimalFormat = new DecimalFormat("#.##");
+     private BookHall BkHall;
+     private BookGuestRoom BkGuestRoom;
+     private TicketParser m_TTP;
+     private int Payment_Flag=0;
+     
+     public Billpage(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        
+    }
+    
+    
+    public Billpage(BookedRoomStatusTableModel.Room_StatusInfo showdata , int Flag){
+        
+        initComponents();
+        rsi = showdata;
+        Payment_Flag = Flag;
+    }
+    
+     public Billpage(BookedHallStatusTableModel.HallStatusInfo showdata){
+        
+        initComponents();
+        hsi = showdata;
+     }
+    
+    
+    public void showDialog()
+    {
+        init();
+       // this.setSize(500, 500);
+        m_jTendered.addEditorKeys(m_jKeys);
+        m_jTendered.reset();
+        m_jTendered.activate();
+        setVisible(true);
+        setFocusable(true);
+        setFocusableWindowState(true);
+       
+    }
+    
+    protected static Window getWindow(Component parent) {
+        if (parent == null) {
+            return new JFrame();
+        } else if (parent instanceof Frame || parent instanceof Dialog) {
+            return (Window) parent;
+        } else {
+            return getWindow(parent.getParent());
+        }
+    }
+    
+    
+   
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel();
+        date_txt = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        mem_id_txt = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable(){public Component prepareRenderer(TableCellRenderer renderer,
+            int rowIndex, int vColIndex) {
+            Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
+            if (c instanceof JComponent) {
+                JComponent jc = (JComponent)c;
+                jc.setToolTipText(String.valueOf(getValueAt(rowIndex, vColIndex)));
+
+                if (rowIndex % 2 == 0 && !isCellSelected(rowIndex, vColIndex)) {
+                    jc.setBackground(Color.lightGray);
+                }
+                else {
+                    jc.setBackground(Color.white);
+                }
+                if(isCellSelected(rowIndex, vColIndex))
+                jc.setBackground(Color.cyan);
+            }
+            return c;
+        }};
+        pay_btn = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        m_jTendered = new com.openbravo.editor.JEditorCurrencyPositive();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        sum_total = new javax.swing.JTextField();
+        remaining = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        given = new javax.swing.JTextField();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel1.setText("Date : ");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel2.setText("Member ID :");
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Sr . No.", "Name", "Room/Hall Name", "No of rooms", "Rate", "Amount"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+
+        pay_btn.setText("Pay");
+        pay_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pay_btnActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Cancel");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Reprint");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        m_jTendered.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                m_jTenderedKeyReleased(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setText("Sum Total :");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel4.setText("Remaining :");
+
+        m_jKeys.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jKeysActionPerformed(evt);
+            }
+        });
+
+        sum_total.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+
+        remaining.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+
+        jButton3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton3.setText("Enter");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel7.setText("Recieved :");
+
+        given.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(67, 67, 67)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(sum_total, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel7))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(remaining, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
+                            .addComponent(given))))
+                .addGap(349, 349, 349)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(m_jTendered, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
+                    .addComponent(m_jKeys, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(sum_total, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(remaining, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(given, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(201, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(m_jKeys, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(m_jTendered, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+
+        sum_total.setEditable(false);
+        sum_total.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        remaining.setEditable(false);
+        remaining.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        given.setEditable(false);
+        given.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(date_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(mem_id_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 808, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(80, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(pay_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(20, 20, 20))))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(date_txt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(mem_id_txt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pay_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(19, 19, 19))
+        );
+
+        date_txt.setEditable(false);
+        mem_id_txt.setEditable(false);
+        pay_btn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/cash2.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel2.png"))); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/ark216.png"))); // NOI18N
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+       dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+               
+    
+    
+                 String reciept_No;   
+                 Date CheckIn_Date;
+                 String MemberName;
+                 String Member_No;
+                 Double Advance_Recv ;
+                 Date Booking_Date;
+                 int Cash_Flag;
+                 int Check_flag;
+                 String Check_no;
+                 String Bank_name;
+                 String Booking_ID;
+                 String hall_ID;
+                 String Room_ID;
+                 String Payment_Ratio;
+                 String GuestName;
+                 String Contact_no;
+                 Double Tax_Total;
+                 String MemberID;
+                 
+    private void pay_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pay_btnActionPerformed
+          given.setText(""+m_jTendered.getText());
+          if(given.getText()!=null && given.getText().trim().length()>0){ 
+         
+                 List<Object> Sequence_Detail = new ArrayList<Object>();
+                 String role =LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getRole();
+                  boolean flag = m_App.getAppUserView().getUser().hasPermission("Billing Perm");        
+                 if(flag){
+                 
+                 Advance_Recv = Double.parseDouble(given.getText());
+                 
+                 try {
+                         reciept_No = getNextBillID();
+                     } catch (BasicException ex) {
+                         Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
+                     }
+                     
+                     if(hsi!=null){
+                         
+                        
+                        CheckIn_Date = hsi.getBOOKING_DATE_EX();
+                        MemberName = hsi.getMemberName();
+                        Member_No = hsi.getMem_No();
+                        Booking_ID = hsi.getId();
+                        hall_ID = hsi.getHall_ID();
+                        MemberID = hsi.getMEMBER_ID();
+                        
+                        if(hsi.getMem_flag()==1){
+                            GuestName="";
+                            Contact_no="";
+                            
+                        }
+                        else{
+                            GuestName = hsi.getNON_MEM_NAME();
+                            Contact_no=hsi.getNON_MEM_CONTCT();
+                        }
+                        
+                        Payment_Ratio = hsi.getADVANCE_PERC();
+                        int min_Advance_Paymnt = getMinAdvPaymnt(Payment_Ratio);
+                        Double Minimum_amount = ((Final_Amount * min_Advance_Paymnt)/100);
+                        if(Minimum_amount <= Advance_Recv ){
+                        try {
+                            Customer = LookupUtilityImpl.getInstance(null).getDataLogicCustomers().getCustomerByID(hsi.getMEMBER_ID());
+                        } catch (BasicException ex) {
+                            Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                        
+                       JPaymentSelect paymentdialog =Final_Amount >= 0.0
+                                        ? paymentdialogreceipt
+                                        : paymentdialogrefund;
+                        if (paymentdialog.showDialog2(Advance_Recv , Customer , m_App.getAppUserView().getUser().getName() , true)){
+                            
+                            
+                            
+                       Transaction t = new Transaction(m_App.getSession()) {                                                                                     
+                                                              
+                        @Override      
+                        protected Object transact() throws BasicException {   
+                         
+                        String ID = UUID.randomUUID().toString();    
+                        int Active =1; 
+                        
+                        
+                         int   insert_advance_pay =  new PreparedSentence(m_App.getSession()  , "INSERT INTO hall_advance_payment (ID, CHECK_IN_DATE, MEMBERNAME, MEMBER_NO, TOTAL_AMOUNT, ADVANCE_RECV,  CRBY, CRDATE, CRHOST, RECIEPT_NO, CASH_FLAG, CHECK_FLAG, CHECK_NO, BANK_NAME, HALLNAME , BOOKING_ID , GUESTNAME , CONTACT , BAL_AMT) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"                           
+                        , new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.TIMESTAMP ,Datas.STRING, Datas.STRING ,Datas.DOUBLE ,Datas.DOUBLE  ,Datas.STRING   , Datas.TIMESTAMP , Datas.STRING ,Datas.STRING ,Datas.INT ,Datas.INT , Datas.STRING , Datas.STRING , Datas.STRING , Datas.STRING, Datas.STRING , Datas.STRING , Datas.DOUBLE})                         
+                        ).exec(new Object[]{ID, CheckIn_Date ,MemberName ,Member_No  ,Final_Amount, Advance_Recv ,  m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() , reciept_No , Cash_Flag ,Check_flag, Check_no , Bank_name , hall_ID ,  Booking_ID , GuestName , Contact_no , Advance_Recv});                                                                                                
+                         
+                        
+                         
+                       int   INSERT_ADVANCE_AGAINST_HALL  =  new PreparedSentence(m_App.getSession()  , "INSERT INTO advnce_agnst_hall (ID, BOOKING_ID, ADVNCE_AMT, BAL_AMT,  CRBY, CRDATE, CRHOST, ACTIVE , CUSTOMER , RECIEPT_NO , HALLNAME) VALUES (?,?,?,?,?,?,?,?,?,?,?)"                           
+                        , new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING ,Datas.DOUBLE, Datas.DOUBLE  ,Datas.STRING   , Datas.TIMESTAMP , Datas.STRING , Datas.INT , Datas.STRING , Datas.STRING , Datas.STRING})                         
+                        ).exec(new Object[]{ID ,Booking_ID ,Advance_Recv , Advance_Recv , m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() , Active ,MemberID ,reciept_No , hall_ID});                                                                                                
+                         
+                         
+                         
+                        UpdateRSeries();  
+                        UpdateHallPaymentStatus(Booking_ID);
+                        
+                          return null;                                      
+                            }                            
+                        };                 
+                          
+                              try {                 
+                                t.execute();          
+                                JOptionPane.showMessageDialog(this, "Advance Payment Done Successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                 PrintHallBill(hsi);
+                                dispose();
+                            }
+                             catch (BasicException ex) {                    
+                                Logger.getLogger(HallBookingMaster.class.getName()).log(Level.SEVERE, null, ex);             
+                           }
+                           
+                          dispose();
+                            
+                          
+                          try {
+                                BkHall.loaddata();
+                            } catch (BasicException ex) {
+                                Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                          
+                        }
+                        
+                        /*
+                        
+                         */
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(this, "Minimum Advance Amount Should be : "+Minimum_amount+" /-", " Advace Paymnt ", JOptionPane.ERROR_MESSAGE);
+                        }
+                     }
+                     
+                     
+                     if(rsi!=null){
+                        CheckIn_Date = rsi.getBOOKED_DATE_EX();
+                        MemberName = rsi.getMemberName();
+                        Member_No = rsi.getMem_No(); 
+                        MemberID = rsi.getMEMBER_ID();
+                        Booking_ID = rsi.getId();
+                        Room_ID = rsi.getROOMTYPE_ID();
+                        if(rsi.getMem_flag()==1){
+                            GuestName="";
+                            Contact_no="";
+                            
+                        }
+                        else{
+                            GuestName = rsi.getNON_MEM_NAME();
+                            Contact_no=rsi.getNON_MEM_CONTCT();
+                        }
+                        
+                        Payment_Ratio = rsi.getADVANCE_PERC();
+                        int min_Advance_Paymnt;
+                        if(Payment_Ratio!=null){
+                             min_Advance_Paymnt = getMinAdvPaymnt(Payment_Ratio);
+                        }
+                        else{
+                             min_Advance_Paymnt = 100;
+                        }
+                        
+                        
+                        Double Minimum_amount = ((Final_Amount * min_Advance_Paymnt)/100);
+                        if(Minimum_amount <= Advance_Recv ){
+                        try {
+                            Customer = LookupUtilityImpl.getInstance(null).getDataLogicCustomers().getCustomerByID(rsi.getMEMBER_ID());
+                        } catch (BasicException ex) {
+                            Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                         JPaymentSelect paymentdialog =Final_Amount >= 0.0
+                                        ? paymentdialogreceipt
+                                        : paymentdialogrefund;
+                        if (paymentdialog.showDialog2(Advance_Recv , Customer , m_App.getAppUserView().getUser().getName() , true)){
+                            
+                   
+                      
+                        Transaction t = new Transaction(m_App.getSession()) {                                                                                     
+                                                              
+                        @Override      
+                        protected Object transact() throws BasicException {   
+                         
+                         String ID = UUID.randomUUID().toString();   
+                         int Active =1;    
+                         String Payment_ref = reciept_No+"#"+Advance_Recv+",";
+                         if(Payment_Flag==0){
+                             
+                         
+                         int   insert_advance_paymnt =  new PreparedSentence(m_App.getSession()  , "INSERT INTO guestroom_advance_payment  (ID, CHECK_IN_DATE, ROOMTYPE, MEMBERNAME, MEMBERNO, TOTAL_AMOUNT, ADVANCE_RECV, RECIEPT_NO, CRBY, CRDATE, CRHOST, CASH_FLAG, CHECK_FLAG, CHECK_NO, BANK_NAME,BOOKING_ID , GUESTNAME , CONTACT , BAL_AMT , TAX_TOTAL,ADVNCE_REF) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"                           
+                        , new SerializerWriteBasic(new Datas[]{Datas.STRING ,  Datas.TIMESTAMP ,Datas.STRING ,Datas.STRING, Datas.STRING ,Datas.DOUBLE ,Datas.DOUBLE , Datas.STRING ,Datas.STRING   , Datas.TIMESTAMP , Datas.STRING ,Datas.INT ,Datas.INT , Datas.STRING , Datas.STRING , Datas.STRING , Datas.STRING , Datas.STRING , Datas.DOUBLE , Datas.DOUBLE , Datas.STRING})                         
+                        ).exec(new Object[]{ID, CheckIn_Date , Room_ID ,MemberName ,Member_No  ,Final_Amount, Advance_Recv ,reciept_No ,  m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() ,  Cash_Flag ,Check_flag, Check_no , Bank_name , Booking_ID , GuestName , Contact_no , Advance_Recv , Tax_Total , Payment_ref});                                                                                                
+                         
+                         
+                         int   INSERT_ADVANCE_AGAINST_HALL  =  new PreparedSentence(m_App.getSession()  , "INSERT INTO advnce_agnst_guestroom (ID, BOOKING_ID, ADVNCE_AMT, BAL_AMT,  CRBY, CRDATE, CRHOST, ACTIVE , CUSTOMER , RECIEPT_NO , ROOMTYPE) VALUES (?,?,?,?,?,?,?,?,?,?,?)"                           
+                        , new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING ,Datas.DOUBLE, Datas.DOUBLE  ,Datas.STRING   , Datas.TIMESTAMP , Datas.STRING , Datas.INT , Datas.STRING , Datas.STRING , Datas.STRING})                         
+                        ).exec(new Object[]{ID ,Booking_ID ,Advance_Recv , Advance_Recv , m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() , Active ,MemberID ,reciept_No ,Room_ID });                                                                                                
+                         
+                          
+                         
+                         UpdateRSeries();   
+                         UpdateGuestRoomPaymentStatus(Booking_ID);  
+                         
+                         }
+                         else{
+                             if(Payment_Flag==1){
+                             
+                                    int x = new StaticSentence(m_App.getSession() , "UPDATE guestroom_advance_payment SET ADVANCE_RECV=ADVANCE_RECV+?   WHERE BOOKING_ID=?"
+                                                                 , new SerializerWriteBasic(new Datas[] {Datas.DOUBLE , Datas.STRING}))
+                                                                 .exec(new Object[] {Advance_Recv , Booking_ID});
+                             
+                                      int x1 = new StaticSentence(m_App.getSession() , "UPDATE guestroom_advance_payment SET BAL_AMT=BAL_AMT+? WHERE BOOKING_ID=?"
+                                                                 , new SerializerWriteBasic(new Datas[] {Datas.DOUBLE , Datas.STRING}))
+                                                                 .exec(new Object[] {Advance_Recv , Booking_ID});
+                             
+                                      int x2 = new StaticSentence(m_App.getSession() , "UPDATE guestroom_advance_payment SET ADVNCE_REF = ADVNCE_REF+? WHERE BOOKING_ID=?"
+                                                                 , new SerializerWriteBasic(new Datas[] {Datas.STRING , Datas.STRING}))
+                                                                 .exec(new Object[] {Payment_ref , Booking_ID});
+                                      
+                                    
+                                      int   INSERT_ADVANCE_AGAINST_HALL  =  new PreparedSentence(m_App.getSession()  , "INSERT INTO advnce_agnst_guestroom (ID, BOOKING_ID, ADVNCE_AMT, BAL_AMT,  CRBY, CRDATE, CRHOST, ACTIVE , CUSTOMER , RECIEPT_NO , ROOMTYPE) VALUES (?,?,?,?,?,?,?,?,?,?,?)"                           
+                                        , new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING ,Datas.DOUBLE, Datas.DOUBLE  ,Datas.STRING   , Datas.TIMESTAMP , Datas.STRING , Datas.INT , Datas.STRING , Datas.STRING , Datas.STRING})                         
+                                        ).exec(new Object[]{ID ,Booking_ID ,Advance_Recv , Advance_Recv , m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() , Active ,MemberID ,reciept_No ,Room_ID });                                                                                                
+
+                                        UpdateRSeries();   
+                                    
+                             }
+                         }
+                         
+                         
+                         
+                         return null;                                      
+                            }                            
+                        };                 
+                          
+                              try {                 
+                                t.execute();          
+                                JOptionPane.showMessageDialog(this, "Advance Payment Done Successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                dispose();
+                                PrintRoomBill(rsi);
+                            }
+                             catch (BasicException ex) {                    
+                                Logger.getLogger(HallBookingMaster.class.getName()).log(Level.SEVERE, null, ex); 
+                                JOptionPane.showMessageDialog(this, "Error..!! Please try again.", " Advance Payment", JOptionPane.ERROR_MESSAGE); 
+                                
+                                
+                           } 
+                           
+                         dispose();  
+                            
+                         try {
+                                BkGuestRoom.loaddata();
+                            } catch (BasicException ex) {
+                                Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                         
+                          }
+                         
+                       }
+                        else{
+                            JOptionPane.showMessageDialog(this, "Minimum Advance Amount Should be : "+Minimum_amount+" /-", " Advace Paymnt ", JOptionPane.ERROR_MESSAGE);
+                        }
+                     }
+                 }
+                 else{
+                      JOptionPane.showMessageDialog(this, "Sorry , you don't have permissions..!!", " luxuryTax", JOptionPane.ERROR_MESSAGE); 
+                 }
+          }
+          else{
+              JOptionPane.showMessageDialog(this, "Please enter amount..!", " luxuryTax", JOptionPane.ERROR_MESSAGE);
+          }
+      
+    }//GEN-LAST:event_pay_btnActionPerformed
+
+    private void m_jKeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jKeysActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_m_jKeysActionPerformed
+
+    private void m_jTenderedKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_m_jTenderedKeyReleased
+           
+                
+    }//GEN-LAST:event_m_jTenderedKeyReleased
+  
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+       
+       Double x = Double.parseDouble(m_jTendered.getText());
+       Double y = Double.parseDouble(sum_total.getText());
+            if(x<=y){
+                Double temp = Double.parseDouble(decimalFormat.format(y-x));
+               remaining.setText(decimalFormat.format(temp));
+            }
+            else{
+                remaining.setText("0.00");
+        }
+        given.setText(decimalFormat.format(x));
+            
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+       PrintRoomBill(rsi);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    
+    
+    
+    public static void main(String args[]) {
+       
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Billpage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Billpage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Billpage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Billpage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                Billpage dialog = new Billpage(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField date_txt;
+    private javax.swing.JTextField given;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.editor.JEditorCurrencyPositive m_jTendered;
+    private javax.swing.JTextField mem_id_txt;
+    private javax.swing.JButton pay_btn;
+    private javax.swing.JTextField remaining;
+    private javax.swing.JTextField sum_total;
+    // End of variables declaration//GEN-END:variables
+
+    private void init() {
+        
+     
+     m_App = LookupUtilityImpl.getInstance(null).getAppView();
+        
+     paymentdialogreceipt = JPaymentSelectReceipt.getDialog(this);
+     AppView app = LookupUtilityImpl.getInstance(null).getAppView();
+     paymentdialogreceipt.init(app);
+     m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
+     BkHall = (BookHall) m_App.getBean("com.openbravo.pos.Booking.BookHall");
+     BkGuestRoom = (BookGuestRoom) m_App.getBean("com.openbravo.pos.Booking.BookGuestRoom");
+     
+      if(rsi!=null){   
+      BillModel = new BillTableModel(m_App);
+      custId = rsi.getMEMBER_ID();
+      BillModel.setRsi(rsi);
+      Final_Amount = Double.parseDouble(decimalFormat.format(BillModel.getTotAmt_Room(rsi)));
+      jTable1.setModel(BillModel.getTableModel());
+      perf_opration2(rsi);
+      
+      Double rate = rsi.getCHARGES();
+      int No_of_Days = rsi.getNO_OF_DAYS();
+      int no_of_Booked_rooms = rsi.getNO_OF_ROOMS_BOOKED();
+      Tax_Total = Final_Amount-(rate*No_of_Days*no_of_Booked_rooms);
+      
+      sum_total.setText(""+Final_Amount);
+      remaining.setText(""+Final_Amount);
+      
+      
+      
+     }
+    
+     
+     
+      if(hsi!=null){
+      custId = hsi.getMEMBER_ID();
+      
+      BillModel = new BillTableModel(m_App);
+      BillModel.setHsi(hsi);
+      Final_Amount = Double.parseDouble(decimalFormat.format(BillModel.getTotAmt_Hall(hsi)));
+      jTable1.setModel(BillModel.getTableModel2());
+      perf_opration(hsi);  
+      sum_total.setText(""+Final_Amount);
+      remaining.setText(""+Final_Amount); 
+      
+      
+     }
+    }
+    
+    
+     public void perf_opration(BookedHallStatusTableModel.HallStatusInfo hsi){
+        date_txt.setText(Formats.DATE.formatValue(CurrentDate));
+        mem_id_txt.setText(hsi.getMem_No());
+        
+    }
+    public void perf_opration2(BookedRoomStatusTableModel.Room_StatusInfo rsi){
+        date_txt.setText(Formats.DATE.formatValue(CurrentDate));
+        mem_id_txt.setText(rsi.getMem_No());
+        
+    }
+    
+   private String getNextBillID() throws BasicException{
+       //akash:sequencedetail:inserting id instead of names
+        String billnum;
+        //String uname=LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getName();
+        String uname=LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getRole();
+     Object[] obj=(Object[])new  StaticSentence(m_App.getSession()
+            , "SELECT SEQUENCEDETAIL.RSERIES,SEQUENCEDETAIL.RMAX FROM SEQUENCEDETAIL WHERE SEQUENCEDETAIL.USERNAME=? AND SEQUENCEDETAIL.CATEGORY=? AND ACTIVE=TRUE"
+            ,new SerializerWriteBasic(new Datas[]{Datas.STRING , Datas.STRING})
+            ,new SerializerReadBasic(new Datas[]{Datas.STRING,Datas.DOUBLE})).find(new Object[]{uname,uname});
+     if(obj!=null){
+         Double max=Double.parseDouble(obj[1].toString());
+         max++;
+         billnum=obj[0].toString()+ max.intValue();
+         return billnum;   
+        }
+     else{
+         return "";
+     }
+       
+     }
+     
+     
+       public void UpdateRSeries() throws BasicException{ 
+         
+        String billnum;
+        String uname=LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getRole();
+    
+           int x = new StaticSentence(m_App.getSession()
+                       // , "UPDATE SEQUENCEDETAIL SET BMAX=?  WHERE ACTIVE=TRUE AND USERNAME =(SELECT ROLES.NAME FROM ROLES,PEOPLE WHERE PEOPLE.NAME=? AND ROLES.ID=PEOPLE.ROLE) AND CATEGORY=(SELECT ROLES.NAME FROM ROLES,PEOPLE WHERE PEOPLE.NAME=? AND ROLES.ID=PEOPLE.ROLE) "
+                  , "UPDATE SEQUENCEDETAIL SET RMAX=RMAX+1 WHERE ACTIVE=TRUE AND USERNAME = ?  AND CATEGORY=?"
+
+                  , new SerializerWriteBasic(new Datas[] {Datas.STRING,Datas.STRING }))
+                        .exec(new Object[] {uname,uname});
+         
+    }
+    
+     // UPDATE ROOM BOOKING DETAILS AFTER ADVANCE PAYMENT  
+     public void UpdateHallPaymentStatus(String BookingHallID) throws BasicException{ 
+         
+      int x = new StaticSentence(m_App.getSession()
+                      , "UPDATE hall_booked_details SET STATUS=2 , PAYMENT_FLAG=1 WHERE ID=?"
+                        , new SerializerWriteBasic(new Datas[] {Datas.STRING }))
+                        .exec(new Object[] { BookingHallID });
+         
+    }    
+     
+    // UPDATE GUEST ROOM BOOKING DETAILS AFTER ADVANCE PAYMENT : AAKASH
+     public void UpdateGuestRoomPaymentStatus(String BookingRoomID) throws BasicException{ 
+         
+       int x = new StaticSentence(m_App.getSession()
+                      , "UPDATE guestroom_booked_details SET STATUS=2 , PAYMENT_FLAG=1 WHERE ID=?"
+                        , new SerializerWriteBasic(new Datas[] {Datas.STRING }))
+                        .exec(new Object[] { BookingRoomID });
+         
+    }
+     
+    public int getMinAdvPaymnt(String Payment_Ratio){
+        String[] temp = Payment_Ratio.split("-");
+        int adv = Integer.parseInt(temp[0]);
+        return adv;
+    }
+    
+    
+    
+    
+    public void PrintRoomBill(BookedRoomStatusTableModel.Room_StatusInfo rsi){
+        String sresource = LookupUtilityImpl.getInstance(null).getDataLogicSystem().getResourceAsXML("Printer.GRBill");
+        String waitername;
+        String table1;
+        try {
+            AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+            
+            Calendar call = Calendar.getInstance();
+            call.setTimeInMillis(rsi.getBOOKED_DATE_EX().getTime());
+            call.add(Calendar.DATE,rsi.getNO_OF_DAYS() );
+            Date Check_Out = call.getTime();
+
+            // qTicket.getCustomer().getSearchkey();
+            m_TTP = new TicketParser(m_App.getDeviceTicket(), LookupUtilityImpl.getInstance(null).getDataLogicSystem());
+            ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+            script.put("createdby", m_App.getAppUserView().getUser().getName());
+            String x = m_App.getAppUserView().getUser().getRole();
+            script.put("role", LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
+            script.put("host",  m_App.getProperties().getHost());
+            script.put("cname", rsi.getMemberName());
+            script.put("cno", rsi.getMem_No());
+            script.put("date", Formats.TIMESTAMP.formatValue(new Date())); 
+            script.put("receipt", reciept_No);
+            script.put("text1", rsi.getROOM_TYPE());
+            script.put("text2", rsi.getBOOKING_DATE());
+            script.put("text3", Formats.DATE.formatValue(Check_Out));
+            script.put("text4", rsi.getNO_OF_ROOMS_BOOKED());
+            script.put("text5", rsi.getNO_OF_DAYS());
+            script.put("Tot_Amt", rsi.getCHARGES());
+            script.put("Advance_Recv", Advance_Recv);
+            script.put("Gname", rsi.getNON_MEM_NAME());
+            
+            
+            script.put("label_1", "Room Type :");
+            script.put("label_2", "Check In Date :");
+            script.put("label_3", "Check Out Date :");
+            script.put("label_4", "No Of Rooms Booked :");
+            script.put("label_5", "No Of Days :");
+            
+            script.put("eoe", StringUtils.encodeXML("E&OE"));
+           // script.put("printer", LookupUtilityImpl.getInstance(null).getPRCategoriesMap().get(prcategory).getPrinter());
+            m_TTP.printTicket(script.eval(sresource).toString());
+        } catch (ScriptException e) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+            msg.show(this);
+        } catch (TicketPrinterException e) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+            msg.show(this);
+        } catch (Exception e) {
+        }
+    }
+    
+    
+    
+     public void PrintHallBill(BookedHallStatusTableModel.HallStatusInfo hsi){
+        String sresource = LookupUtilityImpl.getInstance(null).getDataLogicSystem().getResourceAsXML("Printer.GRBill");
+        String waitername;
+        String table1;
+        try {
+            AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+            
+            
+           
+
+            // qTicket.getCustomer().getSearchkey();
+            m_TTP = new TicketParser(m_App.getDeviceTicket(), LookupUtilityImpl.getInstance(null).getDataLogicSystem());
+            ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+            script.put("createdby", m_App.getAppUserView().getUser().getName());
+            String x = m_App.getAppUserView().getUser().getRole();
+            script.put("role", LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
+            script.put("host",  m_App.getProperties().getHost());
+            script.put("cname", hsi.getMemberName());
+            script.put("cno", hsi.getMem_No());
+            script.put("date", Formats.TIMESTAMP.formatValue(new Date())); 
+            script.put("receipt", reciept_No);
+            script.put("text1", hsi.gethall_name());
+            script.put("text2", hsi.getBOOKING_DATE());
+            
+            if(hsi.getSLOT_FLAG()==1){
+               script.put("text3", "Hourly Booked"); 
+            }
+            else if(hsi.getSLOT_FLAG() == 2){
+                script.put("text3","Half Day");
+            }
+            else{
+                script.put("text3", "Full Day");
+            }
+           
+            script.put("text4", hsi.getTIMING_SLOTS());
+            script.put("text5", "");
+            script.put("Tot_Amt", hsi.getCHARGES());
+            script.put("Advance_Recv", Advance_Recv);
+            script.put("Gname", hsi.getNON_MEM_NAME());
+            
+            script.put("label_1", "Hall Name :");
+            script.put("label_2", "Booking Date :");
+            script.put("label_3", "Slot Booked :");
+            script.put("label_4", "Slot Timings :");
+            script.put("label_5", "");
+            
+            
+            
+            
+            script.put("eoe", StringUtils.encodeXML("E&OE"));
+           // script.put("printer", LookupUtilityImpl.getInstance(null).getPRCategoriesMap().get(prcategory).getPrinter());
+            m_TTP.printTicket(script.eval(sresource).toString());
+        } catch (ScriptException e) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+            msg.show(this);
+        } catch (TicketPrinterException e) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+            msg.show(this);
+        } catch (Exception e) {
+        }
+    }
+}

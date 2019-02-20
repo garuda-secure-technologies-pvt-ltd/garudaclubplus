@@ -1,0 +1,8 @@
+compile.on.save=true
+do.depend=false
+do.jar=true
+file.reference.sqljdbc.jar=F:\\VB\\BCI backup\\BCI\\lib\\sqljdbc.jar
+javac.debug=true
+javadoc.preview=true
+jaxws.endorsed.dir=C:\\Program Files\\NetBeans 6.5\\java2\\modules\\ext\\jaxws21\\api:C:\\Program Files\\NetBeans 6.5\\ide10\\modules\\ext\\jaxb\\api
+user.properties.file=C:\\Documents and Settings\\swathi\\.netbeans\\6.5\\build.properties

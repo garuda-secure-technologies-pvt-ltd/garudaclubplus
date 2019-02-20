@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE form-validation PUBLIC
+          "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
+          "http://jakarta.apache.org/commons/dtds/validator_1_1_3.dtd">
+<form-validation>
+<!--
+     This is a minimal Validator form file with a couple of examples.
+-->
+    <global>
+        <!-- An example global constant
+        <constant>
+            <constant-name>postalCode</constant-name>
+            <constant-value>^\d{5}\d*$</constant-value>
+        </constant>
+        end example-->
+    </global>
+    <formset>
+        <!-- An example form -->
+        <form name="logonForm">
+            <field
+                property="username"
+                depends="required">
+                <arg key="logonForm.username"/>
+            </field>
+            <field
+                property="password"
+                depends="required,mask">
+                <arg key="logonForm.password"/>
+                <var>
+                    <var-name>mask</var-name>
+                    <var-value>^[0-9a-zA-Z]*$</var-value>
+                </var>
+            </field>
+        </form>
+        <form name="login">
+            <field
+                property="login"
+                depends="required">
+                <arg key="loginForm.username"/>
+            </field>
+            <field
+                property="password"
+                depends="required,mask,minlength">
+                <arg key="loginForm.password"/>
+                <var>
+                    <var-name>mask</var-name>
+                    <var-value>^[0-9a-zA-Z]*$</var-value>
+                </var>
+                <arg1 name="minlength" key="${var:minlength}" resource="false"/>
+                <var>
+                    <var-name>minlength</var-name>
+                    <var-value>8</var-value>
+                </var>
+            </field>
+        </form>
+        <form name="restPass">
+            <field
+                property="oldPass"
+                depends="required,mask,minlength">
+                <arg key="restPass.oldPass"/>
+                <var>
+                    <var-name>mask</var-name>
+                    <var-value>^[0-9a-zA-Z]*$</var-value>
+                </var>
+                <arg1 name="minlength" key="${var:minlength}" resource="false"/>
+                <var>
+                    <var-name>minlength</var-name>
+                    <var-value>8</var-value>
+                </var>
+            </field>
+            <field
+                property="newPass"
+                depends="required,mask,minlength">
+                <arg key="restPass.newPass"/>
+                <var>
+                    <var-name>mask</var-name>
+                    <var-value>^[0-9a-zA-Z]*$</var-value>
+                </var>
+                <arg1 name="minlength" key="${var:minlength}" resource="false"/>
+                <var>
+                    <var-name>minlength</var-name>
+                    <var-value>8</var-value>
+                </var>
+            </field>
+            <field
+                property="confirmPass"
+                depends="required,mask,minlength">
+                <arg key="restPass.confirmPass"/>
+                <var>
+                    <var-name>mask</var-name>
+                    <var-value>^[0-9a-zA-Z]*$</var-value>
+                </var>
+                <arg1 name="minlength" key="${var:minlength}" resource="false"/>
+                <var>
+                    <var-name>minlength</var-name>
+                    <var-value>8</var-value>
+                </var>
+            </field>
+
+        </form>
+        <form name="deactivatefacility">
+            <field property="date" depends="required,date">
+                <arg0 key="DeactivateFacilityForm.date"/>
+
+                <var>
+                    <var-name>datePattern</var-name>
+                    <var-value>dd/MM/yy</var-value>
+                </var>
+            </field>
+            <field property="mfuid" depends="required">
+                <arg0 key="DeactivateFacilityForm.mfuid"/>
+                 
+            </field>
+
+        </form>
+        <form name="activatefacility">
+            <field property="date" depends="required,date">
+                <arg0 key="ActivateFacilityForm.date"/>
+                <var>
+                    <var-name>datePattern</var-name>
+                    <var-value>dd/MM/yy</var-value>
+                </var>
+            </field>
+            <field property="fid" depends="required">
+                <arg0 key="ActivateFacilityForm.fid"/>
+                 
+            </field>
+            
+            
+
+        </form>
+    </formset>
+    
+    
+    <!-- An example formset for another locale -->
+    <formset language="fr">
+        <constant>
+            <constant-name>postalCode</constant-name>
+            <constant-value>^[0-9a-zA-Z]*$</constant-value>
+        </constant>
+        <!-- An example form -->
+        <form name="logonForm">
+            <field
+                property="username"
+                depends="required">
+                <arg key="logonForm.username"/>
+            </field>
+            <field
+                property="password"
+                depends="required,mask">
+                <arg key="logonForm.password"/>
+                <var>
+                    <var-name>mask</var-name>
+                    <var-value>^[0-9a-zA-Z]*$</var-value>
+                </var>
+            </field>
+        </form>
+    </formset>
+</form-validation>

@@ -1,0 +1,24 @@
+auxiliary.org-netbeans-modules-web-client-tools-api.clientdebug=false
+auxiliary.org-netbeans-modules-web-client-tools-api.dialogShowDebugPanel=false
+auxiliary.org-netbeans-modules-web-client-tools-api.FIREFOX=true
+auxiliary.org-netbeans-modules-web-client-tools-api.INTERNET_5f_EXPLORER=false
+auxiliary.org-netbeans-modules-web-client-tools-api.serverdebug=true
+deploy.ant.properties.file=C:\\Documents and Settings\\swathi\\.netbeans\\7.0\\tomcat70.properties
+file.reference.antlr.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\antlr.jar
+file.reference.commons-beanutils.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\commons-beanutils.jar
+file.reference.commons-digester.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\commons-digester.jar
+file.reference.commons-fileupload-1.0.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\commons-fileupload-1.0.jar
+file.reference.commons-logging.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\commons-logging.jar
+file.reference.commons-validator.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\commons-validator.jar
+file.reference.jakarta-oro.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\jakarta-oro.jar
+file.reference.jstl.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\jstl.jar
+file.reference.mysql-connector-java-5.1.23-bin.jar=F:\\ProjectCRNum\\projects\\GarudaClubPlusPDA\\build\\web\\WEB-INF\\lib\\mysql-connector-java-5.1.13-bin.jar
+file.reference.mysql-connector-java-5.1.23-bin.jar-1=C:\\Documents and Settings\\swathi\\Desktop\\mysql-connector-java-5.1.23\\mysql-connector-java-5.1.23-bin.jar
+file.reference.mysql.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\mysql.jar
+file.reference.standard.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\standard.jar
+file.reference.struts.jar=E:\\workspace\\source\\web\\WEB-INF\\lib\\struts.jar
+j2ee.server.home=C:/Program Files/apache-tomcat-7.0.34
+j2ee.server.instance=tomcat70:home=C:\\Program Files\\apache-tomcat-7.0.34
+javac.debug=true
+javadoc.preview=true
+user.properties.file=C:\\Documents and Settings\\swathi\\.netbeans\\7.0\\build.properties

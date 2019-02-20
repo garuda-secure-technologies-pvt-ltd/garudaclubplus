@@ -1,0 +1,2959 @@
+
+package com.openbravo.pos.Booking;
+
+import com.openbravo.basic.BasicException;
+import com.openbravo.beans.JCalendarDialog;
+import com.openbravo.data.gui.ComboBoxValModel;
+import com.openbravo.data.gui.MessageInf;
+import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.PreparedSentence;
+import com.openbravo.data.loader.SerializerReadBasic;
+import com.openbravo.data.loader.SerializerWriteBasic;
+import com.openbravo.data.loader.StaticSentence;
+import com.openbravo.data.loader.Transaction;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.Booking.GuestRoomCheckInTable.GuestRoom_CheckIn_Info;
+import com.openbravo.pos.clubmang.DataSourceProvider;
+import com.openbravo.pos.clubmang.JasperReportNew;
+import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.BeanFactoryApp;
+import com.openbravo.pos.forms.BeanFactoryException;
+import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.LookupUtilityImpl;
+import com.openbravo.pos.sales.BillInfo;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import javax.swing.AbstractListModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.TableCellRenderer;
+import net.sf.jasperreports.engine.JasperPrint;
+
+
+
+public class GuestRoom_Check_in extends javax.swing.JPanel implements JPanelView,BeanFactoryApp {
+    private AppView m_App;
+    private AdvanceRecieveTableModel AdvanceRecv;
+    private CheckInTableModel CheckInTable_Model;
+    private GuestRoomBillModel GRBillModel;
+    java.util.List<Object> Mem_list = new ArrayList<Object>();
+    java.util.List<Object> Guest_list = new ArrayList<Object>();
+    private ComboBoxValModel Memlist_model ;
+    private ComboBoxValModel GuestList_model;
+    private List<CheckInTableModel.RoomAdvInfo> GuestRoomDetailList;
+    private List<GuestRoomBillModel.RoomAdvInfo> GR_BillList;
+    
+    private List<CheckInTableModel.RoomTariffInfo> GuestRoomTariffDetailList;
+    private List<Object> roomType_list ;
+    private List<Object> roomNo_List;
+    private ComboBoxValModel RoomTypeListModel;
+    private ComboBoxValModel RoomTypeListModel2;
+    private ComboBoxValModel RoomNoListModel ;
+    private GuestRoomTableModel RoomTableModel; 
+    private List<Object> Room_Nos_list = new ArrayList<Object>();
+    private Room_Nos_Model RoomNoListModel2; 
+    private Chk_out_Guest_model chk_out_guest_model;
+    private Double Tot_Amount;
+    DecimalFormat decimalFormat = new DecimalFormat("#.##");
+    private GuestRoomCheckInTable GR_CheckIn_Detail ; 
+    private GuestRoomService GRS;
+    private GuestRoomService []GRS1;
+    private List<GuestRoomService.BillInfo> BillInfoList;
+    private List<GuestRoomService.BillInfo> BillInfoList_Table;
+    private List<Object> Chk_out_Guest_list = new ArrayList<Object>();
+    
+    public GuestRoom_Check_in() {
+        initComponents();
+       
+       
+        amount_panel.setVisible(false);
+        memNo.setVisible(false);
+        MemNo_label.setVisible(false); 
+        RType_combo2.setVisible(false);
+        RT_Chng.setSelected(false);
+        yes.setSelected(true);
+        chk_panel.setVisible(false);
+        tariff_panrl2.setVisible(false);
+        memNo1.setVisible(false);
+        jLabel3.setVisible(false);
+        memNo2.setVisible(false);
+        jLabel4.setVisible(false);
+        bill_panel.setVisible(false);
+        jTabbedPane1.setSelectedIndex(1);
+        Bill_frame.setVisible(false);
+        check_IN.setVisible(false);
+        check_OUT.setVisible(false);
+        chk_out_guest_panel.setVisible(false);
+        adjust_text.setVisible(false);
+        adjust_text.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        
+        
+    }
+
+  
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jSeparator6 = new javax.swing.JSeparator();
+        jSeparator9 = new javax.swing.JSeparator();
+        jSeparator10 = new javax.swing.JSeparator();
+        bill_panel = new javax.swing.JPanel();
+        jLabel46 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
+        jSeparator4 = new javax.swing.JSeparator();
+        jSeparator3 = new javax.swing.JSeparator();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
+        jSeparator7 = new javax.swing.JSeparator();
+        jSeparator8 = new javax.swing.JSeparator();
+        jSeparator11 = new javax.swing.JSeparator();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        date1 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        date2 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        days = new javax.swing.JLabel();
+        rate = new javax.swing.JLabel();
+        charges = new javax.swing.JLabel();
+        taxamt = new javax.swing.JLabel();
+        tot = new javax.swing.JLabel();
+        roomCharges = new javax.swing.JLabel();
+        tot_chrge = new javax.swing.JLabel();
+        advnce_recv = new javax.swing.JLabel();
+        dueamnt = new javax.swing.JLabel();
+        tax_rate = new javax.swing.JLabel();
+        adjust_check = new javax.swing.JCheckBox();
+        adjust_text = new javax.swing.JTextField();
+        jLabel48 = new javax.swing.JLabel();
+        bal_amount_label = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        mno = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        guest_name_label = new javax.swing.JLabel();
+        cancel = new javax.swing.JButton();
+        submit = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jLabel41 = new javax.swing.JLabel();
+        roomNo_Label1 = new javax.swing.JLabel();
+        jLabel42 = new javax.swing.JLabel();
+        mem_name_label = new javax.swing.JLabel();
+        jLabel43 = new javax.swing.JLabel();
+        room_type_label = new javax.swing.JLabel();
+        jLabel44 = new javax.swing.JLabel();
+        Biiling_name_label = new javax.swing.JLabel();
+        bill_id_label = new javax.swing.JLabel();
+        link_name_label = new javax.swing.JLabel();
+        main_panel = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel4 = new javax.swing.JPanel();
+        save = new javax.swing.JButton();
+        Cancel = new javax.swing.JButton();
+        tariff_panrl2 = new javax.swing.JPanel();
+        jLabel35 = new javax.swing.JLabel();
+        tot_tar2 = new javax.swing.JLabel();
+        jLabel36 = new javax.swing.JLabel();
+        AdvRec_label1 = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
+        N_Room = new javax.swing.JLabel();
+        jLabel38 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel39 = new javax.swing.JLabel();
+        totC_label1 = new javax.swing.JLabel();
+        amount_panel = new javax.swing.JPanel();
+        jLabel29 = new javax.swing.JLabel();
+        AdvRec_label = new javax.swing.JLabel();
+        jLabel32 = new javax.swing.JLabel();
+        totC_label = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel33 = new javax.swing.JLabel();
+        due_label = new javax.swing.JLabel();
+        jLabel37 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        chk_panel = new javax.swing.JPanel();
+        jButton4 = new javax.swing.JButton();
+        e_checkin_text = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
+        e_checkout_date = new javax.swing.JTextField();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        RType_combo = new javax.swing.JComboBox();
+        mem = new javax.swing.JRadioButton();
+        nonmem = new javax.swing.JRadioButton();
+        jLabel22 = new javax.swing.JLabel();
+        Gname_Combo = new javax.swing.JComboBox();
+        memNo = new javax.swing.JLabel();
+        MemNo_label = new javax.swing.JLabel();
+        memNo1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        memNo2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        BillName = new javax.swing.JTextField();
+        jLabel28 = new javax.swing.JLabel();
+        id_detail = new javax.swing.JTextField();
+        RT_Chng = new javax.swing.JCheckBox();
+        RType_combo2 = new javax.swing.JComboBox();
+        jLabel24 = new javax.swing.JLabel();
+        RNo_Combo = new javax.swing.JComboBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
+        enter = new javax.swing.JButton();
+        mem_flag_label = new javax.swing.JLabel();
+        jLabel45 = new javax.swing.JLabel();
+        jLabel30 = new javax.swing.JLabel();
+        jLabel31 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        yes = new javax.swing.JRadioButton();
+        no = new javax.swing.JRadioButton();
+        check_IN = new javax.swing.JLabel();
+        check_OUT = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable(){public Component prepareRenderer(TableCellRenderer renderer,
+            int rowIndex, int vColIndex) {
+            Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
+            if (c instanceof JComponent) {
+                JComponent jc = (JComponent)c;
+                jc.setToolTipText(String.valueOf(getValueAt(rowIndex, vColIndex)));
+
+                if (rowIndex % 2 == 0 && !isCellSelected(rowIndex, vColIndex)) {
+                    jc.setBackground(Color.lightGray);
+                }
+                else {
+                    jc.setBackground(Color.white);
+                }
+                if(isCellSelected(rowIndex, vColIndex))
+                jc.setBackground(Color.cyan);
+            }
+            return c;
+        }};
+        jButton2 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        chk_out_guest_panel = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jList2 = new javax.swing.JList();
+        Bill_frame = new javax.swing.JInternalFrame();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable(){public Component prepareRenderer(TableCellRenderer renderer,
+            int rowIndex, int vColIndex) {
+            Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
+            if (c instanceof JComponent) {
+                JComponent jc = (JComponent)c;
+                jc.setToolTipText(String.valueOf(getValueAt(rowIndex, vColIndex)));
+
+                if (rowIndex % 2 == 0 && !isCellSelected(rowIndex, vColIndex)) {
+                    jc.setBackground(Color.lightGray);
+                }
+                else {
+                    jc.setBackground(Color.white);
+                }
+                if(isCellSelected(rowIndex, vColIndex))
+                jc.setBackground(Color.cyan);
+            }
+            return c;
+        }};
+        jLabel47 = new javax.swing.JLabel();
+        jButton8 = new javax.swing.JButton();
+        jLabel40 = new javax.swing.JLabel();
+        roomNo_Label = new javax.swing.JLabel();
+
+        jLabel46.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel46.setText("Bill Menu");
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jSeparator1.setBackground(new java.awt.Color(0, 51, 51));
+        jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
+
+        jSeparator2.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator2.setForeground(new java.awt.Color(0, 0, 0));
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jSeparator4.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator4.setForeground(new java.awt.Color(0, 0, 0));
+        jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jSeparator3.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator3.setForeground(new java.awt.Color(0, 0, 0));
+        jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel6.setText("Room Bill ");
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel7.setText("Days");
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel8.setText("Rate");
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel9.setText("Amount");
+
+        jSeparator5.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator5.setForeground(new java.awt.Color(0, 0, 0));
+
+        jSeparator7.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator7.setForeground(new java.awt.Color(0, 0, 0));
+
+        jSeparator8.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator8.setForeground(new java.awt.Color(0, 0, 0));
+
+        jSeparator11.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator11.setForeground(new java.awt.Color(0, 0, 0));
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel11.setText("Taxes");
+
+        jLabel12.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel12.setText("From : ");
+
+        date1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        date1.setText("Date1");
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel13.setText("To : ");
+
+        date2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        date2.setText("Date2");
+
+        jLabel15.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel15.setText("Total ");
+
+        jLabel16.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel16.setText("Room Service Charges ");
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel17.setText("Total ");
+
+        jLabel18.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel18.setText("Total Amount Payable");
+
+        jLabel19.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel19.setText("Advance Bal. Amount");
+
+        days.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        days.setText("Days");
+
+        rate.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        rate.setText("Rate");
+
+        charges.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        charges.setText("Amt1");
+
+        taxamt.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        taxamt.setText("Amt2");
+
+        tot.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tot.setText("Amt3");
+
+        roomCharges.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        roomCharges.setText("Amt4");
+
+        tot_chrge.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tot_chrge.setText("Amt5");
+
+        advnce_recv.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        advnce_recv.setText("Amt6");
+
+        dueamnt.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        dueamnt.setText("Final Amt");
+
+        tax_rate.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tax_rate.setText("Amt2");
+
+        adjust_check.setText("Adjust Advance  Amount ");
+        adjust_check.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                adjust_checkItemStateChanged(evt);
+            }
+        });
+        adjust_check.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adjust_checkActionPerformed(evt);
+            }
+        });
+
+        adjust_text.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                adjust_textFocusGained(evt);
+            }
+        });
+        adjust_text.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                adjust_textKeyReleased(evt);
+            }
+        });
+
+        jLabel48.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel48.setText("Balance Amount");
+
+        bal_amount_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        bal_amount_label.setText("Amt7");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(date1))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(date2))
+                            .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(adjust_check, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel48, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(77, 77, 77)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator2)
+                .addGap(4, 4, 4)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(days))
+                        .addGap(26, 26, 26)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel8))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tax_rate)
+                            .addComponent(rate))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jSeparator11)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(48, 48, 48)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(taxamt)
+                                    .addComponent(charges)
+                                    .addComponent(tot)
+                                    .addComponent(roomCharges)
+                                    .addComponent(tot_chrge)
+                                    .addComponent(advnce_recv)
+                                    .addComponent(bal_amount_label)))
+                            .addComponent(adjust_text, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(22, 22, 22))))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(dueamnt)
+                .addContainerGap())
+            .addComponent(jSeparator1)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel9))
+                        .addGap(21, 21, 21)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSeparator11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel12)
+                                    .addComponent(date1))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel13)
+                                    .addComponent(date2))
+                                .addGap(40, 40, 40)
+                                .addComponent(jLabel11)
+                                .addGap(40, 40, 40)
+                                .addComponent(jLabel15)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel16)
+                                .addGap(25, 25, 25)
+                                .addComponent(jLabel17)
+                                .addGap(29, 29, 29)
+                                .addComponent(jLabel19))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(41, 41, 41)
+                                .addComponent(days))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(42, 42, 42)
+                                .addComponent(rate)
+                                .addGap(52, 52, 52)
+                                .addComponent(tax_rate))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(42, 42, 42)
+                                .addComponent(charges)
+                                .addGap(52, 52, 52)
+                                .addComponent(taxamt)
+                                .addGap(40, 40, 40)
+                                .addComponent(tot)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(roomCharges)
+                                .addGap(25, 25, 25)
+                                .addComponent(tot_chrge)
+                                .addGap(30, 30, 30)
+                                .addComponent(advnce_recv)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(adjust_check)
+                            .addComponent(adjust_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel48)
+                            .addComponent(bal_amount_label)))
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+                    .addComponent(jSeparator4)
+                    .addComponent(jSeparator3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(dueamnt))
+                .addContainerGap(16, Short.MAX_VALUE))
+        );
+
+        date1.setForeground(Color.BLUE);
+        date2.setForeground(Color.BLUE);
+        rate.setForeground(Color.BLUE);
+        advnce_recv.setForeground(Color.RED);
+        adjust_text.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        bal_amount_label.setForeground(Color.RED);
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel10.setText("Member No : ");
+
+        mno.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        mno.setText("jLabel11");
+
+        jLabel14.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel14.setText("Guest Name :");
+
+        guest_name_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        guest_name_label.setText("GName");
+
+        cancel.setText("Cancel");
+        cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelActionPerformed(evt);
+            }
+        });
+
+        submit.setText("Submit");
+        submit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Bill");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel41.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel41.setText("Room No : ");
+
+        roomNo_Label1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        roomNo_Label1.setText("jLabel41");
+
+        jLabel42.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel42.setText("Member Name : ");
+
+        mem_name_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        mem_name_label.setText("jLabel11");
+
+        jLabel43.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel43.setText("Room Type : ");
+
+        room_type_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        room_type_label.setText("jLabel41");
+
+        jLabel44.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel44.setText("Billing Name :");
+
+        Biiling_name_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        Biiling_name_label.setText("Bill Name");
+
+        bill_id_label.setText("jLabel48");
+
+        link_name_label.setText("jLabel48");
+
+        javax.swing.GroupLayout bill_panelLayout = new javax.swing.GroupLayout(bill_panel);
+        bill_panel.setLayout(bill_panelLayout);
+        bill_panelLayout.setHorizontalGroup(
+            bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bill_panelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel46, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(189, 189, 189))
+            .addGroup(bill_panelLayout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(cancel)
+                .addGap(20, 20, 20)
+                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1)
+                            .addComponent(submit)
+                            .addComponent(bill_id_label)
+                            .addComponent(link_name_label))
+                        .addContainerGap(37, Short.MAX_VALUE))
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel42)
+                            .addComponent(jLabel44))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(bill_panelLayout.createSequentialGroup()
+                                .addComponent(Biiling_name_label)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(bill_panelLayout.createSequentialGroup()
+                                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(mem_name_label)
+                                    .addComponent(mno))
+                                .addGap(99, 99, 99)
+                                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel43)
+                                    .addComponent(jLabel41))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(roomNo_Label1)
+                                    .addComponent(room_type_label))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel14)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(guest_name_label)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+        );
+        bill_panelLayout.setVerticalGroup(
+            bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bill_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel46)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(cancel)
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(mno)
+                            .addComponent(jLabel14)
+                            .addComponent(guest_name_label)
+                            .addComponent(jLabel41)
+                            .addComponent(roomNo_Label1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel42)
+                            .addComponent(mem_name_label)
+                            .addComponent(jLabel43)
+                            .addComponent(room_type_label))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel44)
+                            .addComponent(Biiling_name_label))
+                        .addGap(4, 4, 4)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addComponent(link_name_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(bill_id_label)
+                        .addGap(27, 27, 27)
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(submit)))
+                .addContainerGap(24, Short.MAX_VALUE))
+        );
+
+        jLabel45.setForeground(Color.BLUE);
+        mno.setForeground(Color.BLUE);
+        guest_name_label.setForeground(Color.BLUE);
+        roomNo_Label1.setForeground(Color.BLUE);
+        mem_name_label.setForeground(Color.BLUE);
+        room_type_label.setForeground(Color.BLUE);
+        Biiling_name_label.setForeground(Color.BLUE);
+        bill_id_label.setVisible(false);
+        link_name_label.setVisible(false);
+
+        save.setText("Submit");
+        save.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveActionPerformed(evt);
+            }
+        });
+
+        Cancel.setText("Cancel");
+        Cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CancelActionPerformed(evt);
+            }
+        });
+
+        tariff_panrl2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel35.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel35.setText("New Tariff :");
+
+        tot_tar2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tot_tar2.setText("Unknown");
+
+        jLabel36.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel36.setText("Advance Recieved :");
+
+        AdvRec_label1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        AdvRec_label1.setText("Unknown");
+
+        jLabel34.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel34.setText("New Room Type :");
+
+        N_Room.setText("jLabel3");
+
+        jLabel38.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel38.setText("Room Type :");
+
+        jLabel21.setText("jLabel20");
+
+        jLabel39.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel39.setText("Curr Tariff : ");
+
+        totC_label1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        totC_label1.setText("Unknown");
+
+        javax.swing.GroupLayout tariff_panrl2Layout = new javax.swing.GroupLayout(tariff_panrl2);
+        tariff_panrl2.setLayout(tariff_panrl2Layout);
+        tariff_panrl2Layout.setHorizontalGroup(
+            tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(tariff_panrl2Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(tariff_panrl2Layout.createSequentialGroup()
+                        .addComponent(jLabel36)
+                        .addGap(26, 26, 26)
+                        .addComponent(AdvRec_label1))
+                    .addGroup(tariff_panrl2Layout.createSequentialGroup()
+                        .addGroup(tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel35)
+                            .addComponent(jLabel34)
+                            .addComponent(jLabel38)
+                            .addComponent(jLabel39))
+                        .addGap(37, 37, 37)
+                        .addGroup(tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(totC_label1)
+                            .addComponent(jLabel21)
+                            .addComponent(N_Room)
+                            .addComponent(tot_tar2))))
+                .addContainerGap(93, Short.MAX_VALUE))
+        );
+        tariff_panrl2Layout.setVerticalGroup(
+            tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(tariff_panrl2Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addGroup(tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel38)
+                    .addComponent(jLabel21))
+                .addGap(18, 18, 18)
+                .addGroup(tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel34)
+                    .addComponent(N_Room))
+                .addGap(18, 18, 18)
+                .addGroup(tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel39)
+                    .addComponent(totC_label1))
+                .addGap(18, 18, 18)
+                .addGroup(tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel35)
+                    .addComponent(tot_tar2))
+                .addGap(18, 18, 18)
+                .addGroup(tariff_panrl2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel36)
+                    .addComponent(AdvRec_label1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        tot_tar2.setForeground(Color.RED);
+        AdvRec_label1.setForeground(Color.RED);
+        N_Room.setForeground(Color.BLUE);
+        jLabel21.setForeground(Color.BLUE);
+        totC_label1.setForeground(Color.RED);
+
+        amount_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel29.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel29.setText("Advance Recieved :");
+
+        AdvRec_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        AdvRec_label.setText("Unknown");
+
+        jLabel32.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel32.setText("Total Charge : ");
+
+        totC_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        totC_label.setText("Unknown");
+
+        jLabel2.setText("-----------------------------------------------------------");
+
+        jLabel33.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel33.setText("Due Amount :");
+
+        due_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        due_label.setText("Unknown");
+
+        jLabel37.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel37.setText("Room Type :");
+
+        jLabel20.setText("jLabel20");
+
+        javax.swing.GroupLayout amount_panelLayout = new javax.swing.GroupLayout(amount_panel);
+        amount_panel.setLayout(amount_panelLayout);
+        amount_panelLayout.setHorizontalGroup(
+            amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(amount_panelLayout.createSequentialGroup()
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 69, Short.MAX_VALUE))
+            .addGroup(amount_panelLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel32)
+                    .addGroup(amount_panelLayout.createSequentialGroup()
+                        .addComponent(jLabel33)
+                        .addGap(52, 52, 52)
+                        .addComponent(due_label))
+                    .addGroup(amount_panelLayout.createSequentialGroup()
+                        .addGroup(amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel29)
+                            .addComponent(jLabel37))
+                        .addGap(18, 18, 18)
+                        .addGroup(amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel20)
+                            .addComponent(totC_label)
+                            .addComponent(AdvRec_label))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        amount_panelLayout.setVerticalGroup(
+            amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(amount_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel37)
+                    .addComponent(jLabel20))
+                .addGap(18, 18, 18)
+                .addGroup(amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel32)
+                    .addComponent(totC_label))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel29)
+                    .addComponent(AdvRec_label))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(amount_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel33)
+                    .addComponent(due_label))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        AdvRec_label.setForeground(Color.RED);
+        totC_label.setForeground(Color.RED);
+        due_label.setForeground(Color.RED);
+        jLabel20.setForeground(Color.BLUE);
+
+        chk_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/date.png"))); // NOI18N
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jLabel25.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel25.setText("Check In Date :");
+
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/date.png"))); // NOI18N
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jLabel26.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel26.setText("Check Out Date :");
+
+        javax.swing.GroupLayout chk_panelLayout = new javax.swing.GroupLayout(chk_panel);
+        chk_panel.setLayout(chk_panelLayout);
+        chk_panelLayout.setHorizontalGroup(
+            chk_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(chk_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(chk_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel26)
+                    .addComponent(jLabel25))
+                .addGap(21, 21, 21)
+                .addGroup(chk_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chk_panelLayout.createSequentialGroup()
+                        .addComponent(e_checkin_text, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton4))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chk_panelLayout.createSequentialGroup()
+                        .addComponent(e_checkout_date)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton5)))
+                .addContainerGap())
+        );
+        chk_panelLayout.setVerticalGroup(
+            chk_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(chk_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(chk_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(chk_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(e_checkin_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel25))
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(chk_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(chk_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(e_checkout_date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel26)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        e_checkin_text.setEditable(false);
+        e_checkout_date.setEditable(false);
+
+        jLabel23.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel23.setText("Room Type :");
+
+        RType_combo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { }));
+        RType_combo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                RType_comboItemStateChanged(evt);
+            }
+        });
+
+        mem.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        mem.setText("Member");
+        mem.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                memItemStateChanged(evt);
+            }
+        });
+
+        nonmem.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        nonmem.setText("Guest");
+        nonmem.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                nonmemItemStateChanged(evt);
+            }
+        });
+
+        jLabel22.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel22.setText("Select Name : ");
+
+        Gname_Combo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { }));
+        Gname_Combo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                Gname_ComboItemStateChanged(evt);
+            }
+        });
+
+        memNo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        memNo.setText("Member No :");
+
+        MemNo_label.setText("Mem No");
+
+        memNo1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        memNo1.setText("No Of Days :");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setText("jLabel3");
+
+        memNo2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        memNo2.setText("No Of Rooms Booked :");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel4.setText("jLabel4");
+
+        jLabel27.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel27.setText("Billing Name :");
+
+        jLabel28.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel28.setText("ID Card Detail : ");
+
+        RT_Chng.setText("Do You Want to Change Room Type ?");
+        RT_Chng.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                RT_ChngItemStateChanged(evt);
+            }
+        });
+
+        RType_combo2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { }));
+        RType_combo2.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                RType_combo2ItemStateChanged(evt);
+            }
+        });
+
+        jLabel24.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel24.setText("Room No :");
+
+        RNo_Combo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { }));
+
+        jList1.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = {  };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(jList1);
+
+        enter.setText("Enter");
+        enter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                enterActionPerformed(evt);
+            }
+        });
+
+        mem_flag_label.setText("jLabel5");
+
+        jLabel45.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel45.setText("Guest Room Check In Menu");
+
+        jLabel30.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel30.setText("Effective Check In Date :");
+
+        jLabel31.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel31.setText("Effective Check Out Date :");
+
+        jLabel1.setText("Do you want to continue with the same date ?");
+
+        yes.setText("Yes");
+        yes.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                yesItemStateChanged(evt);
+            }
+        });
+
+        no.setText("No");
+        no.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                noItemStateChanged(evt);
+            }
+        });
+
+        check_IN.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        check_IN.setText("jLabel42");
+
+        check_OUT.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        check_OUT.setText("jLabel42");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel45, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(212, 212, 212))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(chk_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel31)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(yes)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(no)))
+                        .addGap(225, 225, 225)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(amount_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tariff_panrl2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(mem)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(nonmem, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(160, 160, 160))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel23)
+                                            .addComponent(jLabel24))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(RType_combo2, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(RType_combo, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(RNo_Combo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                                        .addComponent(enter, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGap(20, 20, 20)))
+                                                .addGap(38, 38, 38)
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addGap(105, 105, 105)
+                                        .addComponent(RT_Chng, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                                .addComponent(mem_flag_label)
+                                .addGap(63, 63, 63)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel22)
+                                            .addComponent(memNo)
+                                            .addComponent(memNo1))
+                                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addGap(70, 70, 70)
+                                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jLabel3)
+                                                    .addComponent(MemNo_label)))
+                                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addGap(18, 18, 18)
+                                                .addComponent(Gname_Combo, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addComponent(memNo2)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel4))
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                            .addComponent(jLabel27)
+                                            .addGap(28, 28, 28)
+                                            .addComponent(BillName))
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                            .addComponent(jLabel28)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(id_detail, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel30)
+                                .addGap(54, 54, 54)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(check_OUT)
+                                    .addComponent(check_IN))))
+                        .addContainerGap(95, Short.MAX_VALUE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(Cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(save, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(55, 55, 55))))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel45)
+                .addGap(10, 10, 10)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(mem)
+                    .addComponent(nonmem))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(102, 102, 102)
+                        .addComponent(memNo1))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(77, 77, 77)
+                        .addComponent(RT_Chng)
+                        .addGap(10, 10, 10)
+                        .addComponent(RType_combo2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel22)
+                            .addComponent(Gname_Combo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(RType_combo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel23))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(memNo)
+                            .addComponent(MemNo_label))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel3)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(memNo2)
+                    .addComponent(jLabel4))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel24)
+                                    .addComponent(RNo_Combo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(enter)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(check_IN))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel31)
+                            .addComponent(check_OUT))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(yes)
+                            .addComponent(no))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(chk_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel27)
+                            .addComponent(BillName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel28)
+                            .addComponent(id_detail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(mem_flag_label))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(amount_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(21, 21, 21)
+                        .addComponent(tariff_panrl2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(24, 24, 24)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(save)
+                    .addComponent(Cancel))
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+
+        save.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png"))); // NOI18N
+        Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel2.png"))); // NOI18N
+        RType_combo.setEditable(false);
+        RType_combo.setEnabled(false);
+        MemNo_label.setForeground(Color.RED);
+        jLabel3.setForeground(Color.BLUE);
+        jLabel4.setForeground(Color.BLUE);
+        mem_flag_label.setVisible(false);
+        jLabel45.setForeground(Color.BLUE);
+        check_IN.setForeground(Color.RED);
+        check_OUT.setForeground(Color.RED);
+
+        jTabbedPane1.addTab("Check In", jPanel4);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(jTable1);
+
+        jButton2.setText("Room Service ");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton6.setText("Check Out ");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        chk_out_guest_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel5.setBackground(new java.awt.Color(255, 51, 102));
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel5.setText("Guest to be check out today  :  ");
+
+        jList2.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = {  };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(jList2);
+
+        javax.swing.GroupLayout chk_out_guest_panelLayout = new javax.swing.GroupLayout(chk_out_guest_panel);
+        chk_out_guest_panel.setLayout(chk_out_guest_panelLayout);
+        chk_out_guest_panelLayout.setHorizontalGroup(
+            chk_out_guest_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(chk_out_guest_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(30, Short.MAX_VALUE))
+        );
+        chk_out_guest_panelLayout.setVerticalGroup(
+            chk_out_guest_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(chk_out_guest_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(chk_out_guest_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel5.setForeground(Color.RED);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(chk_out_guest_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(52, 52, 52)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(60, 60, 60)
+                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 78, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(chk_out_guest_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(175, Short.MAX_VALUE))
+        );
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/view2.png"))); // NOI18N
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png"))); // NOI18N
+
+        jTabbedPane1.addTab("Check IN List", jPanel1);
+
+        javax.swing.GroupLayout main_panelLayout = new javax.swing.GroupLayout(main_panel);
+        main_panel.setLayout(main_panelLayout);
+        main_panelLayout.setHorizontalGroup(
+            main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(main_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 965, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        main_panelLayout.setVerticalGroup(
+            main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(main_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        Bill_frame.setTitle("Room Service");
+        Bill_frame.setVisible(true);
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(jTable2);
+
+        jLabel47.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel47.setText("Room Service");
+
+        jButton8.setText("Cancel");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        jLabel40.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel40.setText("Room No : ");
+
+        roomNo_Label.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        roomNo_Label.setText("jLabel41");
+
+        javax.swing.GroupLayout Bill_frameLayout = new javax.swing.GroupLayout(Bill_frame.getContentPane());
+        Bill_frame.getContentPane().setLayout(Bill_frameLayout);
+        Bill_frameLayout.setHorizontalGroup(
+            Bill_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Bill_frameLayout.createSequentialGroup()
+                .addGroup(Bill_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(Bill_frameLayout.createSequentialGroup()
+                        .addGap(126, 126, 126)
+                        .addComponent(jLabel47, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(Bill_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, Bill_frameLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(Bill_frameLayout.createSequentialGroup()
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(Bill_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(Bill_frameLayout.createSequentialGroup()
+                                    .addComponent(jLabel40)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(roomNo_Label))
+                                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(70, Short.MAX_VALUE))
+        );
+        Bill_frameLayout.setVerticalGroup(
+            Bill_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Bill_frameLayout.createSequentialGroup()
+                .addContainerGap(15, Short.MAX_VALUE)
+                .addComponent(jLabel47)
+                .addGap(21, 21, 21)
+                .addGroup(Bill_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel40)
+                    .addComponent(roomNo_Label))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton8))
+        );
+
+        jLabel45.setForeground(Color.BLUE);
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel2.png"))); // NOI18N
+        roomNo_Label.setForeground(Color.BLUE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(main_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Bill_frame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bill_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(61, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(main_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(bill_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(Bill_frame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        Date date1=new Date();
+        try {
+            date1 = (Date) Formats.TIMESTAMP.parseValue(e_checkin_text.getText());
+        }
+        catch (BasicException e) {
+            date1 = null;
+        }
+        try{
+            date1 = JCalendarDialog.showCalendarTimeHours(this, date1);
+            if (date1 != null) {
+
+                e_checkin_text.setText(Formats.TIMESTAMP.formatValue(date1));
+
+            }
+        }catch(Exception e1){
+            e1.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        Date date1=new Date();
+        try {
+            date1 = (Date) Formats.TIMESTAMP.parseValue(e_checkin_text.getText());
+        }
+        catch (BasicException e) {
+            date1 = null;
+        }
+        try{
+            date1 = JCalendarDialog.showCalendarTimeHours(this, date1);
+            if (date1 != null) {
+
+                e_checkout_date.setText(Formats.TIMESTAMP.formatValue(date1));
+
+            }
+        }catch(Exception e1){
+            e1.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    int No_of_rooms_Bkd;
+    int No_of_days;
+    int MemberFlag;
+    String GuestName;
+    String Mname;
+    String Mno;
+    String RoomNo="";
+    String Billname;
+    String IdCard;
+    String Rtype;
+    Date chk_In_date;
+    Date Chk_out_date;
+    Double AdvanceAmt;
+    Double DueAmt;
+    Date E_chk_in;
+    Date E_chk_out;
+    Double RoomSerChrg;
+    String RECIEPT_NO;
+    String Advnce_Recv_ID;
+    int Active;
+    String Adv_Pmt_ID;
+    Double SingleRoom_Tariff;
+    String Link_Name;
+   
+    private void Gname_ComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_Gname_ComboItemStateChanged
+        int memFlag;
+        RT_Chng.setSelected(false);
+        
+        
+        if(Gname_Combo.getSelectedIndex()!=-1){
+            if(mem.isSelected()){
+                String Name  = Gname_Combo.getSelectedItem().toString();
+                memFlag = 1;
+               
+                try {
+                    CheckInTable_Model = CheckInTableModel.LoadGuestRoomCheckInDetail(m_App, Name , memFlag);
+                } catch (BasicException ex) {
+                    Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+            else{
+                String Name  = Gname_Combo.getSelectedItem().toString(); 
+                memFlag = 2;
+                try {
+                    CheckInTable_Model = CheckInTableModel.LoadGuestRoomCheckInDetail(m_App, Name , memFlag);
+                } catch (BasicException ex) {
+                    Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                
+            }
+            
+            
+            GuestRoomDetailList =  (List<CheckInTableModel.RoomAdvInfo>) CheckInTable_Model.getGuestRoomPath();
+            CheckInTableModel.RoomAdvInfo editData = (CheckInTableModel.RoomAdvInfo) ((CheckInTableModel.RoomAdvInfo)GuestRoomDetailList.get(0));
+            
+            
+            e_checkin_text.setText(editData.getCHECK_IN_DATE());
+            check_IN.setText(editData.getCHECK_IN_DATE());
+            check_OUT.setText(editData.getCHECK_OUT_DATE());
+            e_checkout_date.setText(editData.getCHECK_OUT_DATE());
+            check_IN.setVisible(true);
+            check_OUT.setVisible(true);
+            try {
+                chk_In_date = (Date) Formats.DATE.parseValue(check_IN.getText());
+                Chk_out_date = (Date) Formats.DATE.parseValue(check_OUT.getText());
+                
+                E_chk_in = (Date) Formats.DATE.parseValue(e_checkin_text.getText());
+                E_chk_out = (Date) Formats.DATE.parseValue(e_checkout_date.getText());
+                
+            } catch (BasicException ex) {
+                Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            String Booking_ID = editData.getBOOKING_ID();
+            
+            AdvRec_label.setText(decimalFormat.format(editData.getBAL_AMT()));
+            AdvanceAmt = Double.parseDouble(AdvRec_label.getText());
+            
+            MemNo_label.setText(editData.getMEMBER_NO());
+            Mno = MemNo_label.getText();
+            
+            Rtype = editData.getROOMTYPE();
+            Adv_Pmt_ID = editData.getId();
+            totC_label.setText(decimalFormat.format(editData.getTOTAL_AMOUNT()));
+            Tot_Amount = Double.parseDouble(totC_label.getText());
+            
+            totC_label1.setText(decimalFormat.format(editData.getTOTAL_AMOUNT()));
+            
+            due_label.setText(decimalFormat.format((editData.getTOTAL_AMOUNT())-(editData.getBAL_AMT())));
+            DueAmt = Double.parseDouble(due_label.getText());
+            
+            RECIEPT_NO = editData.getRECIEPT_NO();
+            
+            Advnce_Recv_ID = editData.getId();
+            
+            No_of_rooms_Bkd = editData.getNO_OF_ROOMS();
+            
+            No_of_days = editData.getBOOKING_DAYS();
+            MemberFlag = editData.getMEMBER_FLAG();
+            jLabel20.setText(editData.getROOMTYPE());
+            jLabel21.setText(editData.getROOMTYPE());
+            AdvRec_label1.setText(decimalFormat.format(editData.getBAL_AMT()));
+            
+            
+            if(editData.getMEMBER_FLAG()!=1){
+               GuestName = editData.getGuestName();
+               Mname = editData.getMEMBERNAME();
+            }
+            else{
+                GuestName = null;
+                Mname = editData.getMEMBERNAME();
+            }
+            
+            for(int i=0;i<RType_combo.getItemCount();i++){
+                String x = RType_combo.getItemAt(i).toString();
+                if(x.equals(Rtype)){
+                    RType_combo.setSelectedIndex(i);
+                    break;
+                }
+            }
+            
+            jLabel3.setText(""+No_of_days);
+            jLabel4.setText(""+No_of_rooms_Bkd);
+            mem_flag_label.setText(""+MemberFlag);
+            
+            // CALCULATION FOR SINGLE ROOM TARIFF
+            
+            if(editData.getMEMBER_FLAG()==1){
+                SingleRoom_Tariff = editData.getMEM_Tariff();
+            }
+            else{
+                SingleRoom_Tariff = editData.getN_MEM_Tariff();
+            }
+            
+            
+            
+            
+            // PANELS TO KEEP INVISIBLE
+           
+            amount_panel.setVisible(true);
+            memNo.setVisible(true);
+            MemNo_label.setVisible(true);
+            memNo1.setVisible(true);
+            jLabel3.setVisible(true);
+            memNo2.setVisible(true);
+            jLabel4.setVisible(true);
+            
+            
+        }  
+      else{
+          
+        memNo.setVisible(false);
+        MemNo_label.setVisible(false);  
+        amount_panel.setVisible(false);
+        
+        memNo1.setVisible(false);
+        jLabel3.setVisible(false);
+        memNo2.setVisible(false);
+        jLabel4.setVisible(false);
+        reset();
+        
+      }
+    }//GEN-LAST:event_Gname_ComboItemStateChanged
+
+    private void memItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_memItemStateChanged
+       Gname_Combo.setSelectedIndex(-1);
+         try {
+                  loaddata();
+                } catch (BasicException ex) {
+                    Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                }
+     
+    }//GEN-LAST:event_memItemStateChanged
+
+    private void nonmemItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_nonmemItemStateChanged
+        try {
+            loaddata();
+        } catch (BasicException ex) {
+            Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     Gname_Combo.setSelectedIndex(-1);
+      
+    }//GEN-LAST:event_nonmemItemStateChanged
+
+    private void RType_comboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RType_comboItemStateChanged
+       String RoomNo;
+       roomNo_List = new ArrayList<Object>();
+       
+      
+       if(RType_combo.getSelectedIndex()!=-1){
+       /* 
+       String RoomType =  RType_combo.getSelectedItem().toString();
+       RoomNo = RoomTableModel.getRoomNos(m_App,RoomType);
+       String []RoomNo_Arr = RoomNo.split("#");
+       for(int i=0;i<RoomNo_Arr.length;i++){
+           Object o = RoomNo_Arr[i];
+           roomNo_List.add(o);
+       }
+       */
+       String RoomType = RType_combo.getSelectedItem().toString();
+       roomNo_List = RoomTableModel.getRoomNos_Cust(m_App , RoomType);
+       RoomNoListModel = new ComboBoxValModel(roomNo_List);
+       RNo_Combo.setModel(RoomNoListModel);
+       
+    
+     }
+     else{
+       RNo_Combo.setSelectedIndex(-1);
+     }
+     RType_combo2.setSelectedIndex(-1);
+    }//GEN-LAST:event_RType_comboItemStateChanged
+
+    private void RT_ChngItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RT_ChngItemStateChanged
+       if(RT_Chng.isSelected()){
+          RType_combo2.setVisible(true);
+          
+       }
+       else{
+          RType_combo2.setSelectedIndex(-1);
+          RNo_Combo.setSelectedIndex(-1);
+          RType_combo2.setVisible(false);
+          tariff_panrl2.setVisible(false);
+         
+            String RoomNo;
+            roomNo_List = new ArrayList<Object>();
+            if(RType_combo.getSelectedIndex()!=-1){
+                /*
+            String RoomType =  RType_combo.getSelectedItem().toString();
+            RoomNo = RoomTableModel.getRoomNos(m_App,RoomType);
+            String []RoomNo_Arr = RoomNo.split("#");
+            for(int i=0;i<RoomNo_Arr.length;i++){
+                Object o = RoomNo_Arr[i];
+                roomNo_List.add(o);
+             }
+             */
+            String roomtype = RType_combo.getSelectedItem().toString();
+            roomNo_List = RoomTableModel.getRoomNos_Cust(m_App ,roomtype );
+            
+            RoomNoListModel = new ComboBoxValModel(roomNo_List);
+            RNo_Combo.setModel(RoomNoListModel);
+
+
+            }
+            else{
+            RNo_Combo.setSelectedIndex(-1);
+            }
+            RType_combo2.setSelectedIndex(-1);
+            amount_panel.setVisible(true);
+            tariff_panrl2.setVisible(false);
+            
+            
+       }
+    }//GEN-LAST:event_RT_ChngItemStateChanged
+
+    private void CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelActionPerformed
+       reset();
+       Gname_Combo.setSelectedIndex(-1);
+       jTabbedPane1.setSelectedIndex(1);
+    }//GEN-LAST:event_CancelActionPerformed
+
+    private void yesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yesItemStateChanged
+       if(yes.isSelected()){
+            chk_panel.setVisible(false);
+       }
+       else{
+            chk_panel.setVisible(true);
+       }
+    }//GEN-LAST:event_yesItemStateChanged
+
+    private void noItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_noItemStateChanged
+       if(no.isSelected()){
+            chk_panel.setVisible(true);
+       }
+       else{
+            chk_panel.setVisible(false);
+       }
+    }//GEN-LAST:event_noItemStateChanged
+
+    private void RType_combo2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RType_combo2ItemStateChanged
+       String RoomNo;
+       roomNo_List = new ArrayList<Object>();
+       
+       if(RType_combo2.getSelectedIndex()!=-1){
+           String RoomType =  RType_combo2.getSelectedItem().toString();
+           
+           /*
+             
+             RoomNo = RoomTableModel.getRoomNos(m_App,RoomType);
+             String []RoomNo_Arr = RoomNo.split("#");
+             for(int i=0;i<RoomNo_Arr.length;i++){
+                 Object o = RoomNo_Arr[i];
+                 roomNo_List.add(o);
+             }
+             */
+           
+           
+             roomNo_List = RoomTableModel.getRoomNos_Cust(m_App , RoomType);
+             RoomNoListModel = new ComboBoxValModel(roomNo_List);
+             RNo_Combo.setModel(RoomNoListModel);
+
+             Double Amt=0.0;
+             try {
+                   Amt = getGuestRoomCharges(RoomType);
+                 } catch (BasicException ex) {
+                     Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                 }
+             tariff_panrl2.setVisible(true);
+             amount_panel.setVisible(false);
+             tot_tar2.setText(decimalFormat.format(Amt));
+             N_Room.setText(RoomType);
+             jLabel3.setText(""+No_of_days);
+             jLabel4.setText(""+No_of_rooms_Bkd);
+             mem_flag_label.setText(""+MemberFlag);
+             AdvRec_label1.setText(AdvRec_label.getText());
+                     
+                     
+             if(Room_Nos_list.size()>0){
+              Room_Nos_list = new ArrayList<Object>();
+              RoomNoListModel2 = new Room_Nos_Model(Room_Nos_list);
+              jList1.setModel(RoomNoListModel2);   
+             }
+             
+             
+             
+     }
+     else{
+       RNo_Combo.setSelectedIndex(-1);
+       tariff_panrl2.setVisible(false);
+         
+     }
+    }//GEN-LAST:event_RType_combo2ItemStateChanged
+
+    private void enterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enterActionPerformed
+       int count =0;
+        if(RNo_Combo.getSelectedIndex()!=-1){
+          enter.setVisible(true);
+          String X =  RNo_Combo.getSelectedItem().toString();
+          
+          if(Room_Nos_list.size()>0){
+              if(Room_Nos_list.size() < 1){
+                    for(int i=0;i<Room_Nos_list.size();i++){
+                          String x = Room_Nos_list.get(i).toString();
+                          if(x.equals(X)){
+                             count++;
+                             break;
+                         }
+                    }
+                      if(count==0){
+                            Room_Nos_list.add(X);
+                            RoomNoListModel2 = new Room_Nos_Model(Room_Nos_list);
+                            jList1.setModel(RoomNoListModel2);  
+                      }
+                    else{
+                        JOptionPane.showMessageDialog(this, "Room No already Entered..!!", " Duplicate Entry", JOptionPane.ERROR_MESSAGE);
+                    }
+             }
+             else{
+                   JOptionPane.showMessageDialog(this, "Only one room can be booked..!!", "Rooms Booked ", JOptionPane.ERROR_MESSAGE);
+              }
+          }
+          else{
+                Room_Nos_list.add(X);
+                RoomNoListModel2 = new Room_Nos_Model(Room_Nos_list);
+                jList1.setModel(RoomNoListModel2);  
+          }
+          
+       }
+       else{
+          
+       }
+    }//GEN-LAST:event_enterActionPerformed
+    
+   
+    private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
+     if(Gname_Combo.getSelectedIndex()!=-1){
+              if(Room_Nos_list.size()>0){
+                if(id_detail.getText() != null && id_detail.getText().trim().length()>0){
+                    
+                      int x = JOptionPane.showConfirmDialog(jPanel2, "Do You Want to Check In..?? ");
+                       if( x  == JOptionPane.YES_OPTION){
+        
+              
+                    if(BillName.getText()!=null && BillName.getText().trim().length()>0){
+                        Billname = BillName.getText();
+                    } 
+                    else{
+                         if(MemberFlag==1){
+                             Billname = Mname;
+                         }
+                         else{
+                              Billname  = GuestName;
+                         }
+                    }
+                    
+                    
+                    
+                    if(id_detail.getText()!=null && id_detail.getText().trim().length()>0){
+                        IdCard = id_detail.getText();
+                    }
+                    RoomSerChrg = 0.00;
+                    
+                    if(Room_Nos_list.size()>0){
+                        for(int i=0;i<Room_Nos_list.size();i++){
+                            RoomNo = RoomNo+Room_Nos_list.get(i);
+                                if(i+1<Room_Nos_list.size()){
+                                   RoomNo = RoomNo+",";
+                                }
+                        }
+                        
+                    }
+                    Active = 1;
+                           
+                   Link_Name = GR_CheckIn_Detail.getRoom_Link_Name(m_App, RoomNo);
+                   
+                   if(Link_Name !=null) {
+                    
+                    Transaction t = new Transaction(m_App.getSession()) {
+             
+                    @Override
+                    protected Object transact() throws BasicException {
+                       
+                         for(int i=0;i<Room_Nos_list.size();i++){
+                           String Room_No_I = Room_Nos_list.get(i).toString();
+                           
+                         
+                           
+                           int copy_hall_to_hall_cancel_request  =  new PreparedSentence(m_App.getSession(), "INSERT INTO guestroom_checkin (ID , ROOMTYPE , ROOMNO , MEMNO , GUEST_N ,ROOMS , DAYS , CHK_IN , CHK_OUT , ADV_RECV  , TOT_AMT ,  E_CHK_IN , E_CHK_OUT , RM_SERV_CHRG , RECIEPT_NO , BILL_NAME , ID_CARD , CRBY , CRDATE , CRHOST , ACTIVE , MEMNAME ,ADVNCE_RECV_ID , LINK_NAME) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                                                                      , new SerializerWriteBasic(new Datas[]{ Datas.STRING ,Datas.STRING ,Datas.STRING , Datas.STRING , Datas.STRING , Datas.INT , Datas.INT , Datas.TIMESTAMP , Datas.TIMESTAMP , Datas.DOUBLE , Datas.DOUBLE , Datas.TIMESTAMP , Datas.TIMESTAMP , Datas.DOUBLE , Datas.STRING , Datas.STRING , Datas.STRING , Datas.STRING ,Datas.TIMESTAMP ,  Datas.STRING  , Datas.INT  , Datas.STRING , Datas.STRING , Datas.STRING})).exec
+                                                                       (new Object[]{UUID.randomUUID().toString() , Rtype , Room_No_I , Mno , GuestName , No_of_rooms_Bkd , No_of_days , chk_In_date , Chk_out_date , AdvanceAmt , Tot_Amount , E_chk_in , E_chk_out ,RoomSerChrg ,RECIEPT_NO , Billname , IdCard ,  m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() , Active , Mname  , Advnce_Recv_ID , Link_Name}); 
+
+                             }
+                         
+                            int count = GR_CheckIn_Detail.getCountFor_Rooms_Booked(m_App , Advnce_Recv_ID);
+                           
+                            if(count>=No_of_rooms_Bkd){ 
+                                int Adv_pmnt_table  =  new PreparedSentence(m_App.getSession(), "UPDATE guestroom_advance_payment  SET CHK_FLAG=1  WHERE ID =  ?"
+                                                          , new SerializerWriteBasic(new Datas[]{Datas.STRING  })).exec
+                                                           (new Object[]{  Adv_Pmt_ID  });
+                                
+                                   int Adv_pmnt_table1  =  new PreparedSentence(m_App.getSession(), "UPDATE guestroom_booked_details  SET CHK_IN_FLAG=1  WHERE MEMBERNAME = (SELECT ID FROM CUSTOMERS WHERE SEARCHKEY=?)"
+                                                          , new SerializerWriteBasic(new Datas[]{Datas.STRING  })).exec
+                                                           (new Object[]{  Mno  });
+                                
+
+                            }
+                         
+                            return null;
+                          }
+                         };
+                   
+               
+               
+                            try {
+                                    t.execute();
+                                    JOptionPane.showMessageDialog(this, "Check In Done Sucsessfully..!!", "Success", JOptionPane.INFORMATION_MESSAGE);  
+                                    reset();
+                                    Gname_Combo.setSelectedIndex(-1);
+                                    loaddata();
+
+                                } catch (BasicException ex) {
+                                    Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                                    new MessageInf(ex).show(new JFrame());
+                                }
+
+                   }
+                   else{
+                       JOptionPane.showMessageDialog(this, "No Link Set.. Plaese set link to master !! ", "Room NO.", JOptionPane.ERROR_MESSAGE);
+                   }
+                
+               /*
+                    bill_panel.setVisible(true);
+                    main_panel.setVisible(false);
+
+                     mno.setText(MemNo_label.getText());
+                     if(MemberFlag!=1){
+                         jLabel14.setVisible(true);
+                         mno3.setVisible(true);
+                         mno3.setText(GuestName);
+                     }
+                     else{
+                         jLabel14.setVisible(false);
+                         mno3.setVisible(false);
+                     }
+
+                     mno12.setText(due_label.getText());
+                     advnce_recv.setText(AdvRec_label.getText());
+                     tot_chrge.setText(totC_label.getText());
+                     date1.setText(e_checkin_text.getText());
+                     date2.setText(e_checkout_date.getText());
+                     roomCharges.setText("0.00");
+                     tot.setText(totC_label.getText());
+                     days.setText(jLabel3.getText());
+                     getRoomNoBooked();
+                     
+                     */
+                  
+                    }
+                }
+                
+                else{
+                     JOptionPane.showMessageDialog(this, "Enter ID Card details. !! ", "Room NO.", JOptionPane.ERROR_MESSAGE);
+                   }
+                 }
+          
+              else{
+                    JOptionPane.showMessageDialog(this, "Select Room No. !! ", "Room NO.", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            
+        
+    }//GEN-LAST:event_saveActionPerformed
+
+    private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
+       main_panel.setVisible(true);
+       bill_panel.setVisible(false);
+    }//GEN-LAST:event_cancelActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+       int bill = JOptionPane.showConfirmDialog(main_panel, " Do you want to bill ?? ");
+       if(bill == JOptionPane.YES_OPTION)
+       {   
+      
+         try {
+               Generate_GuestRoomBill();
+           } catch (BasicException ex) {
+               Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+           }
+         
+         
+         
+        
+        try {
+               loaddata();
+               reset();
+           } catch (BasicException ex) {
+               Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+           }
+        
+        
+       }  
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitActionPerformed
+      Launch_Bill();
+    }//GEN-LAST:event_submitActionPerformed
+
+    String CheckIn_ID;
+    String CreateBy;
+    Date CreateDate;
+    
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if(jTable1.getSelectedRow()!=-1){
+              if(jTable1.getSelectedRow()<GR_CheckIn_Detail.getSize()){
+               int row = jTable1.getSelectedRow();
+               GuestRoom_CheckIn_Info showdata = GR_CheckIn_Detail.getGuestRmList().get(row);
+                
+               CheckIn_ID = showdata.getId();
+               RoomNo = showdata.getROOMNO();
+               No_of_rooms_Bkd = showdata.getROOMS();
+               Mname = showdata.getMemName();
+               Mno = showdata.getMEMNO();
+               GuestName = showdata.getGUEST_N();
+               No_of_days = showdata.getDAYS();
+               chk_In_date = showdata.getCHK_IN();
+               Chk_out_date = showdata.getCHK_OUT();
+               E_chk_in = showdata.getE_CHK_IN();
+               E_chk_out = showdata.getE_CHK_OUT();
+               //AdvanceAmt = showdata.getADV_RECV();
+               AdvanceAmt = showdata.getBAL_AMT();
+               Tot_Amount = showdata.getTOT_AMT();
+               RoomSerChrg = showdata.getRM_SERV_CHRG();
+               RECIEPT_NO = showdata.getRECIEPT_NO();
+               Billname = showdata.getBILL_NAME();
+               IdCard = showdata.getID_CARD();
+               CreateBy = showdata.getCRBY();
+               CreateDate = showdata.getCRDATE();
+               
+               roomNo_Label.setText(RoomNo);
+               Rtype = showdata.getROOMTYPE();
+               
+               String Cust_n = GRS.getCust_link_name(m_App, RoomNo);
+               
+              if(Cust_n!="null"){
+               
+               try{
+                             GRS = GuestRoomService.load_Curr_Bills(m_App, Cust_n);
+                         }
+                         catch (BasicException ex) {
+                            Logger.getLogger(hallTableModel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        BillInfoList = (List<GuestRoomService.BillInfo>) GRS.getBillInfo_Path();
+                        if(BillInfoList==null){
+                             BillInfoList = new ArrayList<GuestRoomService.BillInfo>();
+                        }
+              
+                ShowBillDetails(GRS);
+                
+                Bill_frame.setVisible(true);
+                main_panel.setVisible(false);
+              }
+              else{
+                   JOptionPane.showMessageDialog(this, " Room not linked with Member Master", "Error", JOptionPane.ERROR_MESSAGE);
+              }
+               
+             }
+              
+            
+        }
+        else{
+             JOptionPane.showMessageDialog(this, " Select Any One ", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+       Bill_frame.setVisible(false);
+       main_panel.setVisible(true);
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    
+    
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+      
+         if(jTable1.getSelectedRow()!=-1){
+              if(jTable1.getSelectedRow()<GR_CheckIn_Detail.getSize()){
+               int row = jTable1.getSelectedRow();
+               GuestRoom_CheckIn_Info showdata = GR_CheckIn_Detail.getGuestRmList().get(row);
+        
+        
+                   main_panel.setVisible(false);
+                   bill_panel.setVisible(true);
+                   
+                   link_name_label.setText(showdata.getLINK_NAME());
+                   
+                   mno.setText(showdata.getMEMNO());
+                   if(showdata.getGUEST_N()!=null && showdata.getGUEST_N().trim().length()>0){
+                       jLabel14.setVisible(true);
+                       guest_name_label.setVisible(true);
+                       guest_name_label.setText(showdata.getGUEST_N());
+                   }
+                   else{
+                       jLabel14.setVisible(false);
+                       guest_name_label.setVisible(false);
+                       guest_name_label.setText("");
+                   }
+                   
+                   Date check_out_d = showdata.getCHK_OUT();
+                   Date to_date = new Date();
+                   
+                   if(check_out_d.before(to_date)){
+                       System.out.println(check_out_d);
+                       System.out.println(to_date);
+                   }
+                   
+                   date1.setText(Formats.DATE.formatValue(showdata.getCHK_IN()));
+                   date2.setText(Formats.DATE.formatValue(showdata.getCHK_OUT()));
+                   
+                   days.setText(""+showdata.getDAYS());
+                   charges.setText(""+showdata.getTOT_AMT());
+                   advnce_recv.setText(""+showdata.getBAL_AMT());
+                   mem_name_label.setText(showdata.getMemName());
+                   room_type_label.setText(showdata.getROOMTYPE());
+                   
+                   CheckIn_ID = showdata.getId();
+                   Advnce_Recv_ID = showdata.getADVNCE_RECV_ID();
+                   RoomNo = showdata.getROOMNO();
+                   String Cust_n = GRS.getCust_link_name(m_App, RoomNo);
+                   
+                   Double RoomCharge = getRoomServiceDetails(Cust_n);
+                   roomCharges.setText(""+RoomCharge);
+                  try {
+                      int update_RoomServiceCharges =  new PreparedSentence(m_App.getSession(), "UPDATE guestroom_checkin  SET RM_SERV_CHRG=? WHERE ID=? "
+                                                                 , new SerializerWriteBasic(new Datas[]{Datas.DOUBLE , Datas.STRING})).exec
+                                                                  (new Object[]{ RoomCharge , CheckIn_ID  });
+                  } catch (BasicException ex) {
+                      Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                  }
+
+                  
+                  
+                   roomNo_Label1.setText(showdata.getROOMNO());
+                   
+                   String Name = showdata.getMemName();
+                  
+                   
+                   try {
+                      CheckInTable_Model = CheckInTableModel.LoadGuestRoomCheckInDetail(m_App, Name , 1);
+                    } catch (BasicException ex) {
+                      Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    GuestRoomDetailList =  (List<CheckInTableModel.RoomAdvInfo>) CheckInTable_Model.getGuestRoomPath();
+                    CheckInTableModel.RoomAdvInfo showdata2 = (CheckInTableModel.RoomAdvInfo) ((CheckInTableModel.RoomAdvInfo)GuestRoomDetailList.get(0));
+                   
+                    
+                    if(showdata2.getMEMBER_FLAG()==1){
+                        rate.setText(decimalFormat.format(showdata2.getMEM_Tariff()));
+                        charges.setText(decimalFormat.format(showdata2.getMEM_Tariff()*showdata2.getBOOKING_DAYS()));
+                    }
+                    else{
+                         rate.setText(decimalFormat.format(showdata2.getN_MEM_Tariff()));
+                         charges.setText(decimalFormat.format(showdata2.getN_MEM_Tariff()*showdata2.getBOOKING_DAYS()));
+                    }
+                   
+                    Billname = showdata.getBILL_NAME();
+                    Biiling_name_label.setText(Billname);
+                    
+                    tax_rate.setText(decimalFormat.format(showdata2.getTAX1()+showdata2.getTAX2()+showdata2.getTAX3()));
+                    Double Amt = Double.parseDouble(charges.getText());
+                    Double taxRate = Double.parseDouble(tax_rate.getText());
+                    taxamt.setText(decimalFormat.format((showdata2.getTAX1()*Amt)+(showdata2.getTAX2()*Amt)+(showdata2.getTAX3()*Amt)));
+                    
+                    Double Tax_amt = Double.parseDouble(taxamt.getText());
+                    tot.setText(decimalFormat.format(Amt+Tax_amt));
+                    
+                    Double Tot_amount = Double.parseDouble(tot.getText());
+                    
+                    
+                    tot_chrge.setText(decimalFormat.format(Tot_amount+RoomCharge));
+                     
+                    Double AmountPayable = (Tot_amount+RoomCharge)-(showdata.getBAL_AMT());
+                    if(AmountPayable>=0){
+                        dueamnt.setText(decimalFormat.format(AmountPayable));
+                        dueamnt.setForeground(Color.red);
+                        jLabel18.setText("Amount Payable");
+                    }
+                    else{
+                        dueamnt.setText(decimalFormat.format(AmountPayable));
+                        dueamnt.setForeground(Color.GREEN);
+                        jLabel18.setText("Amount Refundable");
+                    }
+                    
+                    bal_amount_label.setText("0.00");
+                    
+                    //TAX VALUES
+                    Tax1_N = showdata2.getTAX1().toString();
+                    Tax2_N = showdata2.getTAX2().toString();
+                    Tax3_N = showdata2.getTAX3().toString();
+                    
+                    Id_Details = showdata.getID_CARD();
+                    
+                    no_of_romms = showdata2.getNO_OF_ROOMS();
+              }
+         }
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void adjust_checkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjust_checkActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_adjust_checkActionPerformed
+
+    private void adjust_checkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_adjust_checkItemStateChanged
+      if(adjust_check.isSelected()){
+          adjust_text.setVisible(true);
+         
+          adjust_text.requestFocusInWindow();
+          
+          
+      }
+      else{
+          adjust_text.setVisible(false);
+          adjust_text.setText(null);
+        
+    }
+    }//GEN-LAST:event_adjust_checkItemStateChanged
+
+    private void adjust_textKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_adjust_textKeyReleased
+        char c = evt.getKeyChar();
+        if(c!=KeyEvent.VK_BACK_SPACE && c!=KeyEvent.VK_TAB && c!=KeyEvent.VK_ESCAPE && c!=KeyEvent.VK_CONTROL && c!=KeyEvent.VK_SHIFT )
+        {
+
+            if(!Character.isDigit(c))
+            {   
+                if(c!='.' && c!=KeyEvent.VK_ENTER)
+                {
+                    
+                JOptionPane.showMessageDialog(adjust_text, "Please enter only numbers..");
+                adjust_text.setText(null);
+
+                }
+                
+                if(c==KeyEvent.VK_ENTER){
+                    
+                   Double AdjAmt = Double.parseDouble(adjust_text.getText());
+                   Double totAmt = Double.parseDouble(tot_chrge.getText());
+                   Double Advance_amt = Double.parseDouble(advnce_recv.getText());
+                   Double Bal_Amt = 0.00;
+                   Double DueAmt = 0.00;
+                   
+                   if(AdjAmt<totAmt){
+                       JOptionPane.showMessageDialog(adjust_text, "Adjusted Amount Should not be less than bill amount..!!");
+                   }
+                   else{
+                       
+                       Bal_Amt = Advance_amt- AdjAmt;
+                       DueAmt = Advance_amt - (Bal_Amt+totAmt);
+                              
+                       
+                       bal_amount_label.setText(decimalFormat.format(Bal_Amt));
+                       dueamnt.setText(decimalFormat.format(DueAmt));
+                       
+                   }
+                    
+                }
+            }
+            
+        }
+    }//GEN-LAST:event_adjust_textKeyReleased
+
+    private void adjust_textFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_adjust_textFocusGained
+       adjust_text.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+    }//GEN-LAST:event_adjust_textFocusGained
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel AdvRec_label;
+    private javax.swing.JLabel AdvRec_label1;
+    private javax.swing.JLabel Biiling_name_label;
+    private javax.swing.JTextField BillName;
+    private javax.swing.JInternalFrame Bill_frame;
+    private javax.swing.JButton Cancel;
+    private javax.swing.JComboBox Gname_Combo;
+    private javax.swing.JLabel MemNo_label;
+    private javax.swing.JLabel N_Room;
+    private javax.swing.JComboBox RNo_Combo;
+    private javax.swing.JCheckBox RT_Chng;
+    private javax.swing.JComboBox RType_combo;
+    private javax.swing.JComboBox RType_combo2;
+    private javax.swing.JCheckBox adjust_check;
+    private javax.swing.JTextField adjust_text;
+    private javax.swing.JLabel advnce_recv;
+    private javax.swing.JPanel amount_panel;
+    private javax.swing.JLabel bal_amount_label;
+    private javax.swing.JLabel bill_id_label;
+    private javax.swing.JPanel bill_panel;
+    private javax.swing.JButton cancel;
+    private javax.swing.JLabel charges;
+    private javax.swing.JLabel check_IN;
+    private javax.swing.JLabel check_OUT;
+    private javax.swing.JPanel chk_out_guest_panel;
+    private javax.swing.JPanel chk_panel;
+    private javax.swing.JLabel date1;
+    private javax.swing.JLabel date2;
+    private javax.swing.JLabel days;
+    private javax.swing.JLabel due_label;
+    private javax.swing.JLabel dueamnt;
+    private javax.swing.JTextField e_checkin_text;
+    private javax.swing.JTextField e_checkout_date;
+    private javax.swing.JButton enter;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.JLabel guest_name_label;
+    private javax.swing.JTextField id_detail;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
+    private javax.swing.JLabel jLabel35;
+    private javax.swing.JLabel jLabel36;
+    private javax.swing.JLabel jLabel37;
+    private javax.swing.JLabel jLabel38;
+    private javax.swing.JLabel jLabel39;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel40;
+    private javax.swing.JLabel jLabel41;
+    private javax.swing.JLabel jLabel42;
+    private javax.swing.JLabel jLabel43;
+    private javax.swing.JLabel jLabel44;
+    private javax.swing.JLabel jLabel45;
+    private javax.swing.JLabel jLabel46;
+    private javax.swing.JLabel jLabel47;
+    private javax.swing.JLabel jLabel48;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JList jList1;
+    private javax.swing.JList jList2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator10;
+    private javax.swing.JSeparator jSeparator11;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator7;
+    private javax.swing.JSeparator jSeparator8;
+    private javax.swing.JSeparator jSeparator9;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JLabel link_name_label;
+    private javax.swing.JPanel main_panel;
+    private javax.swing.JRadioButton mem;
+    private javax.swing.JLabel memNo;
+    private javax.swing.JLabel memNo1;
+    private javax.swing.JLabel memNo2;
+    private javax.swing.JLabel mem_flag_label;
+    private javax.swing.JLabel mem_name_label;
+    private javax.swing.JLabel mno;
+    private javax.swing.JRadioButton no;
+    private javax.swing.JRadioButton nonmem;
+    private javax.swing.JLabel rate;
+    private javax.swing.JLabel roomCharges;
+    private javax.swing.JLabel roomNo_Label;
+    private javax.swing.JLabel roomNo_Label1;
+    private javax.swing.JLabel room_type_label;
+    private javax.swing.JButton save;
+    private javax.swing.JButton submit;
+    private javax.swing.JPanel tariff_panrl2;
+    private javax.swing.JLabel tax_rate;
+    private javax.swing.JLabel taxamt;
+    private javax.swing.JLabel tot;
+    private javax.swing.JLabel totC_label;
+    private javax.swing.JLabel totC_label1;
+    private javax.swing.JLabel tot_chrge;
+    private javax.swing.JLabel tot_tar2;
+    private javax.swing.JRadioButton yes;
+    // End of variables declaration//GEN-END:variables
+
+    public String getTitle() {
+       return "";
+    }
+
+    public void activate() throws BasicException {
+       loaddata();
+    }
+
+    public boolean deactivate() {
+        return true;
+    }
+
+    public JComponent getComponent() {
+      return this;
+    }
+
+    public void init(AppView app) throws BeanFactoryException {
+       this.m_App = app;
+       AdvanceRecv = (AdvanceRecieveTableModel) app.getBean("com.openbravo.pos.Booking.AdvanceRecieveTableModel");
+       CheckInTable_Model = (CheckInTableModel) app.getBean("com.openbravo.pos.Booking.CheckInTableModel");
+       RoomTableModel = (GuestRoomTableModel) app.getBean("com.openbravo.pos.Booking.GuestRoomTableModel");
+       GRS = (GuestRoomService) app.getBean("com.openbravo.pos.Booking.GuestRoomService");
+       GRBillModel = (GuestRoomBillModel) app.getBean("com.openbravo.pos.Booking.GuestRoomBillModel");
+       buttonGoup();
+       
+    }
+
+    public Object getBean() {
+        return this;
+    }
+     private void buttonGoup() {
+       ButtonGroup bg1 = new ButtonGroup();
+        bg1.add(mem);
+        bg1.add(nonmem);
+        
+       ButtonGroup bg2 = new ButtonGroup();
+       bg2.add(yes);
+       bg2.add(no);
+     }
+     
+     public void loaddata() throws BasicException{
+         
+         bill_panel.setVisible(false);
+         main_panel.setVisible(true);
+       
+        GR_CheckIn_Detail = GuestRoomCheckInTable.loadCheckIn_Data(m_App);
+        showPanelInfo(GR_CheckIn_Detail );
+        
+        Chk_out_Guest_list = GR_CheckIn_Detail.getCheck_out_guestList(m_App);
+        
+        if(Chk_out_Guest_list.size()>0){
+          chk_out_guest_panel.setVisible(true);
+          chk_out_guest_model = new Chk_out_Guest_model(Chk_out_Guest_list);
+          jList2.setModel(chk_out_guest_model);
+        }
+        else{
+           chk_out_guest_panel.setVisible(false);
+        }
+        
+        if(mem.isSelected()){
+          Mem_list = new ArrayList<Object>();
+          Mem_list =  AdvanceRecv.getMemList_GL(m_App);
+          Memlist_model = new ComboBoxValModel(Mem_list);
+          Gname_Combo.setModel(Memlist_model);
+          
+        } 
+        if(nonmem.isSelected()){
+          Guest_list = new ArrayList<Object>();
+          Guest_list =AdvanceRecv.getGuetList_GL(m_App);
+          GuestList_model = new ComboBoxValModel(Guest_list);
+          Gname_Combo.setModel(GuestList_model);
+         
+          
+        }
+       
+       roomType_list = new ArrayList<Object>();
+       roomType_list = RoomTableModel.RoomType_NamesList_Active(m_App);
+       RoomTypeListModel = new ComboBoxValModel(roomType_list);
+       RType_combo.setModel(RoomTypeListModel); 
+       RoomTypeListModel2 = new ComboBoxValModel(roomType_list);
+       RType_combo2.setModel(RoomTypeListModel2); 
+         
+      
+       
+     }
+     
+     
+     public void reset(){
+         
+         RType_combo.setSelectedIndex(-1);
+         RType_combo2.setSelectedIndex(-1);
+         RNo_Combo.setSelectedIndex(-1);
+         id_detail.setText(null);
+         e_checkin_text.setText(null);
+         e_checkout_date.setText(null);
+         
+         BillName.setText(null);
+        
+         yes.setSelected(true);
+         RT_Chng.setSelected(false);
+         id_detail.setText(null);
+         BillName.setText(null);
+         chk_panel.setVisible(false);
+         check_IN.setText(null);
+         check_OUT.setText(null);
+         Room_Nos_list = new ArrayList<Object>();
+         RoomNoListModel2 = new Room_Nos_Model(Room_Nos_list);
+         jList1.setModel(RoomNoListModel2);  
+         check_IN.setVisible(false);
+         check_OUT.setVisible(false);
+         tariff_panrl2.setVisible(false);
+         RoomNo="";
+         
+         
+         
+     }
+     
+     
+     
+     public Double getGuestRoomCharges(String RoomType) throws BasicException{
+         CheckInTable_Model = CheckInTableModel.LoadGuestRoomTariff(m_App, RoomType);
+         GuestRoomTariffDetailList  =  (List<CheckInTableModel.RoomTariffInfo>) CheckInTable_Model.getGuestRoomTariff();
+         CheckInTableModel.RoomTariffInfo Tariff_D = (CheckInTableModel.RoomTariffInfo) ((CheckInTableModel.RoomTariffInfo)GuestRoomTariffDetailList.get(0));
+         Double rate ;
+         if(MemberFlag==1){
+           rate = Tariff_D.getMEM_Tariff();  
+         } 
+         else{
+           rate = Tariff_D.getN_MEM_Tariff(); 
+         }
+         
+         int No_of_Days = No_of_days;
+         int no_of_Booked_rooms = No_of_rooms_Bkd;
+        
+         Double Temp_1 = rate*No_of_Days*no_of_Booked_rooms;                             // TEMP_1 (WITHOUT ANY TAX CONSIST OF BASIC TARIFF )
+        
+         Double Tax1_Rate = Tariff_D.getTAX1();
+         Double Tax2_Rate = Tariff_D.getTAX2();
+         Double Tax3_Rate = Tariff_D.getTAX3();
+        
+         Double Temp_2 = Temp_1 + ((Temp_1*Tax1_Rate));                              // TEMP_2 WITH BASIC TAX1 CALCULATED
+       
+                
+         int Tax2_Basic = Tariff_D.getBASIC1();
+         int Tax2_Cascade =Tariff_D.getCASCADE1();
+         int Tax3_Basic = Tariff_D.getBASIC1();
+         int Tax3_Cascade = Tariff_D.getCASCADE2();
+        
+         Double Temp_3;
+         
+         if(Tax2_Basic==1){
+            Temp_3 = ((Temp_1*Tax2_Rate));                                          // TEMP_3 WITH BASIC  OR CASCADE TAX 2     
+            Temp_3 = Temp_2 + Temp_3;
+         }
+         else{
+            Temp_3 = ((Temp_2*Tax2_Rate));
+            Temp_3 = Temp_2 + Temp_3;
+            
+         }
+        
+         Double Temp_4;
+        
+         if(Tax3_Basic==1){
+            Temp_4 = ((Temp_1*Tax3_Rate));                                          // TEMP_4 WITH BASIC  OR CASCADE TAX 3   
+            Temp_4 = Temp_3 + Temp_4;
+         }
+         else{
+            Temp_4 = ((Temp_3*Tax3_Rate));
+            Temp_4 = Temp_3 + Temp_4;
+         }
+        
+         Tot_Amount = Temp_4; 
+         return Tot_Amount;
+         
+         
+     }
+     
+     
+       public static  String x=""; 
+       public  void getRoomNoBooked(){
+           if(Room_Nos_list.size()>0){
+               for(int i=0;i<Room_Nos_list.size();i++){
+                    x = x+Room_Nos_list.get(i).toString()+"#";
+               }
+           }
+          
+       }
+      public static String getRoomNo(){
+         
+          String room = x;
+          return room;
+      }
+     
+     
+     //     METHOD FOR LIST1
+       private class Room_Nos_Model extends AbstractListModel {
+            private java.util.List RoomNo;
+                public Room_Nos_Model(java.util.List RNo) {
+                    this.RoomNo = RNo;
+                }
+                public int getSize() {
+                    return RoomNo.size();
+                }
+                public Object getElementAt(int i) {
+                    return RoomNo.get(i);
+                }
+                public void remove(int i) {
+                    RoomNo.remove(i);
+                }
+       }
+      // METHOD FOR LIST 2
+      private class Chk_out_Guest_model extends AbstractListModel {
+            private java.util.List Name;
+                public Chk_out_Guest_model(java.util.List Name) {
+                    this.Name = Name;
+                }
+                public int getSize() {
+                    return Name.size();
+                }
+                public Object getElementAt(int i) {
+                    return Name.get(i);
+                }
+                public void remove(int i) {
+                    Name.remove(i);
+                }
+       }
+       
+      
+      
+       public void showPanelInfo(GuestRoomCheckInTable GR_Check_In){
+          jTable1.setModel(GR_Check_In.getTableModel());
+       }
+       
+       
+       public Double getRoomServiceDetails(String GuestRmNO){
+                Double RoomBill = null;
+                RoomBill = GRS.getTotalBillAmt(m_App, GuestRmNO);
+                System.out.println(RoomBill);
+                return RoomBill;   
+       }
+       
+       
+       
+        public void ShowBillDetails(GuestRoomService GR_Service_detail){
+          jTable2.setModel(GR_Service_detail.getTableModel());
+       }
+       
+        
+      //GET BILL SEQUENCE ID  
+        private String getNextBillID() throws BasicException {
+        //praveen:sequencedetail:inserting id instead of names
+        String billnum;
+        //String uname=LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getName();
+        String createBy =  m_App.getAppUserView().getUser().getName();
+        String uname = LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getRole();
+        Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT SEQUENCEDETAIL.BSERIES,SEQUENCEDETAIL.BMAX FROM SEQUENCEDETAIL,PEOPLE P WHERE SEQUENCEDETAIL.USERNAME=? AND SEQUENCEDETAIL.CATEGORY=P.ROLE  AND P.NAME=? AND ACTIVE=TRUE", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.STRING, Datas.DOUBLE})).find(new Object[]{uname, createBy});
+        if (obj != null) {
+            Double max = Double.parseDouble(obj[1].toString());
+            max++;
+            billnum = obj[0].toString() + max.intValue();
+            new StaticSentence(m_App.getSession(), "UPDATE SEQUENCEDETAIL SET BMAX=?  WHERE ACTIVE=TRUE AND USERNAME = ?  AND CATEGORY=(SELECT ROLE FROM PEOPLE WHERE NAME=?) ", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE, Datas.STRING, Datas.STRING})).exec(new Object[]{max, uname, createBy});
+            return billnum;
+        } else {
+            JOptionPane.showMessageDialog(null, "Please Specify the Bill Series", "Cannot Create Bill", JOptionPane.OK_OPTION);
+            return "";
+        }
+        }
+     
+         
+        // UPDATE BILL SEQUENCE 
+         public void UpdateRSeries() throws BasicException{ 
+         
+           String billnum;
+           String uname=LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getRole();
+    
+           int x = new StaticSentence(m_App.getSession()
+                       // , "UPDATE SEQUENCEDETAIL SET BMAX=?  WHERE ACTIVE=TRUE AND USERNAME =(SELECT ROLES.NAME FROM ROLES,PEOPLE WHERE PEOPLE.NAME=? AND ROLES.ID=PEOPLE.ROLE) AND CATEGORY=(SELECT ROLES.NAME FROM ROLES,PEOPLE WHERE PEOPLE.NAME=? AND ROLES.ID=PEOPLE.ROLE) "
+                  , "UPDATE SEQUENCEDETAIL SET BMAX=BMAX+1 WHERE ACTIVE=TRUE AND USERNAME = ?  AND CATEGORY=?"
+
+                  , new SerializerWriteBasic(new Datas[] {Datas.STRING,Datas.STRING }))
+                        .exec(new Object[] {uname,uname});
+         
+          }
+         
+              String BillID;
+              String Mem_No;
+              String Customer;
+              Date Chk_in;
+              Date Chk_Out;
+              Double Rate;
+              Double Tax_total;
+              String Rm_Serv_ID = "";
+              Double Rm_Serv_Amt;
+              Double Advnce_Recv;
+              int paid;
+              String Reciept;
+              String Room_No;
+              String narrations;
+              Double bal_amt;
+              String Tax1_N;
+              String Tax2_N;
+              String Tax3_N;
+              String BillingName;
+              String Id_Details;
+              int no_of_romms;
+              String RoomType;
+              
+         public void Generate_GuestRoomBill() throws BasicException{
+              
+              
+              Mem_No = mno.getText();
+              Customer = GR_CheckIn_Detail.getCustomerID(m_App, Mem_No);
+              
+              if(MemberFlag!=1){
+                   Customer = Customer +"#"+ guest_name_label.getText();
+              }
+              
+              Chk_in = (Date) Formats.DATE.parseValue(date1.getText());
+              Chk_Out = (Date) Formats.DATE.parseValue(date2.getText());
+              
+              Rate = Double.parseDouble(charges.getText());
+              Tax_total = Double.parseDouble(taxamt.getText());
+              
+              Rm_Serv_Amt = Double.parseDouble(roomCharges.getText());
+              Advnce_Recv = Double.parseDouble(advnce_recv.getText());
+              BillingName = Biiling_name_label.getText();
+              
+              BillID = getNextBillID();
+                
+              Room_No = roomNo_Label1.getText();
+              No_of_days = Integer.parseInt(days.getText());
+              RoomType = room_type_label.getText();
+             
+              Double tot_charge = Double.parseDouble(tot_chrge.getText());
+             // bal_amt = (Advnce_Recv-tot_charge);
+              bal_amt = Double.parseDouble(bal_amount_label.getText());
+              
+              String link_N = link_name_label.getText();
+              
+              try{
+                       GRS = GuestRoomService.load_Curr_Bills(m_App, link_N);
+                   }
+                    catch (BasicException ex) {
+                          Logger.getLogger(hallTableModel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        BillInfoList = (List<GuestRoomService.BillInfo>) GRS.getBillInfo_Path();
+                        if(BillInfoList==null){
+                             BillInfoList = new ArrayList<GuestRoomService.BillInfo>();
+                        }
+              
+              for(int i=0;i<BillInfoList.size();i++){          
+                        GuestRoomService.BillInfo getData = GRS.getBillInfo_Path().get(i);
+                        Rm_Serv_ID = Rm_Serv_ID + getData.getID()+"#"+getData.getPLACE()+"#"+getData.getAMOUNT()+"#";
+               }
+              if(BillInfoList.size()<=0){
+                  Rm_Serv_ID = null;
+              }
+              
+              Transaction t = new Transaction(m_App.getSession()) {
+             
+                    @Override
+                    protected Object transact() throws BasicException {
+                       
+                            int insert_Bill  =  new PreparedSentence(m_App.getSession(), "INSERT INTO guestroom_bill (ID , CUSTOMER , ROOM_NO , CHK_IN , CHK_OUT ,RATE , TAX_TOTAL , RM_SERV_ID , RM_SERV_AMT , ADVNCE_RECV  , PAID ,  RECIEPT , CRBY , CRDATE , CRHOST , NARRATIONS , PARENTID , TAX1 , TAX2 , TAX3 , BILLNAME , ID_DETAIL , No_OF_ROOMS , NO_OF_DAYS , ROOMTYPE) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                                                                      , new SerializerWriteBasic(new Datas[]{ Datas.STRING ,Datas.STRING , Datas.STRING , Datas.TIMESTAMP , Datas.TIMESTAMP ,Datas.DOUBLE , Datas.DOUBLE , Datas.STRING , Datas.DOUBLE , Datas.DOUBLE , Datas.INT , Datas.STRING , Datas.STRING , Datas.TIMESTAMP , Datas.STRING  , Datas.STRING , Datas.STRING , Datas.STRING,Datas.STRING,Datas.STRING,Datas.STRING,Datas.STRING, Datas.INT , Datas.INT , Datas.STRING})).exec
+                                                                       (new Object[]{BillID ,Customer ,Room_No ,Chk_in,Chk_Out,Rate,Tax_total ,Rm_Serv_ID,Rm_Serv_Amt,Advnce_Recv ,paid ,Reciept, m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() , narrations , CheckIn_ID , Tax1_N , Tax2_N , Tax3_N , BillingName , Id_Details , no_of_romms , No_of_days ,RoomType }); 
+
+                             
+                            int x = new StaticSentence(m_App.getSession(), "UPDATE guestroom_checkin SET ACTIVE=0 WHERE ID=?"
+                                                                        , new SerializerWriteBasic(new Datas[] {Datas.STRING })).exec(new Object[] {CheckIn_ID});
+
+                             
+                            int y = new StaticSentence(m_App.getSession(), "UPDATE guestroom_advance_payment SET BAL_AMT=? WHERE ID=?"
+                                                                        , new SerializerWriteBasic(new Datas[] {Datas.DOUBLE , Datas.STRING })).exec(new Object[] {bal_amt , Advnce_Recv_ID});
+
+                          
+                           
+                           
+                            
+                             return null;
+                          }
+                         };
+                   
+                            try {
+                                    t.execute();
+                                    JOptionPane.showMessageDialog(this, "Bill Generated Sucsessfully..!!", "Success", JOptionPane.INFORMATION_MESSAGE);  
+                                    bill_id_label.setText(BillID);
+                                    Launch_Bill();
+                                    
+                            } catch (BasicException ex) {
+                                    Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                                    new MessageInf(ex).show(new JFrame());
+                                }
+
+         }
+         
+         
+         
+      public void Launch_Bill(){
+         Date edate = new Date();
+          
+         Map reportparam = new HashMap();
+         reportparam.put("enddate", edate);
+        
+         DataSourceProvider data1 = new DataSourceProvider();
+         DataSourceForGuestRoomCheckIN ds= null;
+         
+         String RmNo = roomNo_Label1.getText();
+         String bill_id = bill_id_label.getText();
+         String linkname = link_name_label.getText();
+         
+         
+             try {
+                GRBillModel = GuestRoomBillModel.LoadGuestRoomCheckInDetail(m_App, linkname , bill_id);
+             } catch (BasicException ex) {
+                      Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+              }
+             GR_BillList  =  (List<GuestRoomBillModel.RoomAdvInfo>) GRBillModel.getGuestRoomPath();
+           
+         ds = new DataSourceForGuestRoomCheckIN(GR_BillList);
+         data1.setDataSource(ds);
+         
+         JasperPrint jp = JasperReportNew.runReport(m_App , "./reports/com/openbravo/reports/GuestRm.jrxml", reportparam, false, data1, true, "GuestRoomBill");
+           
+        
+         
+         
+         
+      }   
+        
+}

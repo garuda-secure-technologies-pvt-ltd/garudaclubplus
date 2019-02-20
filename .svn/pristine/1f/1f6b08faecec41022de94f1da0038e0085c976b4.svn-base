@@ -1,0 +1,1790 @@
+
+package com.openbravo.pos.Booking;
+
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.gui.ComboBoxValModel;
+import com.openbravo.data.gui.MessageInf;
+import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.PreparedSentence;
+import com.openbravo.data.loader.SerializerReadBasic;
+import com.openbravo.data.loader.SerializerWriteBasic;
+import com.openbravo.data.loader.StaticSentence;
+import com.openbravo.data.loader.Transaction;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.clubmang.DataSourceProvider;
+import com.openbravo.pos.clubmang.JasperReportNew;
+import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.BeanFactoryApp;
+import com.openbravo.pos.forms.BeanFactoryException;
+import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.LookupUtilityImpl;
+import java.awt.Color;
+import java.awt.Component;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.TableCellRenderer;
+import net.sf.jasperreports.engine.JasperPrint;
+
+
+public class Hall_Check_In extends javax.swing.JPanel implements JPanelView,BeanFactoryApp{
+    private AppView m_App;
+    java.util.List<Object> Mem_list = new ArrayList<Object>();
+    java.util.List<Object> Guest_list = new ArrayList<Object>();
+    private ComboBoxValModel Memlist_model ;
+    private ComboBoxValModel GuestList_model;
+    DecimalFormat decimalFormat = new DecimalFormat("#.##");
+    private AdvanceRecieveTableModel AdvanceRecv;
+    private CheckInTableModel CheckInTable_Model;
+    private List<CheckInTableModel.Hall_AdvInfo> HallDetailList;
+    private HallCheckInTable Hall_CheckIn_Detail ; 
+    private HallBillModel hallbill_Model;
+    private List<HallBillModel.HallBillInfo> hall_Bill_list;
+    
+    
+    public Hall_Check_In() {
+        initComponents();
+        main_panel.setVisible(true);
+        Gname_Combo.setSelectedIndex(-1);
+        slot_panel.setVisible(false);
+        tariff_panel.setVisible(false);
+        hallname_label.setVisible(false);
+        
+        
+    }
+
+    
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        main_panel = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable(){public Component prepareRenderer(TableCellRenderer renderer,
+            int rowIndex, int vColIndex) {
+            Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
+            if (c instanceof JComponent) {
+                JComponent jc = (JComponent)c;
+                jc.setToolTipText(String.valueOf(getValueAt(rowIndex, vColIndex)));
+
+                if (rowIndex % 2 == 0 && !isCellSelected(rowIndex, vColIndex)) {
+                    jc.setBackground(Color.lightGray);
+                }
+                else {
+                    jc.setBackground(Color.white);
+                }
+                if(isCellSelected(rowIndex, vColIndex))
+                jc.setBackground(Color.cyan);
+            }
+            return c;
+        }};
+        chk_out_btn = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
+        save = new javax.swing.JButton();
+        Cancel = new javax.swing.JButton();
+        tariff_panel = new javax.swing.JPanel();
+        jLabel29 = new javax.swing.JLabel();
+        AdvRec_label = new javax.swing.JLabel();
+        jLabel32 = new javax.swing.JLabel();
+        totC_label = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel33 = new javax.swing.JLabel();
+        due_label = new javax.swing.JLabel();
+        hall_name_label = new javax.swing.JLabel();
+        mem = new javax.swing.JRadioButton();
+        nonmem = new javax.swing.JRadioButton();
+        jLabel22 = new javax.swing.JLabel();
+        Gname_Combo = new javax.swing.JComboBox();
+        jLabel27 = new javax.swing.JLabel();
+        BillName = new javax.swing.JTextField();
+        jLabel28 = new javax.swing.JLabel();
+        id_detail = new javax.swing.JTextField();
+        advance_id_label = new javax.swing.JLabel();
+        jLabel46 = new javax.swing.JLabel();
+        slot_panel = new javax.swing.JPanel();
+        memNo = new javax.swing.JLabel();
+        MemNo_label = new javax.swing.JLabel();
+        memNo2 = new javax.swing.JLabel();
+        slot_label = new javax.swing.JLabel();
+        memNo3 = new javax.swing.JLabel();
+        booked_date_label = new javax.swing.JLabel();
+        tax1_label = new javax.swing.JLabel();
+        tax2_label = new javax.swing.JLabel();
+        tax3_label = new javax.swing.JLabel();
+        member_ID_label = new javax.swing.JLabel();
+        hall_id_label = new javax.swing.JLabel();
+        hallname_label = new javax.swing.JLabel();
+        bill_panel = new javax.swing.JPanel();
+        jLabel47 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
+        jSeparator4 = new javax.swing.JSeparator();
+        jSeparator3 = new javax.swing.JSeparator();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
+        jSeparator7 = new javax.swing.JSeparator();
+        jSeparator8 = new javax.swing.JSeparator();
+        jSeparator11 = new javax.swing.JSeparator();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel451 = new javax.swing.JLabel();
+        slot_time_label = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        rate = new javax.swing.JLabel();
+        charges = new javax.swing.JLabel();
+        tax_total_label = new javax.swing.JLabel();
+        tot_label = new javax.swing.JLabel();
+        hall_serv_chrg_label = new javax.swing.JLabel();
+        tot_chrge = new javax.swing.JLabel();
+        advnce_recv_label = new javax.swing.JLabel();
+        dueamnt_label = new javax.swing.JLabel();
+        tax_rate = new javax.swing.JLabel();
+        slot_book_label = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        mno_label = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        guest_name_label = new javax.swing.JLabel();
+        cancel = new javax.swing.JButton();
+        submit = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jLabel41 = new javax.swing.JLabel();
+        Hall_N_Label = new javax.swing.JLabel();
+        jLabel42 = new javax.swing.JLabel();
+        mem_name_label = new javax.swing.JLabel();
+        jLabel44 = new javax.swing.JLabel();
+        Biiling_name_label = new javax.swing.JLabel();
+        bill_id_label = new javax.swing.JLabel();
+        link_name_label = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        Date_label = new javax.swing.JLabel();
+        advance_Recv_label = new javax.swing.JLabel();
+        basic2_label = new javax.swing.JLabel();
+        basic1_label = new javax.swing.JLabel();
+        slot_flag_label = new javax.swing.JLabel();
+        tax1_rate_label = new javax.swing.JLabel();
+        tax2_rate_label = new javax.swing.JLabel();
+        tax3_rate_label = new javax.swing.JLabel();
+        checkin_id_label = new javax.swing.JLabel();
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        chk_out_btn.setText("Check  Out");
+        chk_out_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chk_out_btnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(chk_out_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(138, 138, 138))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 836, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(80, 80, 80)
+                .addComponent(chk_out_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(127, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Check in List", jPanel1);
+
+        save.setText("Submit");
+        save.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveActionPerformed(evt);
+            }
+        });
+
+        Cancel.setText("Cancel");
+        Cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CancelActionPerformed(evt);
+            }
+        });
+
+        tariff_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel29.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel29.setText("Advance Recieved :");
+
+        AdvRec_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        AdvRec_label.setText("Unknown");
+
+        jLabel32.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel32.setText("Total Charge : ");
+
+        totC_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        totC_label.setText("Unknown");
+
+        jLabel2.setText("-----------------------------------------------------------");
+
+        jLabel33.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel33.setText("Due Amount :");
+
+        due_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        due_label.setText("Unknown");
+
+        javax.swing.GroupLayout tariff_panelLayout = new javax.swing.GroupLayout(tariff_panel);
+        tariff_panel.setLayout(tariff_panelLayout);
+        tariff_panelLayout.setHorizontalGroup(
+            tariff_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(tariff_panelLayout.createSequentialGroup()
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 67, Short.MAX_VALUE))
+            .addGroup(tariff_panelLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(tariff_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel32)
+                    .addGroup(tariff_panelLayout.createSequentialGroup()
+                        .addComponent(jLabel33)
+                        .addGap(46, 46, 46)
+                        .addComponent(due_label))
+                    .addGroup(tariff_panelLayout.createSequentialGroup()
+                        .addComponent(jLabel29)
+                        .addGap(18, 18, 18)
+                        .addGroup(tariff_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(totC_label)
+                            .addComponent(AdvRec_label))))
+                .addContainerGap(99, Short.MAX_VALUE))
+        );
+        tariff_panelLayout.setVerticalGroup(
+            tariff_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(tariff_panelLayout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addGroup(tariff_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel32)
+                    .addComponent(totC_label))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(tariff_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel29)
+                    .addComponent(AdvRec_label))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(tariff_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel33)
+                    .addComponent(due_label))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        AdvRec_label.setForeground(Color.RED);
+        totC_label.setForeground(Color.RED);
+        due_label.setForeground(Color.RED);
+
+        hall_name_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        hall_name_label.setText("Hall Name :");
+
+        mem.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        mem.setText("Member");
+        mem.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                memItemStateChanged(evt);
+            }
+        });
+
+        nonmem.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        nonmem.setText("Guest");
+        nonmem.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                nonmemItemStateChanged(evt);
+            }
+        });
+
+        jLabel22.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel22.setText("Select Name : ");
+
+        Gname_Combo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { }));
+        Gname_Combo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                Gname_ComboItemStateChanged(evt);
+            }
+        });
+
+        jLabel27.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel27.setText("Billing Name :");
+
+        jLabel28.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel28.setText("ID Card Detail : ");
+
+        advance_id_label.setText("jLabel5");
+
+        jLabel46.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel46.setText("Hall Check In Menu");
+
+        slot_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        memNo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        memNo.setText("Member No :");
+
+        MemNo_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        MemNo_label.setText("Mem No");
+
+        memNo2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        memNo2.setText("Slot Booked :");
+
+        slot_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        slot_label.setText("jLabel4");
+
+        memNo3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        memNo3.setText("Booking Date :");
+
+        booked_date_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        booked_date_label.setText("Booking Date");
+
+        javax.swing.GroupLayout slot_panelLayout = new javax.swing.GroupLayout(slot_panel);
+        slot_panel.setLayout(slot_panelLayout);
+        slot_panelLayout.setHorizontalGroup(
+            slot_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(slot_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(slot_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(memNo)
+                    .addComponent(memNo2)
+                    .addComponent(memNo3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(slot_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(booked_date_label)
+                    .addComponent(MemNo_label)
+                    .addComponent(slot_label))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        slot_panelLayout.setVerticalGroup(
+            slot_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(slot_panelLayout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addGroup(slot_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(memNo)
+                    .addComponent(MemNo_label))
+                .addGap(18, 18, 18)
+                .addGroup(slot_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(memNo3)
+                    .addComponent(booked_date_label))
+                .addGap(18, 18, Short.MAX_VALUE)
+                .addGroup(slot_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(memNo2)
+                    .addComponent(slot_label))
+                .addGap(24, 24, 24))
+        );
+
+        MemNo_label.setForeground(Color.RED);
+        slot_label.setForeground(Color.BLUE);
+        MemNo_label.setForeground(Color.RED);
+
+        tax1_label.setText("jLabel1");
+
+        tax2_label.setText("jLabel3");
+
+        tax3_label.setText("jLabel4");
+
+        member_ID_label.setText("jLabel5");
+
+        hall_id_label.setText("jLabel1");
+
+        hallname_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        hallname_label.setText("jLabel20");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(Cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(save, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(14, 14, 14))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(advance_id_label)
+                            .addComponent(tax1_label)
+                            .addComponent(tax2_label)
+                            .addComponent(tax3_label)
+                            .addComponent(member_ID_label)
+                            .addComponent(hall_id_label)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel28)
+                                    .addComponent(jLabel27)
+                                    .addComponent(hall_name_label))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(BillName, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(id_detail, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(hallname_label, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(18, 217, Short.MAX_VALUE)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(mem)
+                                .addGap(18, 18, 18)
+                                .addComponent(nonmem, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel4Layout.createSequentialGroup()
+                                    .addComponent(jLabel22)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(Gname_Combo, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(slot_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(tariff_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap(41, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(268, Short.MAX_VALUE)
+                .addComponent(jLabel46, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(132, 132, 132))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel46)
+                .addGap(10, 10, 10)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(mem)
+                    .addComponent(nonmem))
+                .addGap(41, 41, 41)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel22)
+                    .addComponent(Gname_Combo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(hall_name_label)
+                    .addComponent(hallname_label))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(68, 68, 68)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel27)
+                            .addComponent(BillName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel28)
+                            .addComponent(id_detail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(33, 33, 33)
+                        .addComponent(advance_id_label)
+                        .addGap(18, 18, 18)
+                        .addComponent(tax1_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tax2_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tax3_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(member_ID_label)
+                        .addGap(18, 18, 18)
+                        .addComponent(hall_id_label))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(slot_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
+                        .addComponent(tariff_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(39, 39, 39)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(save)
+                    .addComponent(Cancel))
+                .addContainerGap(43, Short.MAX_VALUE))
+        );
+
+        save.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png"))); // NOI18N
+        Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel2.png"))); // NOI18N
+        advance_id_label.setVisible(false);
+        advance_id_label.setForeground(Color.BLUE);
+        tax1_label.setVisible(false);
+        tax2_label.setVisible(false);
+        tax3_label.setVisible(false);
+        member_ID_label.setVisible(false);
+        hall_id_label.setVisible(false);
+        hallname_label.setForeground(Color.BLUE);
+
+        jTabbedPane1.addTab("Check In", jPanel4);
+
+        javax.swing.GroupLayout main_panelLayout = new javax.swing.GroupLayout(main_panel);
+        main_panel.setLayout(main_panelLayout);
+        main_panelLayout.setHorizontalGroup(
+            main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(main_panelLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 865, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(96, Short.MAX_VALUE))
+        );
+        main_panelLayout.setVerticalGroup(
+            main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(main_panelLayout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 583, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel47.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel47.setText("Bill Menu");
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jSeparator1.setBackground(new java.awt.Color(0, 51, 51));
+        jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
+
+        jSeparator2.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator2.setForeground(new java.awt.Color(0, 0, 0));
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jSeparator4.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator4.setForeground(new java.awt.Color(0, 0, 0));
+        jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jSeparator3.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator3.setForeground(new java.awt.Color(0, 0, 0));
+        jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel6.setText("Details");
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel8.setText("Rate");
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel9.setText("Amount");
+
+        jSeparator5.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator5.setForeground(new java.awt.Color(0, 0, 0));
+
+        jSeparator7.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator7.setForeground(new java.awt.Color(0, 0, 0));
+
+        jSeparator8.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator8.setForeground(new java.awt.Color(0, 0, 0));
+
+        jSeparator11.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator11.setForeground(new java.awt.Color(0, 0, 0));
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel11.setText("Taxes");
+
+        jLabel451.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel451.setText("Slot Booked : ");
+
+        slot_time_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        slot_time_label.setText("Date1");
+
+        jLabel15.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel15.setText("Total ");
+
+        jLabel16.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel16.setText("Hall Service Charges ");
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel17.setText("Total ");
+
+        jLabel18.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel18.setText("Total Amount Payble");
+
+        jLabel19.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel19.setText("Advance Bal. Amount");
+
+        rate.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        rate.setText("Rate");
+
+        charges.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        charges.setText("Amt1");
+
+        tax_total_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tax_total_label.setText("Amt2");
+
+        tot_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tot_label.setText("Amt3");
+
+        hall_serv_chrg_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        hall_serv_chrg_label.setText("Amt4");
+
+        tot_chrge.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tot_chrge.setText("Amt5");
+
+        advnce_recv_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        advnce_recv_label.setText("Amt6");
+
+        dueamnt_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        dueamnt_label.setText("Final Amt");
+
+        tax_rate.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tax_rate.setText("Amt2");
+
+        slot_book_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        slot_book_label.setText("Date1");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel451)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(slot_book_label))
+                            .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(slot_time_label))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(77, 77, 77)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
+                .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel8))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tax_rate)
+                            .addComponent(rate))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(25, 25, 25)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(tax_total_label)
+                                    .addComponent(charges)
+                                    .addComponent(tot_label)
+                                    .addComponent(hall_serv_chrg_label)
+                                    .addComponent(tot_chrge)
+                                    .addComponent(advnce_recv_label))))
+                        .addGap(22, 22, 22))
+                    .addComponent(jSeparator11)))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(dueamnt_label)
+                .addContainerGap())
+            .addComponent(jSeparator1)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel9))
+                        .addGap(21, 21, 21)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSeparator11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel451)
+                                    .addComponent(slot_book_label))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(slot_time_label)
+                                .addGap(52, 52, 52)
+                                .addComponent(jLabel11)
+                                .addGap(40, 40, 40)
+                                .addComponent(jLabel15)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel16)
+                                .addGap(25, 25, 25)
+                                .addComponent(jLabel17)
+                                .addGap(29, 29, 29)
+                                .addComponent(jLabel19))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(34, 34, 34)
+                                .addComponent(rate)
+                                .addGap(60, 60, 60)
+                                .addComponent(tax_rate))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(34, 34, 34)
+                                .addComponent(charges)
+                                .addGap(60, 60, 60)
+                                .addComponent(tax_total_label)
+                                .addGap(40, 40, 40)
+                                .addComponent(tot_label)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(hall_serv_chrg_label)
+                                .addGap(25, 25, 25)
+                                .addComponent(tot_chrge)
+                                .addGap(30, 30, 30)
+                                .addComponent(advnce_recv_label))))
+                    .addComponent(jSeparator3, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
+                    .addComponent(jSeparator4)
+                    .addComponent(jSeparator2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(dueamnt_label))
+                .addContainerGap(16, Short.MAX_VALUE))
+        );
+
+        slot_time_label.setForeground(Color.BLUE);
+        charges.setForeground(Color.BLUE);
+        tax_total_label.setForeground(Color.BLUE);
+        tot_label.setForeground(Color.BLUE);
+        hall_serv_chrg_label.setForeground(Color.BLUE);
+        tot_chrge.setForeground(Color.BLUE);
+        advnce_recv_label.setForeground(Color.RED);
+        slot_book_label.setForeground(Color.BLUE);
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel10.setText("Member No : ");
+
+        mno_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        mno_label.setText("jLabel11");
+
+        jLabel14.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel14.setText("Guest Name :");
+
+        guest_name_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        guest_name_label.setText("GName");
+
+        cancel.setText("Cancel");
+        cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelActionPerformed(evt);
+            }
+        });
+
+        submit.setText("Submit");
+        submit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Bill");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel41.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel41.setText("Hall Name :");
+
+        Hall_N_Label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        Hall_N_Label.setText("jLabel41");
+
+        jLabel42.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel42.setText("Member Name : ");
+
+        mem_name_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        mem_name_label.setText("jLabel11");
+
+        jLabel44.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel44.setText("Billing Name :");
+
+        Biiling_name_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        Biiling_name_label.setText("Bill Name");
+
+        bill_id_label.setText("jLabel48");
+
+        link_name_label.setText("jLabel48");
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel13.setText("Date :");
+
+        Date_label.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        Date_label.setText("Date2");
+
+        advance_Recv_label.setText("jLabel1");
+
+        basic2_label.setText("basic2");
+
+        basic1_label.setText("basic1");
+
+        slot_flag_label.setText("slot_flag");
+
+        tax1_rate_label.setText("jLabel1");
+
+        tax2_rate_label.setText("jLabel3");
+
+        tax3_rate_label.setText("jLabel4");
+
+        checkin_id_label.setText("check_in_id");
+
+        javax.swing.GroupLayout bill_panelLayout = new javax.swing.GroupLayout(bill_panel);
+        bill_panel.setLayout(bill_panelLayout);
+        bill_panelLayout.setHorizontalGroup(
+            bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bill_panelLayout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cancel)
+                    .addComponent(basic2_label)
+                    .addComponent(basic1_label)
+                    .addComponent(slot_flag_label)
+                    .addComponent(checkin_id_label))
+                .addGap(20, 20, 20)
+                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1)
+                            .addComponent(submit)
+                            .addComponent(bill_id_label)
+                            .addComponent(link_name_label)
+                            .addComponent(advance_Recv_label)
+                            .addComponent(tax1_rate_label)
+                            .addComponent(tax2_rate_label)
+                            .addComponent(tax3_rate_label))
+                        .addContainerGap())
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel42)
+                            .addComponent(jLabel44))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(bill_panelLayout.createSequentialGroup()
+                                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(bill_panelLayout.createSequentialGroup()
+                                        .addComponent(mno_label)
+                                        .addGap(99, 99, 99)
+                                        .addComponent(jLabel41)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(Hall_N_Label))
+                                    .addComponent(Biiling_name_label))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(bill_panelLayout.createSequentialGroup()
+                                        .addComponent(jLabel13)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(Date_label))
+                                    .addGroup(bill_panelLayout.createSequentialGroup()
+                                        .addComponent(jLabel14)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(guest_name_label)))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(bill_panelLayout.createSequentialGroup()
+                                .addComponent(mem_name_label)
+                                .addGap(0, 0, Short.MAX_VALUE))))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bill_panelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel47, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(188, 188, 188))
+        );
+        bill_panelLayout.setVerticalGroup(
+            bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bill_panelLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jLabel47)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addComponent(checkin_id_label)
+                        .addGap(33, 33, 33)
+                        .addComponent(basic1_label)
+                        .addGap(15, 15, 15)
+                        .addComponent(basic2_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(slot_flag_label)
+                        .addGap(53, 53, 53)
+                        .addComponent(cancel))
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(mno_label)
+                            .addComponent(jLabel14)
+                            .addComponent(guest_name_label)
+                            .addComponent(jLabel41)
+                            .addComponent(Hall_N_Label))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel42)
+                            .addComponent(mem_name_label)
+                            .addComponent(jLabel13)
+                            .addComponent(Date_label))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(bill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel44)
+                            .addComponent(Biiling_name_label))
+                        .addGap(4, 4, 4)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(bill_panelLayout.createSequentialGroup()
+                        .addComponent(tax1_rate_label)
+                        .addGap(18, 18, 18)
+                        .addComponent(tax2_rate_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tax3_rate_label)
+                        .addGap(32, 32, 32)
+                        .addComponent(advance_Recv_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(link_name_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(bill_id_label)
+                        .addGap(27, 27, 27)
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(submit)))
+                .addContainerGap(24, Short.MAX_VALUE))
+        );
+
+        jLabel451.setForeground(Color.BLUE);
+        mno_label.setForeground(Color.BLUE);
+        guest_name_label.setForeground(Color.BLUE);
+        Hall_N_Label.setForeground(Color.BLUE);
+        mem_name_label.setForeground(Color.BLUE);
+        Biiling_name_label.setForeground(Color.BLUE);
+        bill_id_label.setVisible(false);
+        link_name_label.setVisible(false);
+        Date_label.setForeground(Color.BLUE);
+        advance_Recv_label.setVisible(false);
+        basic2_label.setVisible(false);
+        basic1_label.setVisible(false);
+        slot_flag_label.setVisible(false);
+        //tax1_rate_label.setVisible(false);
+        //tax2_rate_label.setVisible(false);
+        //tax3_rate_label.setVisible(false);
+        checkin_id_label.setVisible(false);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(main_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bill_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(119, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(main_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bill_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 11, Short.MAX_VALUE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    String MemberName;
+    String MemberNo;
+    String GuestName;
+    String SlotTimings;
+    String Slot_Booked;
+    String BillingName;
+    String Id_Card_Details;
+    String HallName;
+    String advanceId;
+    Double Charges;
+    Double TotalAmount;
+    Double Tax_total;
+    Double Advance_Recv;
+    Double DueAmt;
+    String BookingID;
+    String Tax1;
+    String Tax2;
+    String Tax3;
+    String Member_ID;
+    int MemberFlag;
+    int Active;
+    String Reciept_No;
+    Date Booking_Date;
+    String Hall_Name_ID;
+    Double Tax1_rate;
+    Double Tax2_rate;
+    Double Tax3_rate;
+    Double Hall_Serv_Chrg;
+    String Hall_serv_ID;
+    int Basic1;
+    int Basic2;
+    int Slot_Flag;
+    String Bill_ID;
+    String Customer;
+    int Paid;
+    String Narrations;
+    String Check_in_ID;
+    
+    
+    
+    private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
+        if(Gname_Combo.getSelectedIndex()!=-1){
+            if(id_detail.getText()!=null && id_detail.getText().trim().length()>0){
+           
+               int x = JOptionPane.showConfirmDialog(main_panel, "Do You Want to Check In..?? ");
+                       if( x  == JOptionPane.YES_OPTION){
+        
+                       Member_ID =  member_ID_label.getText();
+                       advanceId = advance_id_label.getText();
+                       MemberNo = MemNo_label.getText();
+                       SlotTimings = slot_label.getText();
+                       HallName = hallname_label.getText();
+                       TotalAmount = Double.parseDouble(totC_label.getText());
+                       Advance_Recv = Double.parseDouble(AdvRec_label.getText());
+                       Tax1 = tax1_label.getText();
+                       Tax2 = tax2_label.getText();
+                       Tax3 = tax3_label.getText();
+                   
+                       
+                       try {                       
+                          Booking_Date = (Date) Formats.TIMESTAMP.parseValue(booked_date_label.getText());
+                          } catch (BasicException ex) {
+                                 Logger.getLogger(Hall_Check_In.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                       
+                       if(BillName.getText()!=null && BillName.getText().trim().length()>0){
+                           BillingName = BillName.getText();
+                       }else{
+                           if(MemberFlag ==1){
+                               BillingName = MemberName;
+                           }
+                           else{
+                               BillingName = GuestName;
+                           }
+                       }
+                       
+                       Id_Card_Details = id_detail.getText();
+                       
+                       Active=1;
+                       Hall_Name_ID = hall_id_label.getText();
+                       
+                       
+                    Transaction t = new Transaction(m_App.getSession()) {
+             
+                    @Override
+                    protected Object transact() throws BasicException {
+                       
+                     
+                         
+                           
+                           int copy_hall_to_hall_cancel_request  =  new PreparedSentence(m_App.getSession(), "INSERT INTO hall_check_in (ID , HALLNAME , MEMBERNAME , MEMBERNO , GUESTNAME ,SLOTBOOKED , ID_CARD , BILL_NAME , ADVNCE_RECV , TOT_AMT  , RECIEPT_NO ,  ADVNCE_ID , CRBY , CRDATE , CRHOST , TAX1 , TAX2 , TAX3 , ACTIVE , BOOKED_DATE ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                                                                      , new SerializerWriteBasic(new Datas[]{ Datas.STRING ,Datas.STRING ,Datas.STRING , Datas.STRING , Datas.STRING , Datas.STRING , Datas.STRING , Datas.STRING , Datas.DOUBLE , Datas.DOUBLE ,  Datas.STRING , Datas.STRING ,  Datas.STRING ,Datas.TIMESTAMP ,  Datas.STRING  , Datas.STRING  , Datas.STRING , Datas.STRING , Datas.INT , Datas.STRING})).exec
+                                                                       (new Object[]{UUID.randomUUID().toString() , Hall_Name_ID , MemberName , MemberNo , GuestName , SlotTimings , Id_Card_Details , BillingName , Advance_Recv , TotalAmount , Reciept_No , advanceId ,   m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() , Tax1 , Tax2  , Tax3 , Active , Booking_Date}); 
+
+                           
+                         
+                          
+                           
+                         
+                                int Adv_pmnt_table  =  new PreparedSentence(m_App.getSession(), "UPDATE hall_advance_payment  SET CHK_IN_FLAG=1  WHERE ID =  ?"
+                                                          , new SerializerWriteBasic(new Datas[]{Datas.STRING  })).exec
+                                                           (new Object[]{  advanceId  });
+
+                         
+                         
+                            return null;
+                          }
+                         };
+                   
+               
+               
+                            try {
+                                    t.execute();
+                                    JOptionPane.showMessageDialog(this, "Check In Done Sucsessfully..!!", "Success", JOptionPane.INFORMATION_MESSAGE);  
+                                    reset();
+                                    Gname_Combo.setSelectedIndex(-1);
+                                    loaddata();
+
+                                } catch (BasicException ex) {
+                                    Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                                    new MessageInf(ex).show(new JFrame());
+                                }
+
+                       
+            
+            
+            
+                       }
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Enter Id Card Details..!! ", " Error ", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        }
+        else{
+              JOptionPane.showMessageDialog(this, "Select Name First ..!! ", " Error ", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_saveActionPerformed
+
+    private void CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelActionPerformed
+        
+        reset();
+        Gname_Combo.setSelectedIndex(-1);
+        jTabbedPane1.setSelectedIndex(0);
+    }//GEN-LAST:event_CancelActionPerformed
+
+    private void memItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_memItemStateChanged
+        try {
+            loaddata();
+        } catch (BasicException ex) {
+            Logger.getLogger(Hall_Check_In.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_memItemStateChanged
+
+    private void nonmemItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_nonmemItemStateChanged
+      try {
+            loaddata();
+        } catch (BasicException ex) {
+            Logger.getLogger(Hall_Check_In.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_nonmemItemStateChanged
+
+    int flag;
+    
+    
+    
+    
+    private void Gname_ComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_Gname_ComboItemStateChanged
+        if(Gname_Combo.getSelectedIndex()!=-1){
+            
+           
+              if(mem.isSelected()){
+                String Name  = Gname_Combo.getSelectedItem().toString();
+                flag = 1;
+               
+                try {
+                    CheckInTable_Model = CheckInTableModel.LoadHallCheckInDetail(m_App, Name , flag);
+                } catch (BasicException ex) {
+                    Logger.getLogger(Hall_Check_In.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+            else{
+                String Name  = Gname_Combo.getSelectedItem().toString(); 
+                flag = 2;
+                try {
+                    CheckInTable_Model = CheckInTableModel.LoadHallCheckInDetail(m_App, Name , flag);
+                } catch (BasicException ex) {
+                    Logger.getLogger(Hall_Check_In.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                
+            }
+            
+            
+             HallDetailList =  (List<CheckInTableModel.Hall_AdvInfo>) CheckInTable_Model.getHallPath();
+             CheckInTableModel.Hall_AdvInfo editData = (CheckInTableModel.Hall_AdvInfo) ((CheckInTableModel.Hall_AdvInfo)HallDetailList.get(0)); 
+            
+            
+            MemNo_label.setText(editData.getMEMBER_NO());
+            slot_label.setText(editData.getSLOT_TIMMINGS());
+            hallname_label.setText(editData.getHALLNAME());
+            totC_label.setText(""+editData.getTOTAL_AMOUNT());
+            AdvRec_label.setText(""+editData.getADVANCE_RECV());
+            
+            Double Tot_amt = editData.getTOTAL_AMOUNT();
+            Double Advnce_Recv = editData.getADVANCE_RECV();
+            MemberFlag = editData.getMEMBER_FLAG();
+            Double Due_amt = (Tot_amt-Advnce_Recv);
+            hall_id_label.setText(editData.getHallName_ID());
+            
+            
+            if(Due_amt <0){
+                jLabel33.setText("Amount Refundable");
+                due_label.setText(decimalFormat.format(Due_amt));
+            }
+            else{
+                jLabel33.setText("Amount Payable");
+                due_label.setText(decimalFormat.format(Advnce_Recv-Tot_amt));
+            }
+            try {
+                Booking_Date = (Date) Formats.DATE.parseValue(editData.getCHECK_IN_DATE());
+            } catch (BasicException ex) {
+                Logger.getLogger(Hall_Check_In.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            String Temp_D = Formats.DATE.formatValue(Booking_Date);
+            booked_date_label.setText(Temp_D);
+            
+            advance_id_label.setText(editData.getADVANCE_ID());
+            member_ID_label.setText(editData.getMEMBER_ID());
+            tax1_label.setText(editData.getTAX1());
+            tax2_label.setText(editData.getTAX2());
+            tax3_label.setText(editData.getTAX3());
+            GuestName = editData.getGuestName();
+            MemberName = editData.getMEMBERNAME();
+            Reciept_No = editData.getRECIEPT_NO();
+            slot_panel.setVisible(true);
+            tariff_panel.setVisible(true); 
+            hallname_label.setVisible(true);
+        }
+        
+        else{
+            
+            
+            slot_panel.setVisible(false);
+            tariff_panel.setVisible(false);
+            hallname_label.setVisible(false);
+        }
+
+        
+    }//GEN-LAST:event_Gname_ComboItemStateChanged
+
+    private void chk_out_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chk_out_btnActionPerformed
+          if(jTable1.getSelectedRow()!=-1){
+              if(jTable1.getSelectedRow()<Hall_CheckIn_Detail.getSize()){
+                 int row = jTable1.getSelectedRow();
+                 HallCheckInTable.Hall_CheckIn_Info showdata = Hall_CheckIn_Detail.getHallList().get(row);  
+                  
+                 mno_label.setText(showdata.getMEMBERNO());
+                 mem_name_label.setText(showdata.getMEMBERNAME());
+                 Biiling_name_label.setText(showdata.getBILL_NAME());
+                 guest_name_label.setText(showdata.getGUEST_N());
+                 Date_label.setText(Formats.DATE.formatValue(showdata.getCHECK_IN_DATE()));
+                 slot_time_label.setText(showdata.getSLOT_BOOKED());
+                 rate.setText(""+showdata.getCHARGES());
+                 Hall_N_Label.setText(showdata.getHALLNAME());
+                 advnce_recv_label.setText(""+showdata.getADV_RECV());
+                 tot_chrge.setText(""+showdata.getTOT_AMT());
+                 charges.setText(""+showdata.getCHARGES());
+                 
+                 Reciept_No = showdata.getRECIEPT_NO();
+                 
+                 Double TaxRate1;
+                 Double TaxRate2;
+                 Double TaxRate3;
+                 
+                 if(showdata.getTAX1_RATE()!=null){
+                     TaxRate1 = showdata.getTAX1_RATE();
+                     tax1_rate_label.setText(""+showdata.getTAX1_RATE());
+                 }
+                 else{
+                     TaxRate1 = 0.00;
+                     tax1_rate_label.setText(""+TaxRate1);
+                 }
+                 
+                 
+                 if(showdata.getTAX2_RATE()!=null){
+                     TaxRate2 = showdata.getTAX2_RATE();
+                     tax2_rate_label.setText(""+showdata.getTAX2_RATE());
+                 }
+                 else{
+                     TaxRate2 = 0.00;
+                     tax2_rate_label.setText(""+TaxRate2);
+                 }
+                 
+                 
+                 if(showdata.getTAX3_RATE()!=null){
+                     TaxRate3 = showdata.getTAX3_RATE();
+                     tax3_rate_label.setText(""+showdata.getTAX3_RATE());
+                 }
+                 else{
+                     TaxRate3 = 0.00;
+                     tax3_rate_label.setText(""+TaxRate3);
+                 }
+                 
+              
+                 
+                 tax_rate.setText(""+(TaxRate1+TaxRate2+TaxRate3));
+                 
+                 
+                // tax_rate.setText(""+(showdata.getTAX1_RATE()+showdata.getTAX2_RATE()+showdata.getTAX3_RATE()));
+                 
+                 Double Tot_Tax = Double.parseDouble(tax_rate.getText());
+                 Double Tot_Charge = Double.parseDouble(charges.getText());
+                 tax_total_label.setText(""+(Tot_Tax*Tot_Charge));
+                 tot_label.setText(""+showdata.getTOT_AMT());
+                 hall_serv_chrg_label.setText("0.00");
+                 basic1_label.setText(""+showdata.getBASIC1());
+                 basic2_label.setText(""+showdata.getBASIC2());
+                 slot_flag_label.setText(""+showdata.getSLOT_FLAG());
+                 
+                 advance_Recv_label.setText(showdata.getADVANCE_ID());
+                 Id_Card_Details = showdata.getID_CARD();
+                 
+                 checkin_id_label.setText(showdata.getCHECK_IN_Id());
+                         
+                         
+                 int sf = showdata.getSLOT_FLAG();
+                 if(sf==1){
+                     slot_book_label.setText("( Hourly Booked )");
+                 }
+                 else if(sf==2){
+                      slot_book_label.setText("( Half Day )");
+                 }
+                 else{
+                      slot_book_label.setText("( Full Day )");
+                 }
+                 
+                
+                 
+                 if(showdata.getGUEST_N()!=null ){
+                     guest_name_label.setText(showdata.getGUEST_N());
+                     guest_name_label.setVisible(true);
+                     jLabel14.setVisible(true);
+                 }
+                 else{
+                     guest_name_label.setVisible(false);
+                     jLabel14.setVisible(false);
+                 }
+                 
+                 
+                 
+                 
+                 Double tot_Amt =showdata.getTOT_AMT();
+                 Double Advance_Recv = showdata.getADV_RECV();
+                 if(tot_Amt>=showdata.getADV_RECV()){
+                     Double AmountPayable = (tot_Amt)-(Advance_Recv);
+                      dueamnt_label.setText(decimalFormat.format(AmountPayable));
+                      dueamnt_label.setForeground(Color.red);
+                      jLabel18.setText("Amount Payable");
+                     
+                     
+                 }
+                 else{
+                     Double AmountRefundable = (Advance_Recv-tot_Amt);
+                      dueamnt_label.setText(decimalFormat.format(AmountRefundable));
+                      dueamnt_label.setForeground(Color.GREEN);
+                      jLabel18.setText("Amount Refundable");
+                     
+                     
+                     
+                 }
+                 
+              
+                 
+                 
+                 
+                 bill_panel.setVisible(true);
+                 main_panel.setVisible(false);
+                 
+              }
+          }
+          
+    }//GEN-LAST:event_chk_out_btnActionPerformed
+
+    private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
+        main_panel.setVisible(true);
+        bill_panel.setVisible(false);
+    }//GEN-LAST:event_cancelActionPerformed
+
+    private void submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitActionPerformed
+        
+        
+        
+    }//GEN-LAST:event_submitActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+      
+       int bill = JOptionPane.showConfirmDialog(main_panel, " Do you want to bill ?? ");
+       if(bill == JOptionPane.YES_OPTION)
+       {   
+      
+        
+               Generate_Hall_Bill();
+          
+         main_panel.setVisible(true);
+         bill_panel.setVisible(false);
+         
+        
+       }
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel AdvRec_label;
+    private javax.swing.JLabel Biiling_name_label;
+    private javax.swing.JTextField BillName;
+    private javax.swing.JButton Cancel;
+    private javax.swing.JLabel Date_label;
+    private javax.swing.JComboBox Gname_Combo;
+    private javax.swing.JLabel Hall_N_Label;
+    private javax.swing.JLabel MemNo_label;
+    private javax.swing.JLabel advance_Recv_label;
+    private javax.swing.JLabel advance_id_label;
+    private javax.swing.JLabel advnce_recv_label;
+    private javax.swing.JLabel basic1_label;
+    private javax.swing.JLabel basic2_label;
+    private javax.swing.JLabel bill_id_label;
+    private javax.swing.JPanel bill_panel;
+    private javax.swing.JLabel booked_date_label;
+    private javax.swing.JButton cancel;
+    private javax.swing.JLabel charges;
+    private javax.swing.JLabel checkin_id_label;
+    private javax.swing.JButton chk_out_btn;
+    private javax.swing.JLabel due_label;
+    private javax.swing.JLabel dueamnt_label;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.JLabel guest_name_label;
+    private javax.swing.JLabel hall_id_label;
+    private javax.swing.JLabel hall_name_label;
+    private javax.swing.JLabel hall_serv_chrg_label;
+    private javax.swing.JLabel hallname_label;
+    private javax.swing.JTextField id_detail;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
+    private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel41;
+    private javax.swing.JLabel jLabel42;
+    private javax.swing.JLabel jLabel44;
+    private javax.swing.JLabel jLabel451;
+    private javax.swing.JLabel jLabel46;
+    private javax.swing.JLabel jLabel47;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator11;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator7;
+    private javax.swing.JSeparator jSeparator8;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel link_name_label;
+    private javax.swing.JPanel main_panel;
+    private javax.swing.JRadioButton mem;
+    private javax.swing.JLabel memNo;
+    private javax.swing.JLabel memNo2;
+    private javax.swing.JLabel memNo3;
+    private javax.swing.JLabel mem_name_label;
+    private javax.swing.JLabel member_ID_label;
+    private javax.swing.JLabel mno_label;
+    private javax.swing.JRadioButton nonmem;
+    private javax.swing.JLabel rate;
+    private javax.swing.JButton save;
+    private javax.swing.JLabel slot_book_label;
+    private javax.swing.JLabel slot_flag_label;
+    private javax.swing.JLabel slot_label;
+    private javax.swing.JPanel slot_panel;
+    private javax.swing.JLabel slot_time_label;
+    private javax.swing.JButton submit;
+    private javax.swing.JPanel tariff_panel;
+    private javax.swing.JLabel tax1_label;
+    private javax.swing.JLabel tax1_rate_label;
+    private javax.swing.JLabel tax2_label;
+    private javax.swing.JLabel tax2_rate_label;
+    private javax.swing.JLabel tax3_label;
+    private javax.swing.JLabel tax3_rate_label;
+    private javax.swing.JLabel tax_rate;
+    private javax.swing.JLabel tax_total_label;
+    private javax.swing.JLabel totC_label;
+    private javax.swing.JLabel tot_chrge;
+    private javax.swing.JLabel tot_label;
+    // End of variables declaration//GEN-END:variables
+
+    public String getTitle() {
+        return "";
+    }
+
+    public void activate() throws BasicException {
+          loaddata();
+    }
+
+    public boolean deactivate() {
+      return true;
+    }
+
+    public JComponent getComponent() {
+      return this;
+    }
+
+    public void init(AppView app) throws BeanFactoryException {
+        
+       
+        this.m_App = app;
+        AdvanceRecv = (AdvanceRecieveTableModel) app.getBean("com.openbravo.pos.Booking.AdvanceRecieveTableModel");
+        
+        
+         buttonGoup();
+    }
+
+    public Object getBean() {
+       return this;
+    }
+    
+    
+     public void loaddata() throws BasicException{
+         
+       
+         
+        if(mem.isSelected()){
+          Mem_list = new ArrayList<Object>();
+          Mem_list =  AdvanceRecv.getMemListFromHall(m_App);
+          Memlist_model = new ComboBoxValModel(Mem_list);
+          Gname_Combo.setModel(Memlist_model);
+          
+          } 
+        if(nonmem.isSelected()){
+          Guest_list = new ArrayList<Object>();
+          Guest_list =AdvanceRecv.getGuestListFromHall(m_App);
+          GuestList_model = new ComboBoxValModel(Guest_list);
+          Gname_Combo.setModel(GuestList_model);
+        }
+       
+          Hall_CheckIn_Detail = HallCheckInTable.loadCheckIn_Data(m_App);
+          showPanelInfo(Hall_CheckIn_Detail );
+         
+     }
+     
+      private void buttonGoup() {
+       ButtonGroup bg1 = new ButtonGroup();
+        bg1.add(mem);
+        bg1.add(nonmem);
+      }
+    
+      
+      public void reset(){
+          slot_panel.setVisible(false);
+          tariff_panel.setVisible(false);
+          hallname_label.setVisible(false);
+          id_detail.setText(null);
+          BillName.setText(null);
+          
+          
+      }
+    
+      public void showPanelInfo(HallCheckInTable hall_check_in_detail){
+            jTable1.setModel(hall_check_in_detail.getTableModel());
+          
+      }
+      
+      
+      
+        //GET BILL SEQUENCE ID  
+        private String getNextBillID() throws BasicException {
+        //praveen:sequencedetail:inserting id instead of names
+        String billnum;
+        //String uname=LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getName();
+        String createBy =  m_App.getAppUserView().getUser().getName();
+        String uname = LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().getRole();
+        Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT SEQUENCEDETAIL.BSERIES,SEQUENCEDETAIL.BMAX FROM SEQUENCEDETAIL,PEOPLE P WHERE SEQUENCEDETAIL.USERNAME=? AND SEQUENCEDETAIL.CATEGORY=P.ROLE  AND P.NAME=? AND ACTIVE=TRUE", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.STRING, Datas.DOUBLE})).find(new Object[]{uname, createBy});
+        if (obj != null) {
+            Double max = Double.parseDouble(obj[1].toString());
+            max++;
+            billnum = obj[0].toString() + max.intValue();
+            new StaticSentence(m_App.getSession(), "UPDATE SEQUENCEDETAIL SET BMAX=?  WHERE ACTIVE=TRUE AND USERNAME = ?  AND CATEGORY=(SELECT ROLE FROM PEOPLE WHERE NAME=?) ", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE, Datas.STRING, Datas.STRING})).exec(new Object[]{max, uname, createBy});
+            return billnum;
+        } else {
+            JOptionPane.showMessageDialog(null, "Please Specify the Bill Series", "Cannot Create Bill", JOptionPane.OK_OPTION);
+            return "";
+        }
+        }
+        
+        
+        // FOR GENERATING BILL 
+        public void Generate_Hall_Bill(){
+            
+                        MemberNo = mno_label.getText();
+                        MemberName = mem_name_label.getText();
+                        BillingName = Biiling_name_label.getText();
+                        if(guest_name_label.getText()!=null && guest_name_label.getText().trim().length()>0){
+                            GuestName = guest_name_label.getText();
+                        }
+                        else{
+                            GuestName=null;
+                        }
+                        try {
+                            Booking_Date = (Date) Formats.TIMESTAMP.parseValue(Date_label.getText());
+                        } catch (BasicException ex) {
+                            Logger.getLogger(Hall_Check_In.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        SlotTimings = slot_time_label.getText();
+                        Slot_Booked = slot_book_label.getText();
+                        Charges = Double.parseDouble(charges.getText());
+                        System.out.println(tax2_rate_label.getText());
+                        if(tax1_rate_label.getText()!="null" ){
+                              Tax1_rate = Double.parseDouble(tax1_rate_label.getText());
+                        }
+                        else{
+                             Tax1_rate = 0.00;
+                        }
+                        if(tax2_rate_label.getText()!="null" ){
+                              Tax2_rate = Double.parseDouble(tax2_rate_label.getText());
+                        }
+                        else{
+                             Tax2_rate = 0.00;
+                        }
+                        if(tax3_rate_label.getText()!="null" ){
+                              Tax3_rate = Double.parseDouble(tax3_rate_label.getText());
+                        }
+                        else{
+                             Tax3_rate = 0.00;
+                        }
+                    
+                        Hall_Serv_Chrg = Double.parseDouble(hall_serv_chrg_label.getText());
+                        TotalAmount = Double.parseDouble(tot_chrge.getText());
+                        Basic1 = Integer.parseInt(basic1_label.getText());
+                        Basic2 = Integer.parseInt(basic2_label.getText());
+                        Slot_Flag = Integer.parseInt(slot_flag_label.getText());
+                        advanceId = advance_Recv_label.getText();
+                        Advance_Recv = Double.parseDouble(advnce_recv_label.getText());
+                        Tax_total = Double.parseDouble(tax_total_label.getText());
+                        Customer = Hall_CheckIn_Detail.getCustomerID(m_App, MemberNo);
+                        
+                        Hall_Serv_Chrg = 0.00;
+                        Hall_serv_ID = null;
+                        Paid = 0;
+                        if(GuestName!=null){
+                            Customer = Customer + "#" +GuestName;
+                        }
+                        
+                        Narrations=null;
+                        Check_in_ID = checkin_id_label.getText();
+                        HallName = Hall_N_Label.getText();
+                        
+                        
+                        try {
+                            Bill_ID = getNextBillID();
+                        } catch (BasicException ex) {
+                            Logger.getLogger(Hall_Check_In.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                        
+                        
+                        
+                       Transaction t = new Transaction(m_App.getSession()) {
+             
+                       @Override
+                       protected Object transact() throws BasicException {
+                       
+                            int insert_Bill  =  new PreparedSentence(m_App.getSession(), "INSERT INTO hall_bill (ID , CUSTOMER , HALL_NAME , SLOT_TIME , CHECKIN_DATE ,RATE , TAX_TOTAL , HALL_SERV_ID , HALL_SERV_AMT , PAID  , RECIEPT ,  ADVANCE_RECV , CHECK_IN_ID , TAX1 , TAX2 , TAX3 , BILLNAME , ID_DETAIL , CRBY , CRDATE , CRHOST , SLOT_BOOKED , NARRATIONS ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                                                                      , new SerializerWriteBasic(new Datas[]{ Datas.STRING ,Datas.STRING , Datas.STRING ,Datas.STRING  ,  Datas.TIMESTAMP , Datas.DOUBLE , Datas.DOUBLE , Datas.STRING , Datas.DOUBLE  , Datas.INT , Datas.STRING , Datas.DOUBLE ,  Datas.STRING  , Datas.DOUBLE , Datas.DOUBLE , Datas.DOUBLE,Datas.STRING,Datas.STRING,Datas.STRING,Datas.TIMESTAMP, Datas.STRING , Datas.STRING , Datas.STRING})).exec
+                                                                       (new Object[]{Bill_ID , Customer , HallName , SlotTimings ,Booking_Date , Charges ,  Tax_total , Hall_serv_ID , Hall_Serv_Chrg , Paid , Reciept_No , Advance_Recv , Check_in_ID , Tax1_rate , Tax2_rate , Tax3_rate , BillingName , Id_Card_Details ,  m_App.getAppUserView().getUser().getName() ,new Date(), m_App.getProperties().getHost() , Slot_Booked , Narrations  }); 
+
+                             
+                            int x = new StaticSentence(m_App.getSession(), "UPDATE hall_check_in SET ACTIVE=0 WHERE ID=?"
+                                                                        , new SerializerWriteBasic(new Datas[] {Datas.STRING })).exec(new Object[] {Check_in_ID});
+
+                             
+                           // int y = new StaticSentence(m_App.getSession(), "UPDATE guestroom_advance_payment SET BAL_AMT=? WHERE ID=?"
+                                                  //                      , new SerializerWriteBasic(new Datas[] {Datas.DOUBLE , Datas.STRING })).exec(new Object[] {bal_amt , Advnce_Recv_ID});
+
+                          
+                           
+                           
+                            
+                             return null;
+                          }
+                         };
+                   
+                            try {
+                                    t.execute();
+                                    JOptionPane.showMessageDialog(this, "Bill Generated Sucsessfully..!!", "Success", JOptionPane.INFORMATION_MESSAGE);  
+                                    bill_id_label.setText(Bill_ID);
+                                    Launch_Bill();
+                                    reset();
+                                    loaddata();
+                                    Gname_Combo.setSelectedIndex(-1);
+                                    jTabbedPane1.setSelectedIndex(0);
+                                    
+                                    
+                            } catch (BasicException ex) {
+                                    Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+                                    new MessageInf(ex).show(new JFrame());
+                                }  
+                        
+             }
+        
+        // FOR JASPER REPORT OF BILL 
+        public void  Launch_Bill(){
+            
+         Date edate = new Date();
+          
+         Map reportparam = new HashMap();
+         reportparam.put("enddate", edate);
+        
+         DataSourceProvider data1 = new DataSourceProvider();
+         DataSourceForHallCheckIn ds= null;
+         
+         String bill_id = bill_id_label.getText();
+         String linkname = link_name_label.getText();
+         
+         try {
+                hallbill_Model = HallBillModel.LoadHallCheckInDetail(m_App, bill_id);
+             } catch (BasicException ex) {
+                      Logger.getLogger(GuestRoom_Check_in.class.getName()).log(Level.SEVERE, null, ex);
+              }
+             hall_Bill_list  =  (List<HallBillModel.HallBillInfo>) hallbill_Model.getHallInfoList();
+           
+         ds = new DataSourceForHallCheckIn(hall_Bill_list);
+         data1.setDataSource(ds);
+         
+         JasperPrint jp = JasperReportNew.runReport(m_App , "./reports/com/openbravo/reports/HallBill.jrxml", reportparam, false, data1, true, "HallBill");
+           
+            
+            
+        }
+        
+}
