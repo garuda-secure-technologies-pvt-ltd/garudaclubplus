@@ -62,6 +62,8 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_FACILITY_KEY = " ###FCLTNO### ";
     public static final String SMS_ACCOUNT_KEY = " ###ACTNO### ";
     public static final String SMS_GUEST_KEY = " ###GUESTCHRGNO### ";
+    public static final String SMS_WHAREHOUSE_NAME_KEY = " ###WHAREHOUSE### ";
+    public static final String SMS_ROLE_KEY = " ###ROLE### ";
     
     
     @Override
@@ -160,6 +162,24 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
             iCallback.onError();
             Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void insertSMStoActiveMsgTable(String message, String mobile)
+    {
+        try 
+        {
+            String id = UUID.randomUUID().toString();
+            new PreparedSentence(session, "INSERT INTO activemsgtable(ID,Message,SENDTO,PRIORITY,CNT) VALUES (?,?,?,?,?) ", 
+                    new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING, Datas.INT, Datas.INT}))
+                    .exec(new Object[]{id, message, mobile, 1, 0});
+            
+            
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
     }
     
 }

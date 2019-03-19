@@ -19,6 +19,7 @@ import com.openbravo.pos.panels.JProductFinder;
 import com.openbravo.pos.scale.ScaleException;
 import com.openbravo.pos.payment.JPaymentSelect;
 import com.openbravo.basic.BasicException;
+import com.openbravo.beans.DateUtils;
 import com.openbravo.data.gui.ListKeyed;
 import com.openbravo.data.loader.Datas;
 import com.openbravo.data.loader.PreparedSentence;
@@ -49,6 +50,7 @@ import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.payment.JPaymentSelectReceipt;
 import com.openbravo.pos.payment.JPaymentSelectRefund;
 import com.openbravo.pos.sales.restaurant.QTList;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import com.openbravo.pos.ticket.CategoryInfo;
 import com.openbravo.pos.ticket.PrintCategoryInfo;
 import com.openbravo.pos.ticket.ProductInfoExt;
@@ -60,6 +62,7 @@ import com.openbravo.pos.util.ReportUtils;
 import com.openbravo.pos.util.StringUtils;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -120,6 +123,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     protected DataLogicSales dlSales;
     protected DataLogicCustomers dlCustomers;
     protected DataLogicReceipts dlReceipts;
+    protected SMSgeneralDBSettings smsDBSettings;
 //    protected QTKitchen qtk;
     protected Qticket qTicket;
     private JPaymentSelect paymentdialogreceipt;
@@ -142,6 +146,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
         dlCustomers = (DataLogicCustomers) m_App.getBean("com.openbravo.pos.customers.DataLogicCustomersCreate");
         dlReceipts = (DataLogicReceipts) app.getBean("com.openbravo.pos.sales.DataLogicReceipts");
+        smsDBSettings = (SMSgeneralDBSettings) m_App.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
   //      qtk = (QTKitchen) app.getBean("com.openbravo.pos.sales.QTKitchen");///aaa
 
         qTicket = (Qticket) m_App.getBean("com.openbravo.pos.sales.Qticket");
@@ -1123,28 +1128,53 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         QTLogic qtLogic = new QTLogic(ticket, dlSales, qTicket);
         qtLogic.dispatchQT();
         saveAndPrintQTs(qtLogic.getQTickets());
+        
     }
 
-    private void saveAndPrintQTs(final Collection<QticketInfo> qts) throws Exception {
+    private void saveAndPrintQTs(final Collection<QticketInfo> qts) throws Exception 
+    {
         
-        for (QticketInfo qtInfo : qts) {
-                    boolean flag = qTicket.saveQTicket(qtInfo);
-                    if (flag == true) {
-                        printqt(qtInfo.getprCategory(), qtInfo);
-                    } else {
-                        break;
-                    }
-                }
-//        Transaction t = new Transaction(LookupUtilityImpl.getInstance(null).getAppView().getSession()) {
-//
-//            public Object transact() throws BasicException {
-//                
-//                return null;
-//            }
-//        };
-//        t.execute();
-//    }
+        for (QticketInfo qtInfo : qts) 
+        {
+            boolean flag = qTicket.saveQTicket(qtInfo);
+            if (flag == true) 
+            {
+                printqt(qtInfo.getprCategory(), qtInfo);
+                checkSMSflagForQT(qtInfo);
+            } 
+            else 
+            {
+                break;
+            }
+        }
     }
+    
+    public void checkSMSflagForQT(QticketInfo qTicket)
+    {
+       boolean sendSMSwhileQT =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_QT_ID);
+       if(sendSMSwhileQT)
+       {
+           String smsString = smsDBSettings.getMessage(SMSgeneralDBSettings.MESSAGE_QT_ID);
+           createSMS(smsString, qTicket);
+       }
+    }
+    
+    public void createSMS(String smsString, QticketInfo qTicket)
+    {
+        String sms = smsString;
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_QT_KEY, qTicket.getId());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, qTicket.getWarehouse());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRdisplayName(qTicket.getWarehouse()));    
+        JOptionPane.showMessageDialog(this, "SMS String is : "+smsString , "SMS", JOptionPane.INFORMATION_MESSAGE);
+        if(qTicket.getCustomer().getmobile() != null && !qTicket.getCustomer().getmobile().isEmpty())
+        {
+           smsDBSettings.insertSMStoActiveMsgTable(smsString, qTicket.getCustomer().getmobile());
+           JOptionPane.showMessageDialog(this, "SMS sent", "SMS", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
     public void printqt(String prcategory, QticketInfo qTicket) throws BasicException {
         String sresource = LookupUtilityImpl.getInstance(null).getDataLogicSystem().getResourceAsXML("Printer.QT");
         String waitername;
@@ -1179,14 +1209,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
 
             String Displayname="";
-            
-            Object[] obj4 = (Object[]) new StaticSentence(m_App.getSession(), "select rdisplayname from locations where id=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(qTicket.getWarehouse());
-
-            if (obj4 == null) {
-                Displayname = "";
-            } else {
-                Displayname = obj4[0].toString();
-            }
+            Displayname = getRdisplayName(qTicket.getWarehouse());
             
             
             // script.put("flag", flag);
@@ -1209,6 +1232,25 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         } catch (Exception e) {
             throw new BasicException(e.getMessage());
         }
+    }
+    
+    private String getRdisplayName(String wareHouse)
+    {
+        try 
+        {
+            Object[] obj = (Object[]) new StaticSentence(m_App.getSession(),
+                    "select rdisplayname from locations where id=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING}))
+                    .find(wareHouse);
+            if (obj == null)
+                return "";
+            else
+                return obj[0].toString();
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     private boolean closeTicket(TicketInfo ticket, Object ticketext) {

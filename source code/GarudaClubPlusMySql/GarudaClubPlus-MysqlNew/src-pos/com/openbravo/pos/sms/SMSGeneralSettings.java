@@ -68,12 +68,12 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     
     private void loaddata()
     {
-        initializeList();
+        initializeComboBoxList();
         loadAllRadioButtons();
         loadAllMessages();
     }
     
-    private void initializeList()
+    private void initializeComboBoxList()
     {
         predefine_list = new HashMap();
         predefine_list.put("QT No.", SMSgeneralDBSettings.SMS_QT_KEY);
@@ -81,6 +81,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         predefine_list.put("Date & Time", SMSgeneralDBSettings.SMS_DTM_KEY);
         predefine_list.put("Facility No.", SMSgeneralDBSettings.SMS_FACILITY_KEY);
         predefine_list.put("Guest Chrg No.", SMSgeneralDBSettings.SMS_GUEST_KEY);
+        predefine_list.put("Wharehouse", SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY);
+        predefine_list.put("Role", SMSgeneralDBSettings.SMS_ROLE_KEY);
         
         List list  = new ArrayList<Object>(predefine_list.values());
         Set<String> set = predefine_list.keySet();
