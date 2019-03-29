@@ -6,6 +6,7 @@
 package com.openbravo.pos.sms;
 
 import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.DataRead;
 import com.openbravo.data.loader.Session;
 import com.openbravo.pos.forms.BeanFactoryDataSingle;
 import com.openbravo.data.loader.StaticSentence;
@@ -16,8 +17,14 @@ import com.openbravo.data.loader.SerializerReadString;
 import com.openbravo.data.loader.SerializerWriteBasic;
 import com.openbravo.data.loader.SerializerWriteString;
 import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.IKeyed;
+import com.openbravo.data.loader.SerializableRead;
 import com.openbravo.data.loader.Transaction;
+import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.util.ICallBack;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,18 +50,13 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_SHARED_TKT_NAME =  "Send SMS while creatig Shared Ticket ?";
     
     
-    public static final String MESSAGE_QT_KEY =  "General message for QT";
-    public static final String MESSAGE_BILL_KEY =  "General message for BILL";
-    public static final String MESSAGE_ACCOUNT_KEY =  "General message for Account";
-    public static final String MESSAGE_GUEST_KEY =  "General message for Guest charges";
-    public static final String MESSAGE_SHARED_TKT_KEY =  "General message for Shared ticket";
+    public static final String MESSAGE_QT_KEY =  "Master message for QT";
+    public static final String MESSAGE_BILL_KEY =  "Mastre message for BILL";
+    public static final String MESSAGE_ACCOUNT_KEY =  "Master message for Account";
+    public static final String MESSAGE_GUEST_KEY =  "Master message for Guest charges";
+    public static final String MESSAGE_SHARED_TKT_KEY =  "Master message for Shared ticket";
     
-    // GENERIC IDS FOR MESSAGE MASTER
-    public static final String MESSAGE_QT_ID =  "sms-201";
-    public static final String MESSAGE_BILL_ID =  "sms-202";
-    public static final String MESSAGE_ACCOUNT_ID =  "sms-203";
-    public static final String MESSAGE_GUEST_ID =  "sms-204";
-    public static final String MESSAGE_SHARED_TKT_ID =  "sms-205";
+  
     
     public static final String SMS_QT_KEY = " ###QTNO### ";
     public static final String SMS_BILL_KEY = " ###BILLNO### ";
@@ -62,9 +64,8 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_FACILITY_KEY = " ###FCLTNO### ";
     public static final String SMS_ACCOUNT_KEY = " ###ACTNO### ";
     public static final String SMS_GUEST_KEY = " ###GUESTCHRGNO### ";
-    public static final String SMS_WHAREHOUSE_NAME_KEY = " ###WHAREHOUSE### ";
-    public static final String SMS_ROLE_KEY = " ###ROLE### ";
     
+    private List<SmsMasterInfo> smsMasterClassList; 
     
     @Override
     public void init(Session s) 
@@ -114,44 +115,38 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     
    
     
-    public void setSMSflag(final String id ,final String name,final String value,final String massageID,final  String smsName,final String messageValue, final ICallBack iCallback)
+    public void setSMSflag(final String smsMasterId ,final String smsMasterName,final String active, final String message, final List<String> facilityList , final ICallBack iCallback)
     {
         try 
         {
             Transaction t = new Transaction(session) 
             {
-            //  boolean error=false;
-                public Object transact() throws BasicException {
-
-                // query to store if need to send SMS or not
-                if( new PreparedSentence(session
-                        , "UPDATE GENERALTABLE SET VALUE=? WHERE ID=?"
-                        , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING}))
-                        .exec(new Object[]{value,id}) <= 0)
+                public Object transact() throws BasicException 
                 {
 
-                    new PreparedSentence(session
-                            , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
+                    // delete facility linked with master and insert it again
+                    deleteLinkedFacility(smsMasterId);
+                    if(facilityList != null && facilityList.size() > 0)
+                    {
+                         insertFacilityIds(smsMasterId,facilityList);
+                    }
+                        
+                    // query to store if need to send SMS or not
+                    if( new PreparedSentence(session
+                            , "UPDATE SMS_MASTER SET ACTIVE=? , MESSAGE = ? WHERE ID=?"
                             , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING}))
-                            .exec(new Object[]{id,name,value});
+                            .exec(new Object[]{active, message, smsMasterId}) <= 0)
+                    {
 
-                }
+                        new PreparedSentence(session
+                                , "INSERT INTO SMS_MASTER(ID,NAME,ACTIVE,MESSAGE) VALUES(?,?,?,?)"
+                                , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING, Datas.STRING}))
+                                .exec(new Object[]{smsMasterId, smsMasterName, active, message });
 
-                // query to store SMS string
-                if( new PreparedSentence(session
-                        , "UPDATE GENERALTABLE SET VALUE=? WHERE ID=?"
-                        , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING}))
-                        .exec(new Object[]{messageValue,massageID}) <= 0)
-                {
+                    }
 
-                    new PreparedSentence(session
-                            , "INSERT INTO GENERALTABLE(ID,NAME,VALUE) VALUES(?,?,?)"
-                            , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING}))
-                            .exec(new Object[]{massageID,smsName,messageValue});
-
-                }
-                iCallback.onSuccess();
-                return null;
+                    iCallback.onSuccess();
+                    return null;
 
                 }
             };
@@ -164,22 +159,165 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
         }
     }
     
-    public void insertSMStoActiveMsgTable(String message, String mobile)
+    
+    // get facility list for QT , bill , and sharedtickets
+    public List getAllFacilityList()
     {
+        List<Object> fac_list = new ArrayList<Object>();
         try 
         {
-            String id = UUID.randomUUID().toString();
-            new PreparedSentence(session, "INSERT INTO activemsgtable(ID,Message,SENDTO,PRIORITY,CNT) VALUES (?,?,?,?,?) ", 
-                    new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING, Datas.INT, Datas.INT}))
-                    .exec(new Object[]{id, message, mobile, 1, 0});
-            
-            
+            fac_list  = (List<Object>) new StaticSentence(session, "SELECT NAME FROM FACILITY WHERE ACTIVE=1 ORDER BY NAME",  SerializerWriteString.INSTANCE , SerializerReadString.INSTANCE).list();
+            return fac_list;
         } 
         catch (BasicException ex) 
         {
             Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
+    }
     
+    public boolean insertFacilityIds(String smsMasterID, List<String> fac_list)
+    {
+        String ids = null;
+        try 
+        {
+            // Insert linked facility to facility sms master
+            
+            for(int i=0; i<fac_list.size();i++)
+            {
+                new PreparedSentence(session
+                    , "INSERT INTO SMS_MASTER_FAC(SMS_MASTER_ID,FACILITY_ID) VALUES( ? , (SELECT ID FROM FACILITY WHERE NAME = ? AND ACTIVE=1) )"
+                    , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING}))
+                        .exec(new Object[]{smsMasterID,fac_list.get(i)});
+            }
+            return true;
+            
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+      
+    }
+    
+    public void deleteLinkedFacility(String smsMasterID)
+    {
+        try 
+        {
+            // delete existing sms ids from sms_master_fac 
+            
+            new PreparedSentence(session
+                    , "DELETE FROM  SMS_MASTER_FAC WHERE SMS_MASTER_ID=?"
+                    , new SerializerWriteBasic(new Datas[]{Datas.STRING})).exec(new Object[]{smsMasterID});
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public List<SmsMasterInfo> getSmsMasterList()
+    {
+        try 
+        {
+            smsMasterClassList = new StaticSentence(session,
+                    " SELECT ID , NAME, MESSAGE, ACTIVE FROM SMS_MASTER ",
+                    SerializerWriteString.INSTANCE  ,
+                    new SerializerReadClass(SmsMasterInfo.class)).list();
+            
+            if(smsMasterClassList.size() > 0)
+            {
+                for(int i=0; i<smsMasterClassList.size(); i++)
+                {
+                    List<String> fac_list  = (List<String>) new StaticSentence(session, "SELECT NAME FROM FACILITY WHERE ID IN (SELECT FACILITY_ID FROM SMS_MASTER_FAC WHERE SMS_MASTER_ID=?) ", 
+                            SerializerWriteString.INSTANCE , SerializerReadString.INSTANCE)
+                            .list(smsMasterClassList.get(i).getsmsId());
+                    
+                    smsMasterClassList.get(i).setFacilityList(fac_list);
+                }
+            }
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        return smsMasterClassList;
+    }
+    
+    
+    
+    public static class SmsMasterInfo implements SerializableRead,IKeyed
+{
+
+        private String smsId;
+        private String smsName;
+        private String message;
+        private String active;
+        private List<String> facilityList;
+         
+
+        public String getsmsId() 
+        {
+            return smsId;
+        }
+
+        public void setsmsId(String smsId) 
+        {
+            this.smsId = smsId;
+        }
+
+        public String getSmsName() 
+        {
+            return smsName;
+        }
+
+        public void setSmsName(String smsName) 
+        {
+            this.smsName = smsName;
+        }
+
+        public String getMessage()
+        {
+            return message;
+        }
+
+        public void setMessage(String message)
+        {
+            this.message = message;
+        }
+
+        public String getActive() 
+        {
+            return active;
+        }
+        
+        public List<String> getFacilityList()
+        {
+            return facilityList;
+        }
+        public void setFacilityList(List<String> facList)
+        {
+            this.facilityList = facList;
+        }
+        
+        
+        
+        @Override
+        public void readValues(DataRead dr) throws BasicException 
+        {
+
+            smsId=dr.getString(1);
+            smsName=dr.getString(2);
+            message=dr.getString(3);
+            active=dr.getString(4);
+        }
+
+        @Override
+        public Object getKey() {
+             return this;
+        }
     }
     
 }
