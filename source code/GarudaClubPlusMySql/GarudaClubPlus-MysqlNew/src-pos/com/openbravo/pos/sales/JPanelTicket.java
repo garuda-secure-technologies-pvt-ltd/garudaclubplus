@@ -1152,9 +1152,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     public void checkSMSflagForQT(QticketInfo qTicket)
     {
        boolean sendSMSwhileQT =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_QT_ID);
-       if(sendSMSwhileQT)
+       boolean isFacilityEnable = smsDBSettings.isFacilityEnable(SMSgeneralDBSettings.SMS_QT_ID, getFacilityId(qTicket.getWarehouse()) );
+       if(sendSMSwhileQT && isFacilityEnable)
        {
-           String smsString = smsDBSettings.getMessage(SMSgeneralDBSettings.MESSAGE_QT_ID);
+           String smsString = smsDBSettings.getMessage(SMSgeneralDBSettings.SMS_QT_ID);
            createSMS(smsString, qTicket);
        }
     }
@@ -1164,8 +1165,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         String sms = smsString;
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_QT_KEY, qTicket.getId());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, qTicket.getWarehouse());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getFacilityName(qTicket.getWarehouse()));
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRdisplayName(qTicket.getWarehouse()));    
         JOptionPane.showMessageDialog(this, "SMS String is : "+smsString , "SMS", JOptionPane.INFORMATION_MESSAGE);
         if(qTicket.getCustomer().getmobile() != null && !qTicket.getCustomer().getmobile().isEmpty())
@@ -1252,7 +1252,47 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
         return null;
     }
+    
+    private String getFacilityName(String wareHouse)
+    {
+        try 
+        {
+            Object[] obj = (Object[]) new StaticSentence(m_App.getSession(),
+                    "SELECT NAME FROM FACILITY WHERE ID = (SELECT FACILITY FROM LOCATIONS WHERE ID = ? )", 
+                    SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING}))
+                    .find(wareHouse);
+            if (obj == null)
+                return "";
+            else
+                return obj[0].toString();
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
+    private String getFacilityId(String wareHouse)
+    {
+        try 
+        {
+            Object[] obj = (Object[]) new StaticSentence(m_App.getSession(),
+                    "SELECT FACILITY FROM LOCATIONS WHERE ID = ? ", 
+                    SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING}))
+                    .find(wareHouse);
+            if (obj == null)
+                return "";
+            else
+                return obj[0].toString();
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
     private boolean closeTicket(TicketInfo ticket, Object ticketext) {
 
         boolean resultok = false;

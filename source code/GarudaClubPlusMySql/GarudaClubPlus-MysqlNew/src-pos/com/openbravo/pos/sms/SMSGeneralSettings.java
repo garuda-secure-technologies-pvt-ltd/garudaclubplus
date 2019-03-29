@@ -56,7 +56,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private DefaultComboBoxModel combo_box_model = new DefaultComboBoxModel();
     private static final String EMTPTY_ERROR_MESSAGE = "No message selected. Please enter message.";
     private List<String> facilityList = new ArrayList();
-    
+    private static final String SPACE_TEXT = " ";
     private List<String> qt_selected_facility = new ArrayList();
     private List<String> bill_selected_facility = new ArrayList();
     private List<String> st_selected_facility = new ArrayList();
@@ -99,8 +99,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         predefine_list.put("QT No.", SMSgeneralDBSettings.SMS_QT_KEY);
         predefine_list.put("Bill No.", SMSgeneralDBSettings.SMS_BILL_KEY);
         predefine_list.put("Date & Time", SMSgeneralDBSettings.SMS_DTM_KEY);
-        predefine_list.put("Facility No.", SMSgeneralDBSettings.SMS_FACILITY_KEY);
+        predefine_list.put("Facility Name", SMSgeneralDBSettings.SMS_FACILITY_KEY);
         predefine_list.put("Guest Chrg No.", SMSgeneralDBSettings.SMS_GUEST_KEY);
+        predefine_list.put("Wharehouse", SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY);
+        predefine_list.put("Role", SMSgeneralDBSettings.SMS_ROLE_KEY);
         
         List list  = new ArrayList<Object>(predefine_list.values());
         Set<String> set = predefine_list.keySet();
@@ -129,69 +131,17 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 {
                     case SMSgeneralDBSettings.SMS_QT_ID:
                     {
-                        if(list.get(i).getActive().equals("0"))
-                            qt_radio_button_no.setSelected(true);
-                        else
-                             qt_radio_button_yes.setSelected(true);
-                        text_area_qt.setText(list.get(i).getMessage());
-                       
-                        // set facility model
-                        qt_selected_facility = list.get(i).getFacilityList();
-                        if(list.get(i).getFacilityList().size() > 0 )
-                        {
-                            List<String> qt_fac_list = list.get(i).getFacilityList();
-                            for(String  x : qt_fac_list)
-                            {
-                                qt_fac_list_model.addElement(x);
-                            }
-                        }
-                        qt_facility_jList.setModel(qt_fac_list_model);
-                        
+                        setQTdetails(list.get(i));
                         break;
                     }
                     case SMSgeneralDBSettings.SMS_BILL_ID:
                     {
-                        if(list.get(i).getActive().equals("0"))
-                            bill_radio_button_no.setSelected(true);
-                        else
-                            bill_radio_button_yes.setSelected(true);
-                        text_area_bill.setText(list.get(i).getMessage());
-                        
-                        bill_selected_facility = list.get(i).getFacilityList();
-                        if(list.get(i).getFacilityList().size() > 0 )
-                        {
-                            List<String> bill_fac_list = list.get(i).getFacilityList();
-                            for(String  x : bill_fac_list)
-                            {
-                                bill_fac_list_model.addElement(x);
-                            }
-                        }
-                        bill_facility_jList.setModel(bill_fac_list_model);
-                        
-                        
+                        setBillDetails(list.get(i));
                         break;
                     }
                     case SMSgeneralDBSettings.SMS_SHARED_TKT_ID:
                     {
-                        if(list.get(i).getActive().equals("0"))
-                            st_radio_button_no.setSelected(true);
-                        else
-                             st_radio_button_yes.setSelected(true);
-                        text_area_st.setText(list.get(i).getMessage());
-                        
-                        
-                        st_selected_facility = list.get(i).getFacilityList();
-                        if(list.get(i).getFacilityList().size() > 0 )
-                        {
-                            List<String> st_fac_list = list.get(i).getFacilityList();
-                            for(String  x : st_fac_list)
-                            {
-                                st_fac_list_model.addElement(x);
-                            }
-                        }
-                        st_facility_jList.setModel(st_fac_list_model);
-                        
-                        
+                        setSharedTktDetails(list.get(i));
                         break;
                     }
                     case SMSgeneralDBSettings.SMS_ACCOUNT_ID:
@@ -216,6 +166,73 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             }
             
         }
+    }
+    
+    
+    // set qt details to UI
+    public void setQTdetails(SMSgeneralDBSettings.SmsMasterInfo smsInfo)
+    {
+        if(smsInfo.getActive().equals("0"))
+            qt_radio_button_no.setSelected(true);
+        else
+             qt_radio_button_yes.setSelected(true);
+        text_area_qt.setText(smsInfo.getMessage());
+
+        // set facility model
+        qt_selected_facility = smsInfo.getFacilityList();
+        if(smsInfo.getFacilityList().size() > 0 )
+        {
+            List<String> qt_fac_list = smsInfo.getFacilityList();
+            for(String  x : qt_fac_list)
+            {
+                qt_fac_list_model.addElement(x);
+            }
+        }
+        qt_facility_jList.setModel(qt_fac_list_model);
+    }
+    
+    // set Bill details to UI
+    public void setBillDetails(SMSgeneralDBSettings.SmsMasterInfo smsInfo)
+    {
+        if(smsInfo.getActive().equals("0"))
+            bill_radio_button_no.setSelected(true);
+        else
+            bill_radio_button_yes.setSelected(true);
+        text_area_bill.setText(smsInfo.getMessage());
+
+        bill_selected_facility = smsInfo.getFacilityList();
+        if(smsInfo.getFacilityList().size() > 0 )
+        {
+            List<String> bill_fac_list = smsInfo.getFacilityList();
+            for(String  x : bill_fac_list)
+            {
+                bill_fac_list_model.addElement(x);
+            }
+        }
+        bill_facility_jList.setModel(bill_fac_list_model);
+    }
+    
+    
+    // set shared ticket details
+     public void setSharedTktDetails(SMSgeneralDBSettings.SmsMasterInfo smsInfo)
+    { 
+        if(smsInfo.getActive().equals("0"))
+            st_radio_button_no.setSelected(true);
+        else
+             st_radio_button_yes.setSelected(true);
+        text_area_st.setText(smsInfo.getMessage());
+
+
+        st_selected_facility = smsInfo.getFacilityList();
+        if(smsInfo.getFacilityList().size() > 0 )
+        {
+            List<String> st_fac_list = smsInfo.getFacilityList();
+            for(String  x : st_fac_list)
+            {
+                st_fac_list_model.addElement(x);
+            }
+        }
+        st_facility_jList.setModel(st_fac_list_model);
     }
     
     public void resetAllMenu()
@@ -407,7 +424,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         jTabbedPane1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel2.setText("SMS creation while creating  QT ");
+        jLabel2.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel2.setText("Send SMS while creating  QT ");
 
         qt_radio_button_yes.setText("Yes");
 
@@ -443,8 +461,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         });
         jScrollPane6.setViewportView(qt_facility_jList);
 
+        jLabel9.setForeground(new java.awt.Color(255, 0, 0));
         jLabel9.setText("Type SMS here : ");
 
+        jLabel10.setForeground(new java.awt.Color(255, 0, 0));
         jLabel10.setText("Select facility : ");
         jLabel10.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
@@ -544,7 +564,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         jTabbedPane1.addTab("QT", jPanel1);
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel3.setText("SMS creation while creating  Bill ");
+        jLabel3.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel3.setText("Send SMS while creating Bill ");
 
         bill_radio_button_yes.setText("Yes");
 
@@ -573,6 +594,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         text_area_bill.setRows(5);
         jScrollPane2.setViewportView(text_area_bill);
 
+        jLabel11.setForeground(new java.awt.Color(255, 0, 0));
         jLabel11.setText("Type SMS here :");
         jLabel11.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
@@ -583,6 +605,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         });
         jScrollPane7.setViewportView(bill_facility_jList);
 
+        jLabel12.setForeground(new java.awt.Color(255, 0, 0));
         jLabel12.setText("Select facility : ");
         jLabel12.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
@@ -682,7 +705,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         jTabbedPane1.addTab("Bill", jPanel2);
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel4.setText("SMS creation while creating  Shared Ticket ");
+        jLabel4.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel4.setText("Send SMS while creating Shared Ticket ");
 
         st_radio_button_yes.setText("Yes");
 
@@ -711,9 +735,11 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         text_area_st.setRows(5);
         jScrollPane3.setViewportView(text_area_st);
 
+        jLabel13.setForeground(new java.awt.Color(255, 0, 0));
         jLabel13.setText("Type SMS here :");
         jLabel13.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
+        jLabel14.setForeground(new java.awt.Color(255, 0, 0));
         jLabel14.setText("Select facility : ");
         jLabel14.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
@@ -830,7 +856,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         jTabbedPane1.addTab("Shared ticket", jPanel3);
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel5.setText("SMS creation while creating  Guest Charges ");
+        jLabel5.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel5.setText("Send SMS while creating Guest Charges ");
 
         guest_radio_button_yes.setText("Yes");
 
@@ -915,7 +942,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         jTabbedPane1.addTab("Guest Charges", jPanel4);
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel6.setText("SMS creation while debiting to Account ");
+        jLabel6.setForeground(new java.awt.Color(255, 51, 0));
+        jLabel6.setText("Send SMS while debiting to Account ");
 
         account_radio_button_yes.setText("Yes");
 
@@ -1011,9 +1039,13 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             }
         });
 
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(204, 0, 0));
         jLabel7.setText("Select qt no./ bill no./ guest chrg/recept no.");
 
-        jLabel8.setText("from below drop down");
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(204, 0, 0));
+        jLabel8.setText("token from below drop down");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -1024,7 +1056,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 708, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(45, 45, 45)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(combo_box_smsPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(add_text_button)
@@ -1040,19 +1072,21 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             .addGroup(layout.createSequentialGroup()
                 .addGap(6, 6, 6)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(72, 72, 72)
-                .addComponent(jLabel7)
-                .addGap(3, 3, 3)
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(combo_box_smsPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(add_text_button)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTabbedPane1)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addComponent(jLabel7)
+                        .addGap(3, 3, 3)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(combo_box_smsPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(add_text_button)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1179,42 +1213,46 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             {   
                 // QT table
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_qt.getText() + myText;
+                String text = text_area_qt.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
                 text_area_qt.setText(text);
-                addHighlighterTotext(text_area_qt, text, myText);
+                //addHighlighterTotext(text_area_qt, text, myText);
+                text_area_qt.requestFocus();
                 break;
-             
             }  
             case 1:
             {  // Bill Table
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_bill.getText() + myText;
+                String text = text_area_bill.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
                 text_area_bill.setText(text);
-                addHighlighterTotext(text_area_bill, text, myText);
+                text_area_bill.requestFocus();
+                //addHighlighterTotext(text_area_bill, text, myText);
                 break;
             }
             case 2:
             {  //  Shared Ticket
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_st.getText() + myText;
+                String text = text_area_st.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
                 text_area_st.setText(text);
-                addHighlighterTotext(text_area_st, text, myText);
+                text_area_st.requestFocus();
+                //addHighlighterTotext(text_area_st, text, myText);
                 break;
             }
             case 3:
             {   //  GUEST charges
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_guest.getText() + myText;
+                String text = text_area_guest.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
                 text_area_guest.setText(text);
-                addHighlighterTotext(text_area_guest, text, myText);
+                text_area_guest.requestFocus();
+                //addHighlighterTotext(text_area_guest, text, myText);
                 break;
             }
             case 4:
             {   // ACCOUNTS
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_account.getText() + myText;
+                String text = text_area_account.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
                 text_area_account.setText(text);
-                addHighlighterTotext(text_area_account, text, myText);
+                text_area_account.requestFocus();
+                //addHighlighterTotext(text_area_account, text, myText);
                 break;
             }
                 

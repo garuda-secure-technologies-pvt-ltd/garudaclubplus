@@ -43,27 +43,21 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_GUEST_ID =  "sms-104";
     public static final String SMS_SHARED_TKT_ID =  "sms-105";
     
-    public static final String SMS_QT_NAME =  "Send SMS while creatig QT ? ";
-    public static final String SMS_BILL_NAME =  "Send SMS while creatig Bill ?";
-    public static final String SMS_ACCOUNT_NAME =  "Send SMS while creatig Account ?";
-    public static final String SMS_GUEST_NAME =  "Send SMS while creatig Guest Charges ?";
-    public static final String SMS_SHARED_TKT_NAME =  "Send SMS while creatig Shared Ticket ?";
+    public static final String SMS_QT_NAME =  "Master message for QT";
+    public static final String SMS_BILL_NAME =  "Mastre message for BILL";
+    public static final String SMS_ACCOUNT_NAME =  "Master message for Account";
+    public static final String SMS_GUEST_NAME =  "Master message for Guest charges";
+    public static final String SMS_SHARED_TKT_NAME =  "Master message for Shared ticket";
     
+    public static final String SMS_QT_KEY = "###QTNO###";
+    public static final String SMS_BILL_KEY = "###BILLNO###";
+    public static final String SMS_DTM_KEY = "###DTM###";
+    public static final String SMS_FACILITY_KEY = "###FCLTNO###";
+    public static final String SMS_ACCOUNT_KEY = "###ACTNO###";
+    public static final String SMS_GUEST_KEY = "###GUESTCHRGNO###";
+    public static final String SMS_WHAREHOUSE_NAME_KEY = "###WHAREHOUSE###";
+    public static final String SMS_ROLE_KEY = "###ROLE###";
     
-    public static final String MESSAGE_QT_KEY =  "Master message for QT";
-    public static final String MESSAGE_BILL_KEY =  "Mastre message for BILL";
-    public static final String MESSAGE_ACCOUNT_KEY =  "Master message for Account";
-    public static final String MESSAGE_GUEST_KEY =  "Master message for Guest charges";
-    public static final String MESSAGE_SHARED_TKT_KEY =  "Master message for Shared ticket";
-    
-  
-    
-    public static final String SMS_QT_KEY = " ###QTNO### ";
-    public static final String SMS_BILL_KEY = " ###BILLNO### ";
-    public static final String SMS_DTM_KEY = " ###DTM### ";
-    public static final String SMS_FACILITY_KEY = " ###FCLTNO### ";
-    public static final String SMS_ACCOUNT_KEY = " ###ACTNO### ";
-    public static final String SMS_GUEST_KEY = " ###GUESTCHRGNO### ";
     
     private List<SmsMasterInfo> smsMasterClassList; 
     
@@ -72,48 +66,6 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     {
         this.session = s;
     }
-    
-    
-    
-    public boolean getSMSvalue(String id)
-    {
-        Object[] obj;
-        try 
-        {
-            obj = (Object[]) new StaticSentence(session, "SELECT VALUE FROM GENERALTABLE WHERE  ID=? ", SerializerWriteString.INSTANCE , new SerializerReadBasic(new Datas[]{Datas.INT}) ).find(id);
-            if((obj != null) && obj[0] != null  && (int)obj[0] == 1) 
-            {
-                return true;
-            }
-            else 
-                return false;
-        } 
-        catch (BasicException ex) 
-        {
-            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-    
-    public String getMessage(String id)
-    {
-        Object[] obj;
-        try 
-        {
-            obj = (Object[]) new StaticSentence(session, "SELECT VALUE FROM GENERALTABLE WHERE  ID=? ", SerializerWriteString.INSTANCE , new SerializerReadBasic(new Datas[]{Datas.STRING}) ).find(id);
-            if((obj != null) && obj[0] != null) 
-            {
-                return obj[0].toString();
-            }
-        } 
-        catch (BasicException ex) 
-        {
-            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-    
-   
     
     public void setSMSflag(final String smsMasterId ,final String smsMasterName,final String active, final String message, final List<String> facilityList , final ICallBack iCallback)
     {
@@ -186,9 +138,9 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
             for(int i=0; i<fac_list.size();i++)
             {
                 new PreparedSentence(session
-                    , "INSERT INTO SMS_MASTER_FAC(SMS_MASTER_ID,FACILITY_ID) VALUES( ? , (SELECT ID FROM FACILITY WHERE NAME = ? AND ACTIVE=1) )"
-                    , new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING}))
-                        .exec(new Object[]{smsMasterID,fac_list.get(i)});
+                    , "INSERT INTO SMS_MASTER_FAC(ID, SMS_MASTER_ID, FACILITY_ID) VALUES( ? , ? , (SELECT ID FROM FACILITY WHERE NAME = ? AND ACTIVE=1) )"
+                    , new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING}))
+                        .exec(new Object[]{UUID.randomUUID().toString(), smsMasterID, fac_list.get(i)});
             }
             return true;
             
@@ -318,6 +270,88 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
         public Object getKey() {
              return this;
         }
+    }
+    
+    
+    
+    public boolean getSMSvalue(String id)
+    {
+        Object[] obj;
+        try 
+        {
+            obj = (Object[]) new StaticSentence(session, "SELECT ACTIVE FROM SMS_MASTER WHERE ID=? ", SerializerWriteString.INSTANCE , new SerializerReadBasic(new Datas[]{Datas.INT}) ).find(id);
+            if((obj != null) && obj[0] != null  && (int)obj[0] == 1) 
+            {
+                return true;
+            }
+            else 
+                return false;
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    public String getMessage(String id)
+    {
+        Object[] obj;
+        try 
+        {
+            obj = (Object[]) new StaticSentence(session, "SELECT MESSAGE FROM SMS_MASTER WHERE ID=? ", SerializerWriteString.INSTANCE , new SerializerReadBasic(new Datas[]{Datas.STRING}) ).find(id);
+            if((obj != null) && obj[0] != null) 
+            {
+                return obj[0].toString();
+            }
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+   
+    
+    public void insertSMStoActiveMsgTable(String message, String mobile)
+    {
+        try 
+        {
+            String id = UUID.randomUUID().toString();
+            new PreparedSentence(session, "INSERT INTO activemsgtable(ID,Message,SENDTO,PRIORITY,CNT) VALUES (?,?,?,?,?) ", 
+                    new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING, Datas.INT, Datas.INT}))
+                    .exec(new Object[]{id, message, mobile, 1, 0});
+            
+            
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    }
+    
+    // check for facility enabled
+    public boolean isFacilityEnable(String smsID, String facilityID)
+    {
+        Object[] obj;
+        try 
+        {
+            obj = (Object[]) new StaticSentence(session, "SELECT FACILITY_ID FROM SMS_MASTER_FAC WHERE SMS_MASTER_ID=? AND FACILITY_ID=? ", 
+                    new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}) , 
+                    new SerializerReadBasic(new Datas[]{Datas.STRING}) ).find(new Object[]{smsID,facilityID});
+            if((obj != null) && obj[0] != null && obj[0].toString().trim().length() > 0 ) 
+            {
+                return true;
+            }
+            else 
+                return false;
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
     
 }
