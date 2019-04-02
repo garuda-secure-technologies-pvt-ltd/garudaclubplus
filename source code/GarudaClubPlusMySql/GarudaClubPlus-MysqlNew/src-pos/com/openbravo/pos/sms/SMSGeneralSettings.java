@@ -53,6 +53,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private final String DATA_SAVED_MSG = "Data Saved !";
     private final String DATA_SAVE_TITLE = "Success";
     private Map<String,String> predefine_list = new HashMap();
+    private final static String ERROR_EMPTY_FACILITY = "Select facility to remove.";
     private DefaultComboBoxModel combo_box_model = new DefaultComboBoxModel();
     private static final String EMTPTY_ERROR_MESSAGE = "No message selected. Please enter message.";
     private List<String> facilityList = new ArrayList();
@@ -77,6 +78,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
        // class initialization starts here 
        m_AppView = app;
        smsDBSettings = (SMSgeneralDBSettings) m_AppView.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
+       initializeList();
     }
     @Override
     public void activate() throws BasicException 
@@ -88,7 +90,6 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     
     private void loaddata()
     {
-        initializeList();
         loadSmsMasterInfo();
         loadFacilityList();
     }
@@ -182,6 +183,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         qt_selected_facility = smsInfo.getFacilityList();
         if(smsInfo.getFacilityList().size() > 0 )
         {
+            qt_fac_list_model = new DefaultListModel();
             List<String> qt_fac_list = smsInfo.getFacilityList();
             for(String  x : qt_fac_list)
             {
@@ -203,6 +205,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         bill_selected_facility = smsInfo.getFacilityList();
         if(smsInfo.getFacilityList().size() > 0 )
         {
+            bill_fac_list_model = new DefaultListModel();
             List<String> bill_fac_list = smsInfo.getFacilityList();
             for(String  x : bill_fac_list)
             {
@@ -227,6 +230,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         if(smsInfo.getFacilityList().size() > 0 )
         {
             List<String> st_fac_list = smsInfo.getFacilityList();
+            st_fac_list_model = new DefaultListModel();
             for(String  x : st_fac_list)
             {
                 st_fac_list_model.addElement(x);
@@ -1398,33 +1402,57 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     }//GEN-LAST:event_st_fac_add_btnActionPerformed
 
     private void qt_fac_remove_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qt_fac_remove_btnActionPerformed
-        String facility = qt_facility_jList.getSelectedValue();
-        if(qt_selected_facility.contains(facility))
+        if(!qt_facility_jList.isSelectionEmpty())
         {
-            qt_selected_facility.remove(facility);
-            qt_fac_list_model.removeElement(facility);
-            qt_facility_jList.setModel(qt_fac_list_model);
+            String facility = qt_facility_jList.getSelectedValue();
+            if(qt_selected_facility.contains(facility))
+            {
+                qt_selected_facility.remove(facility);
+                qt_fac_list_model.removeElement(facility);
+                qt_facility_jList.setModel(qt_fac_list_model);
+            }
         }
+        else
+        {
+             JOptionPane.showMessageDialog(SMSGeneralSettings.this,ERROR_EMPTY_FACILITY, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
     }//GEN-LAST:event_qt_fac_remove_btnActionPerformed
 
     private void bill_fac_remove_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bill_fac_remove_btnActionPerformed
-        String facility = bill_facility_jList.getSelectedValue();
-        if(bill_selected_facility.contains(facility))
+        if(!bill_facility_jList.isSelectionEmpty())
         {
-            bill_selected_facility.remove(facility);
-            bill_fac_list_model.removeElement(facility);
-            bill_facility_jList.setModel(bill_fac_list_model);
+            String facility = bill_facility_jList.getSelectedValue();
+            if(bill_selected_facility.contains(facility))
+            {
+                bill_selected_facility.remove(facility);
+                bill_fac_list_model.removeElement(facility);
+                bill_facility_jList.setModel(bill_fac_list_model);
+            }
         }
+        else
+        {
+             JOptionPane.showMessageDialog(SMSGeneralSettings.this,ERROR_EMPTY_FACILITY, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
     }//GEN-LAST:event_bill_fac_remove_btnActionPerformed
 
     private void st_fac_remove_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_fac_remove_btnActionPerformed
-        String facility = st_facility_jList.getSelectedValue();
-        if(st_selected_facility.contains(facility))
+        if(!st_facility_jList.isSelectionEmpty())
         {
-            st_selected_facility.remove(facility);
-            st_fac_list_model.removeElement(facility);
-            st_facility_jList.setModel(st_fac_list_model);
+            String facility = st_facility_jList.getSelectedValue();
+            if(st_selected_facility.contains(facility))
+            {
+                st_selected_facility.remove(facility);
+                st_fac_list_model.removeElement(facility);
+                st_facility_jList.setModel(st_fac_list_model);
+            }
         }
+        else
+        {
+            JOptionPane.showMessageDialog(SMSGeneralSettings.this,ERROR_EMPTY_FACILITY, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
     }//GEN-LAST:event_st_fac_remove_btnActionPerformed
         
    
