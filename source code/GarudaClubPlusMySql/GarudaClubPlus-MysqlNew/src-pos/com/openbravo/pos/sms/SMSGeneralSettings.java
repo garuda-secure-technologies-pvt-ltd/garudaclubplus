@@ -56,6 +56,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private final static String ERROR_EMPTY_FACILITY = "Select facility to remove.";
     private DefaultComboBoxModel combo_box_model = new DefaultComboBoxModel();
     private static final String EMTPTY_ERROR_MESSAGE = "No message selected. Please enter message.";
+    private static final String EMTPTY_FAC_LIST_ERROR_MESSAGE = "Select atleast one facility from list. \n Select ALL to send SMS to all counters.";
     private List<String> facilityList = new ArrayList();
     private static final String SPACE_TEXT = " ";
     private List<String> qt_selected_facility = new ArrayList();
@@ -104,6 +105,9 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         predefine_list.put("Guest Chrg No.", SMSgeneralDBSettings.SMS_GUEST_KEY);
         predefine_list.put("Wharehouse", SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY);
         predefine_list.put("Role", SMSgeneralDBSettings.SMS_ROLE_KEY);
+        predefine_list.put("Member Name", SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY);
+        predefine_list.put("Member No.", SMSgeneralDBSettings.SMS_MEMBER_NO_KEY);
+        predefine_list.put("Total Amount", SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY);
         
         List list  = new ArrayList<Object>(predefine_list.values());
         Set<String> set = predefine_list.keySet();
@@ -1107,6 +1111,11 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             if(message.isEmpty())
             {
                JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);
+               return; 
+            } 
+            else if(qt_selected_facility.size() == 0)
+            {
+                JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_FAC_LIST_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);
                 return; 
             }
         }
@@ -1130,6 +1139,11 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            else if(bill_selected_facility.size() == 0)
+            {
+                JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_FAC_LIST_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);
+                return; 
+            }
         }
         setSMSFlag(SMSgeneralDBSettings.SMS_BILL_ID , SMSgeneralDBSettings.SMS_BILL_NAME , isActive, message, bill_selected_facility); 
 
@@ -1149,6 +1163,11 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             {
                 JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);
                 return;
+            }
+            else if(st_selected_facility.size() == 0)
+            {
+                JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_FAC_LIST_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);
+                return; 
             }
         }
         setSMSFlag(SMSgeneralDBSettings.SMS_SHARED_TKT_ID , SMSgeneralDBSettings.SMS_SHARED_TKT_NAME , isActive, message, st_selected_facility);
@@ -1352,6 +1371,17 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         {
             if(!qt_fac_list_model.contains(facility))
             {
+                if(facility.equals("ALL"))
+                {
+                   qt_fac_list_model = new DefaultListModel(); 
+                   qt_selected_facility = new ArrayList();
+                }
+                else if(qt_fac_list_model.contains("ALL"))
+                {
+                     qt_fac_list_model = new DefaultListModel(); 
+                     qt_selected_facility = new ArrayList();
+                }
+                
                 qt_fac_list_model.addElement(facility);
                 qt_selected_facility.add(facility);
                 qt_facility_jList.setModel(qt_fac_list_model);
@@ -1370,6 +1400,18 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         {
             if(!bill_fac_list_model.contains(facility))
             {
+                
+                if(facility.equals("ALL"))
+                {
+                    bill_selected_facility = new ArrayList();
+                    bill_fac_list_model = new DefaultListModel(); 
+                }
+                else if(bill_fac_list_model.contains("ALL"))
+                {
+                    bill_fac_list_model = new DefaultListModel(); 
+                    bill_selected_facility = new ArrayList();
+                }
+                
                 bill_fac_list_model.addElement(facility);
                 bill_selected_facility.add(facility);
                 bill_facility_jList.setModel(bill_fac_list_model);
@@ -1389,6 +1431,16 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         {
             if(!st_fac_list_model.contains(facility))
             {
+                if(facility.equals("ALL"))
+                {
+                   st_fac_list_model = new DefaultListModel(); 
+                   st_selected_facility = new ArrayList();
+                }
+                else if(st_fac_list_model.contains("ALL"))
+                {
+                     st_fac_list_model = new DefaultListModel(); 
+                     st_selected_facility = new ArrayList();
+                }
                st_fac_list_model.addElement(facility);
                st_selected_facility.add(facility);
                st_facility_jList.setModel(st_fac_list_model);

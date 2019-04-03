@@ -1166,12 +1166,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_QT_KEY, qTicket.getId());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getFacilityName(qTicket.getWarehouse()));
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRdisplayName(qTicket.getWarehouse()));    
-        JOptionPane.showMessageDialog(this, "SMS String is : "+smsString , "SMS", JOptionPane.INFORMATION_MESSAGE);
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRdisplayName(qTicket.getWarehouse())); 
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, qTicket.getCustomer().getName());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, qTicket.getCustomer().getId());
+        
+        Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO, "SMS for QT is ON : Customer : "+qTicket.getCustomer().getId()+ " and  mobile number is "+qTicket.getCustomer().getmobile());
         if(qTicket.getCustomer().getmobile() != null && !qTicket.getCustomer().getmobile().isEmpty())
         {
            smsDBSettings.insertSMStoActiveMsgTable(smsString, qTicket.getCustomer().getmobile());
-           JOptionPane.showMessageDialog(this, "SMS sent", "SMS", JOptionPane.INFORMATION_MESSAGE);
+           Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
         }
     }
     

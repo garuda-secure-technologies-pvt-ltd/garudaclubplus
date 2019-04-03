@@ -21,6 +21,7 @@ import com.openbravo.data.loader.IKeyed;
 import com.openbravo.data.loader.SerializableRead;
 import com.openbravo.data.loader.Transaction;
 import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.BeanFactoryData;
 import com.openbravo.pos.util.ICallBack;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,7 +58,9 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_GUEST_KEY = "###GUESTCHRGNO###";
     public static final String SMS_WHAREHOUSE_NAME_KEY = "###WHAREHOUSE###";
     public static final String SMS_ROLE_KEY = "###ROLE###";
-    
+    public static final String SMS_MEMBER_NAME_KEY = "###MEMNAME###";
+    public static final String SMS_MEMBER_NO_KEY = "###MEMNO###";
+    public static final String SMS_TOT_AMOUNT_KEY = "###TOTAMOUNT###";
     
     private List<SmsMasterInfo> smsMasterClassList; 
     
@@ -119,6 +122,7 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
         try 
         {
             fac_list  = (List<Object>) new StaticSentence(session, "SELECT NAME FROM FACILITY WHERE ACTIVE=1 ORDER BY NAME",  SerializerWriteString.INSTANCE , SerializerReadString.INSTANCE).list();
+            fac_list.add(0,"ALL");
             return fac_list;
         } 
         catch (BasicException ex) 
@@ -137,10 +141,21 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
             
             for(int i=0; i<fac_list.size();i++)
             {
-                new PreparedSentence(session
+                if(fac_list.get(i).equals("ALL"))
+                {
+                    new PreparedSentence(session
+                    , "INSERT INTO SMS_MASTER_FAC(ID, SMS_MASTER_ID, FACILITY_ID) VALUES( ? , ? , ? )"
+                    , new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING}))
+                        .exec(new Object[]{UUID.randomUUID().toString(), smsMasterID, "ALL"});
+                }
+                else
+                {
+                    new PreparedSentence(session
                     , "INSERT INTO SMS_MASTER_FAC(ID, SMS_MASTER_ID, FACILITY_ID) VALUES( ? , ? , (SELECT ID FROM FACILITY WHERE NAME = ? AND ACTIVE=1) )"
                     , new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING}))
                         .exec(new Object[]{UUID.randomUUID().toString(), smsMasterID, fac_list.get(i)});
+                }
+                
             }
             return true;
             
@@ -182,11 +197,21 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
             {
                 for(int i=0; i<smsMasterClassList.size(); i++)
                 {
-                    List<String> fac_list  = (List<String>) new StaticSentence(session, "SELECT NAME FROM FACILITY WHERE ID IN (SELECT FACILITY_ID FROM SMS_MASTER_FAC WHERE SMS_MASTER_ID=?) ", 
+                   
+                    List<String> all_list  = (List<String>) new StaticSentence(session, "SELECT FACILITY_ID FROM SMS_MASTER_FAC WHERE SMS_MASTER_ID=? ", 
                             SerializerWriteString.INSTANCE , SerializerReadString.INSTANCE)
                             .list(smsMasterClassList.get(i).getsmsId());
-                    
-                    smsMasterClassList.get(i).setFacilityList(fac_list);
+                    if(all_list.contains("ALL"))
+                    {
+                        smsMasterClassList.get(i).setFacilityList(all_list);
+                    }
+                    else
+                    {
+                        List<String> fac_list  = (List<String>) new StaticSentence(session, "SELECT NAME FROM FACILITY WHERE ID IN (SELECT FACILITY_ID FROM SMS_MASTER_FAC WHERE SMS_MASTER_ID=?) ", 
+                            SerializerWriteString.INSTANCE , SerializerReadString.INSTANCE)
+                            .list(smsMasterClassList.get(i).getsmsId());
+                        smsMasterClassList.get(i).setFacilityList(fac_list);
+                    }
                 }
             }
         } 
@@ -337,7 +362,7 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
         Object[] obj;
         try 
         {
-            obj = (Object[]) new StaticSentence(session, "SELECT FACILITY_ID FROM SMS_MASTER_FAC WHERE SMS_MASTER_ID=? AND FACILITY_ID=? ", 
+            obj = (Object[]) new StaticSentence(session, "SELECT FACILITY_ID FROM SMS_MASTER_FAC WHERE SMS_MASTER_ID=? AND  ( FACILITY_ID=? OR FACILITY_ID = 'ALL')" , 
                     new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}) , 
                     new SerializerReadBasic(new Datas[]{Datas.STRING}) ).find(new Object[]{smsID,facilityID});
             if((obj != null) && obj[0] != null && obj[0].toString().trim().length() > 0 ) 
