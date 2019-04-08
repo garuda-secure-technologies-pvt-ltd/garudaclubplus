@@ -20,6 +20,7 @@ import com.openbravo.data.loader.Datas;
 import com.openbravo.data.loader.IKeyed;
 import com.openbravo.data.loader.SerializableRead;
 import com.openbravo.data.loader.Transaction;
+import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryData;
 import com.openbravo.pos.util.ICallBack;
@@ -377,6 +378,33 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
             Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+    
+    public String getGuestMobile(CustomerInfoExt guestCust)
+    {
+        String[] strArr = guestCust.getId().split("#");
+            if(strArr != null && strArr.length > 0)
+            {
+               Object[] obj;
+                try 
+                {
+                    obj = (Object[]) new StaticSentence(session, "SELECT MOBILE FROM CUSTOMERS WHERE VISIBLE=1 AND  ID=? " , 
+                            new SerializerWriteBasic(new Datas[]{Datas.STRING}) , 
+                            new SerializerReadBasic(new Datas[]{Datas.STRING}) ).find(new Object[]{strArr[0]});
+                    if((obj != null) && obj[0] != null && obj[0].toString().trim().length() > 0 ) 
+                    {
+                        return obj[0].toString();
+                    }
+                    else 
+                        return null;
+                } 
+                catch (BasicException ex) 
+                {
+                    Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                }
+            }
+            return null;
     }
     
 }
