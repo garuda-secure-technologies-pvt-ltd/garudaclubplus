@@ -407,4 +407,24 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
             return null;
     }
     
+    public String getFacilityId(String wareHouse)
+    {
+        try 
+        {
+            Object[] obj = (Object[]) new StaticSentence(session,
+                    "SELECT FACILITY FROM LOCATIONS WHERE ID = ? ", 
+                    SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING}))
+                    .find(wareHouse);
+            if (obj == null)
+                return "";
+            else
+                return obj[0].toString();
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
 }

@@ -1152,7 +1152,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     public void checkSMSflagForQT(QticketInfo qTicket)
     {
        boolean sendSMSwhileQT =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_QT_ID);
-       boolean isFacilityEnable = smsDBSettings.isFacilityEnable(SMSgeneralDBSettings.SMS_QT_ID, getFacilityId(qTicket.getWarehouse()) );
+       boolean isFacilityEnable = smsDBSettings.isFacilityEnable(SMSgeneralDBSettings.SMS_QT_ID, smsDBSettings.getFacilityId(qTicket.getWarehouse()) );
        if(sendSMSwhileQT && isFacilityEnable)
        {
            String smsString = smsDBSettings.getMessage(SMSgeneralDBSettings.SMS_QT_ID);
@@ -1285,26 +1285,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         return null;
     }
 
-    private String getFacilityId(String wareHouse)
-    {
-        try 
-        {
-            Object[] obj = (Object[]) new StaticSentence(m_App.getSession(),
-                    "SELECT FACILITY FROM LOCATIONS WHERE ID = ? ", 
-                    SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING}))
-                    .find(wareHouse);
-            if (obj == null)
-                return "";
-            else
-                return obj[0].toString();
-        } 
-        catch (BasicException ex) 
-        {
-            Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-    
     private boolean closeTicket(TicketInfo ticket, Object ticketext) {
 
         boolean resultok = false;
