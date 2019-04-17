@@ -740,6 +740,64 @@ public class Billpage extends javax.swing.JDialog {
     
     
     
+    public String[] getCustomerBalanceDue(BillInfo ticket) throws BasicException
+    {
+        String[] balanceArr = new String[2];
+        AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+         //praveen:added to display member's account balance
+        Object[] obj4 = (Object[]) new StaticSentence(m_App.getSession(),
+                "SELECT SUM(DEBT),SUM(CREDIT),ACC FROM( " +
+                "SELECT SUM(A.BALANCEAMOUNT) AS DEBT,0.0 AS CREDIT,ACCOUNTID AS ACC FROM ACCOUNTJOURNAL A,CUSTOMERS C WHERE A.TRANSTYPE='D' AND A.ACCOUNTID=C.ACCOUNT AND C.ID=? AND ACTIVE = TRUE GROUP BY A.ACCOUNTID " +
+                "UNION ALL " +
+                "SELECT 0.0 AS DEBT,SUM(A.BALANCEAMOUNT) AS CREDIT,ACCOUNTID AS ACC FROM ACCOUNTJOURNAL A,CUSTOMERS C WHERE A.TRANSTYPE='C' AND A.ACCOUNTID=C.ACCOUNT AND C.ID=? AND ACTIVE = TRUE GROUP BY A.ACCOUNTID) " +
+                "AS TOTAL GROUP BY ACC",
+                new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.DOUBLE, Datas.DOUBLE})).find(new Object[]{customertemp.getId(), customertemp.getId()});
+        Double d = 0.0;
+        Double d1 = 0.0;
+        if (obj4 != null) 
+        {
+            if (obj4[0] != null) 
+            {
+                d = Double.valueOf(obj4[0].toString());
+            }
+            if (obj4[1] != null) 
+            {
+                d1 = Double.valueOf(obj4[1].toString());
+            }
+        }
+        Double bal = d - d1;
+        Double bal1 = d - d1 + ticket.getTotal();
+        String accountBalance = null;
+        String accountBalance1 = null;
+        if (bal > 0) 
+        {
+            bal = dlfac.roundTwoDecimals(bal);
+            accountBalance = Formats.CURRENCY.formatValue(bal) + " Dr.";
+        } 
+        else 
+        {
+           bal = bal * -1;
+           bal = dlfac.roundTwoDecimals(bal);
+           accountBalance = Formats.CURRENCY.formatValue(bal) + " Cr.";
+        }
+       
+        if (bal1 > 0) 
+        {
+            bal1 = dlfac.roundTwoDecimals(bal1);
+            accountBalance1=Formats.CURRENCY.formatValue(bal1) + " Dr.";
+        }
+        else 
+        {
+           bal1 = bal1 * -1;
+           bal1 = dlfac.roundTwoDecimals(bal1);
+           accountBalance1=Formats.CURRENCY.formatValue(bal1) + " Cr.";
+        }
+        balanceArr[0] = accountBalance;
+        balanceArr[1] = accountBalance1;
+        return balanceArr;
+    }
+    
+    
     public void checkForSMS( BillInfo ticket, Object ticketext)
     {
          boolean sendSMSwhileBill =  smsDBsettings.getSMSvalue(SMSgeneralDBSettings.SMS_BILL_ID);
@@ -759,7 +817,27 @@ public class Billpage extends javax.swing.JDialog {
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getRDisplayName(ticket.getWarehouse()));
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRDisplayName(ticket.getWarehouse())); 
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY, ticket.getTotal()+"");
-    
+        
+        // check if string has balance due text 
+        if(smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE) || smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER))
+        {
+            try 
+            {
+                String[] arr = getCustomerBalanceDue(ticket);
+                if(arr != null && arr.length > 0)
+                {
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE, arr[0]);
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER, arr[1]);
+                }
+            } 
+            catch (BasicException ex) 
+            {
+                Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        
+        // check if customer is guest
         if(ticket.getCustomer().getId().contains("Guest"))
         {
             String custID = smsDBsettings.getCustIdFromGuestID(ticket.getCustomer());

@@ -64,6 +64,8 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_MEMBER_NAME_KEY = "###MEMNAME###";
     public static final String SMS_MEMBER_NO_KEY = "###MEMNO###";
     public static final String SMS_TOT_AMOUNT_KEY = "###TOTAMOUNT###";
+    public static final String SMS_CUST_BAL_BEFORE = "###CUSTBALBEFORE###";
+    public static final String SMS_CUST_BAL_AFTER = "###CUSTBALAFTER###";
     
     private List<SmsMasterInfo> smsMasterClassList; 
     

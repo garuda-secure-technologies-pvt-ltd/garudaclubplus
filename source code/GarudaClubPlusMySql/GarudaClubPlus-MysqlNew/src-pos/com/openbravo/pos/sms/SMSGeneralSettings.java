@@ -108,6 +108,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         predefine_list.put("Member Name", SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY);
         predefine_list.put("Member No.", SMSgeneralDBSettings.SMS_MEMBER_NO_KEY);
         predefine_list.put("Total Amount", SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY);
+        predefine_list.put("Member bal. before bill", SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE);
+        predefine_list.put("Member bal. after bill", SMSgeneralDBSettings.SMS_CUST_BAL_AFTER);
         
         List list  = new ArrayList<Object>(predefine_list.values());
         Set<String> set = predefine_list.keySet();
@@ -1066,10 +1068,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 708, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(combo_box_smsPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(add_text_button)
                             .addComponent(jLabel7)
-                            .addComponent(jLabel8)))
+                            .addComponent(jLabel8)
+                            .addComponent(combo_box_smsPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(325, 325, 325)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)))

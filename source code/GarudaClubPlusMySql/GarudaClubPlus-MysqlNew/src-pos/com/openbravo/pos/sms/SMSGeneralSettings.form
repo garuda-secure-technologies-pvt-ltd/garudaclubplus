@@ -33,10 +33,10 @@
                       <Component id="jTabbedPane1" min="-2" pref="708" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="combo_box_smsPrefix" min="-2" pref="147" max="-2" attributes="0"/>
                           <Component id="add_text_button" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                          <Component id="combo_box_smsPrefix" alignment="0" min="-2" pref="172" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
