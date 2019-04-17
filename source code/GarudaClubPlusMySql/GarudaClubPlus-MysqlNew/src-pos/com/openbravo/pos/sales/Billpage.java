@@ -27,6 +27,7 @@ import com.openbravo.data.loader.Transaction;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.clubmang.DataLogicFacilities;
 import com.openbravo.pos.customers.CustomerInfo;
+import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppUser;
 import com.openbravo.pos.forms.AppView;
@@ -77,6 +78,7 @@ import javax.swing.table.TableColumnModel;
 
 import com.openbravo.pos.payment.TicketInfoCash;
 import com.openbravo.pos.sales.restaurant.BillList;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 
 /**
  *
@@ -91,6 +93,7 @@ public class Billpage extends javax.swing.JDialog {
     private BillLogic blogic;
     private BillLogicApply bla;
     private DataLogicSales dlSales;
+    private SMSgeneralDBSettings smsDBsettings;
     private DataLogicFacilities dlfac;
     private BillInfo binfo;
     private boolean resultok = false;
@@ -209,6 +212,7 @@ public class Billpage extends javax.swing.JDialog {
         AppView app = LookupUtilityImpl.getInstance(null).getAppView();
         dlSystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystemCreate");
         dlfac = (DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
+        smsDBsettings = (SMSgeneralDBSettings) app.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
         m_TTP = new TicketParser(app.getDeviceTicket(), LookupUtilityImpl.getInstance(null).getDataLogicSystem());
 
         paymentdialogreceipt = JPaymentSelectReceipt.getDialog(this);
@@ -542,6 +546,8 @@ public class Billpage extends javax.swing.JDialog {
         return resultok;
  
     }
+    
+  
 
     private void printTicket(String sresourcename, BillInfo ticket, Object ticketext) {
 
@@ -625,11 +631,9 @@ public class Billpage extends javax.swing.JDialog {
                 if (obj2[3] != null) {
                     str = obj2[3].toString().split("#");
                 }
-                Object[] obj3 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT RDISPLAYNAME FROM LOCATIONS WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(str[0].toString());
-                String name = null;
-                if (obj3 != null && obj3[0] != null) {
-                    name = obj3[0].toString();
-                }
+                
+                String name = getRDisplayName(str[0].toString());
+                
                 //praveen:added to display member's account balance
                 Object[] obj4 = (Object[]) new StaticSentence(m_App.getSession(),
                         "SELECT SUM(DEBT),SUM(CREDIT),ACC FROM( " +
@@ -713,7 +717,91 @@ public class Billpage extends javax.swing.JDialog {
             }
         }
     }
+    
+    
+    public String getRDisplayName(String wharehouseID)
+    {
+        AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+        Object[] displayObj;
+        try 
+        {
+            displayObj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT RDISPLAYNAME FROM LOCATIONS WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(wharehouseID);
+            if (displayObj != null && displayObj[0] != null) 
+            {
+                return displayObj[0].toString();
+            }
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    
+    
+    public void checkForSMS( BillInfo ticket, Object ticketext)
+    {
+         boolean sendSMSwhileBill =  smsDBsettings.getSMSvalue(SMSgeneralDBSettings.SMS_BILL_ID);
+         boolean isFacilityEnable = smsDBsettings.isFacilityEnable(SMSgeneralDBSettings.SMS_BILL_ID, smsDBsettings.getFacilityId(ticket.getWarehouse()) );
+         if(sendSMSwhileBill && isFacilityEnable)
+       {
+           String smsString = smsDBsettings.getMessage(SMSgeneralDBSettings.SMS_BILL_ID);
+           createSMS(smsString, ticket);
+       }
+    }
 
+    public void createSMS(String smsString,  BillInfo ticket)
+    {
+        String sms = smsString;
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, ticket.getID());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , ticket.printDate());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getRDisplayName(ticket.getWarehouse()));
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRDisplayName(ticket.getWarehouse())); 
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY, ticket.getTotal()+"");
+    
+        if(ticket.getCustomer().getId().contains("Guest"))
+        {
+            String custID = smsDBsettings.getCustIdFromGuestID(ticket.getCustomer());
+             if(custID != null)
+             {
+                try 
+                {
+                    CustomerInfoExt custInfo =  dlSales.loadCustomerExt(custID);
+                    if(custInfo != null )
+                    {
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, custInfo.getName());
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, custInfo.getSearchkey()); 
+                        if(custInfo.getmobile() != null && !custInfo.getmobile().isEmpty())
+                        {
+                           smsDBsettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile()); 
+                        }
+                    }
+                } 
+                catch (BasicException ex)
+                {
+                    Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        else
+        {
+            if(ticket.getCustomer().getmobile() != null && !ticket.getCustomer().getmobile().isEmpty())
+            {
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, ticket.getCustomer().getName());
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, ticket.getCustomer().getSearchkey());
+               smsDBsettings.insertSMStoActiveMsgTable(smsString, ticket.getCustomer().getmobile());
+               Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
+            }  
+        }
+        
+        
+    
+    }
+    
+    
+    
+    
     private int checkForBillDiscount(String billid) {
         int flag1 = 0, tempint = 0;
         String temp;
@@ -1000,6 +1088,7 @@ public class Billpage extends javax.swing.JDialog {
             boolean flag = saveBill("Cash");
             if (flag == true) {
                 printTicket("Printer.Ticket", binfo, binfo.getPlace());
+                checkForSMS(binfo, binfo.getPlace());
                 dispose();
                 AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
                 
@@ -1213,7 +1302,7 @@ public class Billpage extends javax.swing.JDialog {
             if (flag == true) {
                 BillList.taxamt1=binfo.getTax();
                 printTicket("Printer.Ticket", binfo, binfo.getPlace());
-
+                checkForSMS(binfo, binfo.getPlace()); 
                 AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
                 try {
                     // String name=customertemp.getName();
@@ -1345,25 +1434,29 @@ List<PaymentInfo> l = new ArrayList<PaymentInfo>();
       }  
 
     
- public String getCreditConfID() throws BasicException {
+    public String getCreditConfID() throws BasicException
+    {
         AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
-     Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT SEQUENCEDETAIL.RMAX FROM SEQUENCEDETAIL WHERE ID=?", new SerializerWriteBasic(new Datas[]{ Datas.STRING}), new SerializerReadBasic(new Datas[]{ Datas.DOUBLE})).find(new Object[]{"CREDITCONFLISTID"});
-  if (obj != null) {
-                String creditConfID =  obj[0].toString();
-                 int creditConfID1=(int)Double.parseDouble(creditConfID);
-                creditConfID =String.valueOf(creditConfID1);
+        Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT SEQUENCEDETAIL.RMAX FROM SEQUENCEDETAIL WHERE ID=?", new SerializerWriteBasic(new Datas[]{ Datas.STRING}), new SerializerReadBasic(new Datas[]{ Datas.DOUBLE})).find(new Object[]{"CREDITCONFLISTID"});
+        if (obj != null) 
+        {
+            String creditConfID =  obj[0].toString();
+            int creditConfID1=(int)Double.parseDouble(creditConfID);
+            creditConfID =String.valueOf(creditConfID1);
             Double max = Double.parseDouble(obj[0].toString());
-           
+
             max++;
             System.out.println("max"+max);
 
             new StaticSentence(m_App.getSession(), "UPDATE SEQUENCEDETAIL SET RMAX=?  WHERE ID=? ", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE,Datas.STRING})).exec(new Object[]{max,"CREDITCONFLISTID"});
             return creditConfID;
-        } else {
+        } 
+        else 
+        {
             JOptionPane.showMessageDialog(null, "Please Specify the Credit Confirmation ID", "Cannot update Credit Confirmation table", JOptionPane.OK_OPTION);
             return null;
         }
- }
+    }
  public int getPendingBillIntrestDetails() throws BasicException{
         AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
         int flag=0;

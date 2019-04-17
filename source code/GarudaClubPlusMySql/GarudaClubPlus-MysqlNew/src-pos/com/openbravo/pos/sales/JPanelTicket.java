@@ -1167,24 +1167,46 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getFacilityName(qTicket.getWarehouse()));
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRdisplayName(qTicket.getWarehouse())); 
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, qTicket.getCustomer().getName());
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, qTicket.getCustomer().getId());
+        
         
         Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO, "SMS for QT is ON : Customer : "+qTicket.getCustomer().getId()+ " and  mobile number is "+qTicket.getCustomer().getmobile());
-        if(qTicket.getCustomer().getmobile() != null && !qTicket.getCustomer().getmobile().isEmpty())
-        {
-           smsDBSettings.insertSMStoActiveMsgTable(smsString, qTicket.getCustomer().getmobile());
-           Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
-        } 
-        else if(qTicket.getCustomer().getId().contains("Guest"))
-        {
-             String mobile = smsDBSettings.getGuestMobile(qTicket.getCustomer());
-             if(mobile != null)
-             {
-                 smsDBSettings.insertSMStoActiveMsgTable(smsString, mobile);
-             }
-        }
         
+        if(qTicket.getCustomer().getId().contains("Guest"))
+        {
+            String custID = smsDBSettings.getCustIdFromGuestID(qTicket.getCustomer());
+             if(custID != null)
+             {
+                try 
+                {
+                    CustomerInfoExt custInfo =  dlSales.loadCustomerExt(custID);
+                    if(custInfo != null )
+                    {
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, custInfo.getName());
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, custInfo.getSearchkey()); 
+                        if(custInfo.getmobile() != null && !custInfo.getmobile().isEmpty())
+                        {
+                           smsDBSettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile()); 
+                        }
+                        
+                    }
+                } 
+                catch (BasicException ex)
+                {
+                    Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        else
+        {
+           if(qTicket.getCustomer().getmobile() != null && !qTicket.getCustomer().getmobile().isEmpty())
+            {
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, qTicket.getCustomer().getName());
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, qTicket.getCustomer().getSearchkey());
+               smsDBSettings.insertSMStoActiveMsgTable(smsString, qTicket.getCustomer().getmobile());
+               Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
+            }  
+        }
+       
     }
     
     public void printqt(String prcategory, QticketInfo qTicket) throws BasicException {

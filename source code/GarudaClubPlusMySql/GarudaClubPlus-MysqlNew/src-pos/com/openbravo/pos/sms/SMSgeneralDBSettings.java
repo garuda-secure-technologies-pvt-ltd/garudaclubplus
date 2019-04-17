@@ -23,6 +23,8 @@ import com.openbravo.data.loader.Transaction;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryData;
+import com.openbravo.pos.forms.LookupUtilityImpl;
+import com.openbravo.pos.sales.Billpage;
 import com.openbravo.pos.util.ICallBack;
 import java.util.ArrayList;
 import java.util.Date;
@@ -380,31 +382,14 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
         return false;
     }
     
-    public String getGuestMobile(CustomerInfoExt guestCust)
+    public String getCustIdFromGuestID(CustomerInfoExt guestCust)
     {
         String[] strArr = guestCust.getId().split("#");
-            if(strArr != null && strArr.length > 0)
-            {
-               Object[] obj;
-                try 
-                {
-                    obj = (Object[]) new StaticSentence(session, "SELECT MOBILE FROM CUSTOMERS WHERE VISIBLE=1 AND  ID=? " , 
-                            new SerializerWriteBasic(new Datas[]{Datas.STRING}) , 
-                            new SerializerReadBasic(new Datas[]{Datas.STRING}) ).find(new Object[]{strArr[0]});
-                    if((obj != null) && obj[0] != null && obj[0].toString().trim().length() > 0 ) 
-                    {
-                        return obj[0].toString();
-                    }
-                    else 
-                        return null;
-                } 
-                catch (BasicException ex) 
-                {
-                    Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
-                    return null;
-                }
-            }
-            return null;
+        if(strArr != null && strArr.length > 0)
+        {
+            return strArr[0].toString();
+        }
+        return null;
     }
     
     public String getFacilityId(String wareHouse)
@@ -423,6 +408,27 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
         catch (BasicException ex) 
         {
             Logger.getLogger(SMSgeneralDBSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    // get role name 
+    
+    public String getRoleName()
+    {
+        AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+        Object[] roleObj;
+        try 
+        {
+            roleObj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT NAME FROM ROLES WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(m_App.getAppUserView().getUser().getRole());
+            if (roleObj != null && roleObj[0] != null) 
+            {
+                return roleObj[0].toString();
+            }
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
