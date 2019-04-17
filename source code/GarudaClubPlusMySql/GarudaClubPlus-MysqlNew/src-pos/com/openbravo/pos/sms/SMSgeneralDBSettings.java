@@ -53,7 +53,6 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_GUEST_NAME =  "Master message for Guest charges";
     public static final String SMS_SHARED_TKT_NAME =  "Master message for Shared ticket";
     
-    public static final String SMS_QT_KEY = "###QTNO###";
     public static final String SMS_BILL_KEY = "###BILLNO###";
     public static final String SMS_DTM_KEY = "###DTM###";
     public static final String SMS_FACILITY_KEY = "###FCLTNO###";

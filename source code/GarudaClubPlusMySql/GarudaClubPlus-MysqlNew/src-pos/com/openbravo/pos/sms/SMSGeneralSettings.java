@@ -98,8 +98,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private void initializeList()
     {
         predefine_list = new HashMap();
-        predefine_list.put("QT No.", SMSgeneralDBSettings.SMS_QT_KEY);
-        predefine_list.put("Bill No.", SMSgeneralDBSettings.SMS_BILL_KEY);
+        predefine_list.put("Bill/QT/Receipt No.", SMSgeneralDBSettings.SMS_BILL_KEY);
         predefine_list.put("Date & Time", SMSgeneralDBSettings.SMS_DTM_KEY);
         predefine_list.put("Facility Name", SMSgeneralDBSettings.SMS_FACILITY_KEY);
         predefine_list.put("Guest Chrg No.", SMSgeneralDBSettings.SMS_GUEST_KEY);
@@ -110,6 +109,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         predefine_list.put("Total Amount", SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY);
         predefine_list.put("Member bal. before bill", SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE);
         predefine_list.put("Member bal. after bill", SMSgeneralDBSettings.SMS_CUST_BAL_AFTER);
+        
         
         List list  = new ArrayList<Object>(predefine_list.values());
         Set<String> set = predefine_list.keySet();

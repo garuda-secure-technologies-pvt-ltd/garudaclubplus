@@ -1163,7 +1163,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     public void createSMS(String smsString, QticketInfo qTicket)
     {
         String sms = smsString;
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_QT_KEY, qTicket.getId());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, qTicket.getId());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getFacilityName(qTicket.getWarehouse()));
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRdisplayName(qTicket.getWarehouse())); 
