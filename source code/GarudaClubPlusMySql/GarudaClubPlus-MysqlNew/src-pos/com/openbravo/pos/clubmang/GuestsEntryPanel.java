@@ -65,6 +65,7 @@ import com.openbravo.pos.sales.restaurant.BillList;
 import com.openbravo.pos.sales.restaurant.DebtBillList;
 
 import com.openbravo.pos.sales.restaurant.JIntroPageRest;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
 //import java.awt.event.KeyEvent;
@@ -133,27 +134,23 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
       private double TaxAmount2=0.00;//added by lipi
         private double TaxAmount3=0.00;//added by lipi
    private double TotalAmountwithTax = 0.00;
+   protected SMSgeneralDBSettings smsDBSettings;
+   
+   
     public GuestsEntryPanel() {
         initComponents();
     }
 
-    public void init(AppView app) throws BeanFactoryException {
+    public void init(AppView app) throws BeanFactoryException 
+    {
         m_App = app;
         dlCustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomersCreate");
         dmang = (DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
         m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
         dlsystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystemCreate");
         ttp = new TicketParser(app.getDeviceTicket(), dlsystem);
-      
-    // app.getReader().setCardRederPanelObject(this);
-    //cr = new CardReader("COM5");
-    //try {
-    // cr.ConfigurePort();
-    //  } catch (Exception ex) {
-    //     Logger.getLogger(GuestsEntryPanel.class.getName()).log(Level.SEVERE, null, ex);
-    //  }
-
-
+        smsDBSettings = (SMSgeneralDBSettings) m_App.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
+   
     }
 
     public Object getBean() {
@@ -528,16 +525,16 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
                 script.put("receipt", receiptno);
                 script.put("TaxCatName", TaxCatName);
                 script.put("TaxCatName2", TaxCatName2); 
-                  script.put("TaxCatName3", TaxCatName3);
+                script.put("TaxCatName3", TaxCatName3);
                 script.put("TaxAmount", decimalFormat.format(TaxAmount));
                 script.put("totalwithTax", decimalFormat.format(TaxAmount+amount));
                 script.put("TaxAmount1", decimalFormat.format(TaxAmount1));
-                  script.put("TaxAmount2", decimalFormat.format(TaxAmount2));
-                    script.put("TaxAmount3", decimalFormat.format(TaxAmount3));
+                script.put("TaxAmount2", decimalFormat.format(TaxAmount2));
+                script.put("TaxAmount3", decimalFormat.format(TaxAmount3));
                   
                 script.put("ckey", skey);
                 script.put("eoe", StringUtils.encodeXML("E&OE"));
-                  script.put("balance", accountBalance);
+                script.put("balance", accountBalance);
                 script.put("balance1", accountBalance1);
                 ttp.printTicket(script.eval(sresource).toString());
             } catch (ScriptException e) {
@@ -551,6 +548,77 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
             }
         }
     }
+     
+     
+     public String[] getCustomerBalDue()
+     {
+        String[] balanceArr = new String[2];
+        Object[] obj4;
+        try
+        {
+            obj4 = (Object[]) new StaticSentence(m_App.getSession(),
+                    "SELECT SUM(DEBT),SUM(CREDIT),ACC FROM( " +
+                            "SELECT SUM(A.BALANCEAMOUNT) AS DEBT,0.0 AS CREDIT,ACCOUNTID AS ACC FROM ACCOUNTJOURNAL A,CUSTOMERS C WHERE A.TRANSTYPE='D' AND A.ACCOUNTID=C.ACCOUNT AND C.ID=? AND ACTIVE = TRUE GROUP BY A.ACCOUNTID " +
+                            "UNION ALL " +
+                            "SELECT 0.0 AS DEBT,SUM(A.BALANCEAMOUNT) AS CREDIT,ACCOUNTID AS ACC FROM ACCOUNTJOURNAL A,CUSTOMERS C WHERE A.TRANSTYPE='C' AND A.ACCOUNTID=C.ACCOUNT AND C.ID=? AND ACTIVE = TRUE GROUP BY A.ACCOUNTID) " +
+                            "AS TOTAL GROUP BY ACC",
+                    new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.DOUBLE, Datas.DOUBLE})).find(new Object[]{customerInfo.getId(), customerInfo.getId()});
+       
+            Double d = 0.0;
+            Double d1 = 0.0;
+            Double bal1=0.0;
+            Double bal=0.0;
+
+            if (obj4 != null)
+            {
+                if (obj4[0] != null) 
+                {
+                    d = Double.valueOf(obj4[0].toString());
+                }
+                if (obj4[1] != null) 
+                {
+                    d1 = Double.valueOf(obj4[1].toString());
+                }
+            }  
+
+            bal = d - d1;
+            bal1 =bal+TotalAmountwithTax;
+            String accountBalance = null;
+            String accountBalance1 = null;
+            if (bal > 0) 
+            {
+               bal = dmang.roundTwoDecimals(bal);
+               accountBalance = Formats.CURRENCY.formatValue(bal) + " Dr.";
+
+            }
+            else 
+            {
+                bal = bal * -1;
+                bal = dmang.roundTwoDecimals(bal);
+                accountBalance = Formats.CURRENCY.formatValue(bal) + " Cr.";
+            }
+
+            if (bal1 > 0) 
+            {
+                bal1 = dmang.roundTwoDecimals(bal1);
+                accountBalance1=Formats.CURRENCY.formatValue(bal1) + " Dr.";
+            } 
+            else
+            {
+               bal1 = bal1 * -1;
+               bal1 = dmang.roundTwoDecimals(bal1);
+               accountBalance1=Formats.CURRENCY.formatValue(bal1) + " Cr.";
+            }
+            balanceArr[0] = accountBalance;
+            balanceArr[1] = accountBalance1;
+        
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(GuestsEntryPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return balanceArr;
+     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -1435,133 +1503,206 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
 ////        reset();
 //        }
 //        else  if (customerInfo != null) {
-try {
+
+        try 
+        {
             Transaction t;
-    t = new Transaction(m_App.getSession()) {
-        
-        @Override
-        protected Object transact() throws BasicException {
-            String name = "";
-            List<PaymentInfo> pinfo = new ArrayList<PaymentInfo>();
-            List lnames = new ArrayList();
-            if (jComboBox2.getSelectedIndex() != -1 && customerInfo != null && guestno.getText().length() > 0) {
-                if (Integer.parseInt(guestno.getText()) == gnames.size()) {
-                    Date d = new Date();
-                    GuestCategory gcat = (GuestCategory) jComboBox2.getSelectedItem();
-                    
-                    int gno = Integer.parseInt(guestno.getText());
-                    //*/
-                    if (gno == gmodel.getSize()) {
-                        CustomerInfoExt cinfo = new CustomerInfoExt(customerInfo.getId());
-                        cinfo.setSearchkey(customerInfo.getSearchkey());
-                        cinfo.setName(customerInfo.getName());
-                        JPaymentSelect paymentdialog = JPaymentSelectReceipt.getDialog(new JFrame());
-                        paymentdialog.init(m_App);
-                        
-                        String Taxid = getTaxIDByTaxCatID(gcat.getTaxCategory());
-                        String TaxCatName = getTaxCatNameIDByTaxCatID(gcat.getTaxCategory());
-                        
-                        String Taxid2 = getTaxIDByTaxCatID1(gcat.getTaxCategory2());
-                        String TaxCatName2 = getTaxCatNameIDByTaxCatID1(gcat.getTaxCategory2());
-                        
-                        String Taxid3 = getTaxIDByTaxCatID2(gcat.getTaxCategory3());
-                        String TaxCatName3 = getTaxCatNameIDByTaxCatID2(gcat.getTaxCategory3());
-                        
-                        
-                        boolean flag = paymentdialog.showDialog(Double.parseDouble(TotalAmount_text.getText()), cinfo, m_App.getAppUserView().getUser().getName(), true);
-                        if (flag == true) {
-                            pinfo = paymentdialog.getSelectedPayments();
-                            BillInfo ticket = new BillInfo();
-                            ticket.setID(UUID.randomUUID().toString());
-                            ticket.setPayments(pinfo);
-                            ticket.setCustomer(cinfo);
-                            ticket.setCreatedBy(m_App.getAppUserView().getUser().getName());
-                            ticket.setCreatedDate(getdate());
-                            ticket.setActiveCash(m_App.getActiveCashIndex());
-                            ticket.setFloor("Guest Entry");
-                            //Guest cat changes-start
-                            ticket.setPlace(gcat.getid());
-                            ticket.setTaxes(lnames);
-                            
-                            //Guest cat changes-end
-                            String rnum = m_dlSales.payaccount2(ticket, m_App.getInventoryLocation(), true, Taxid,Taxid2,Taxid3, Double.parseDouble(amount.getText()) , Double.parseDouble(taxAmount_text.getText()) );
-                            //  }
-                            if (!(rnum == null
-                                    || rnum.equals("false"))) {
-                                String nametemp = null;
-                                
-                                int i = 0;
-                                for (i = 0; i < gmodel.getSize(); i++) {
-                                    String tempname = gmodel.getElementAt(i).toString();
-                                    if (name.equals("")) {
-                                        name = tempname;
-                                    } else {
-                                        name += ":" + tempname;
-                                    }
-                                    if (nametemp == null) {
-                                        nametemp = tempname;
-                                    } else {
-                                        nametemp = nametemp + " , " + tempname;
-                                        if ((i + 1) % 3 == 0) {
-                                            lnames.add(nametemp);
-                                            nametemp = null;
+            t = new Transaction(m_App.getSession()) 
+            {
+
+            @Override
+            protected Object transact() throws BasicException 
+            {
+                String name = "";
+                List<PaymentInfo> pinfo = new ArrayList<PaymentInfo>();
+                List lnames = new ArrayList();
+                if (jComboBox2.getSelectedIndex() != -1 && customerInfo != null && guestno.getText().length() > 0) 
+                {
+                    if (Integer.parseInt(guestno.getText()) == gnames.size()) 
+                    {
+                        Date d = new Date();
+                        GuestCategory gcat = (GuestCategory) jComboBox2.getSelectedItem();
+
+                        int gno = Integer.parseInt(guestno.getText());
+                        //*/
+                        if (gno == gmodel.getSize()) 
+                        {
+                            CustomerInfoExt cinfo = new CustomerInfoExt(customerInfo.getId());
+                            cinfo.setSearchkey(customerInfo.getSearchkey());
+                            cinfo.setName(customerInfo.getName());
+                            JPaymentSelect paymentdialog = JPaymentSelectReceipt.getDialog(new JFrame());
+                            paymentdialog.init(m_App);
+
+                            String Taxid = getTaxIDByTaxCatID(gcat.getTaxCategory());
+                            String TaxCatName = getTaxCatNameIDByTaxCatID(gcat.getTaxCategory());
+
+                            String Taxid2 = getTaxIDByTaxCatID1(gcat.getTaxCategory2());
+                            String TaxCatName2 = getTaxCatNameIDByTaxCatID1(gcat.getTaxCategory2());
+
+                            String Taxid3 = getTaxIDByTaxCatID2(gcat.getTaxCategory3());
+                            String TaxCatName3 = getTaxCatNameIDByTaxCatID2(gcat.getTaxCategory3());
+
+
+                            boolean flag = paymentdialog.showDialog(Double.parseDouble(TotalAmount_text.getText()), cinfo, m_App.getAppUserView().getUser().getName(), true);
+                            if (flag == true) 
+                            {
+                                pinfo = paymentdialog.getSelectedPayments();
+                                BillInfo ticket = new BillInfo();
+                                ticket.setID(UUID.randomUUID().toString());
+                                ticket.setPayments(pinfo);
+                                ticket.setCustomer(cinfo);
+                                ticket.setCreatedBy(m_App.getAppUserView().getUser().getName());
+                                ticket.setCreatedDate(getdate());
+                                ticket.setActiveCash(m_App.getActiveCashIndex());
+                                ticket.setFloor("Guest Entry");
+                                //Guest cat changes-start
+                                ticket.setPlace(gcat.getid());
+                                ticket.setTaxes(lnames);
+                                 
+
+                                //Guest cat changes-end
+                                String rnum = m_dlSales.payaccount2(ticket, m_App.getInventoryLocation(), true, Taxid,Taxid2,Taxid3, Double.parseDouble(amount.getText()) , Double.parseDouble(taxAmount_text.getText()) );
+                                //  }
+                                if (!(rnum == null || rnum.equals("false"))) 
+                                {
+                                    String nametemp = null;
+
+                                    int i = 0;
+                                    for (i = 0; i < gmodel.getSize(); i++) 
+                                    {
+                                        String tempname = gmodel.getElementAt(i).toString();
+                                        if (name.equals("")) 
+                                        {
+                                            name = tempname;
+                                        } 
+                                        else 
+                                        {
+                                            name += ":" + tempname;
                                         }
+                                        if (nametemp == null) 
+                                        {
+                                            nametemp = tempname;
+                                        } 
+                                        else 
+                                        {
+                                            nametemp = nametemp + " , " + tempname;
+                                            if ((i + 1) % 3 == 0) 
+                                            {
+                                                lnames.add(nametemp);
+                                                nametemp = null;
+                                            }
+                                        }
+
                                     }
+                                    if (i % 3 != 0) 
+                                    {
+                                        lnames.add(nametemp);
+                                    }
+
+                                    Double amt = gcat.getrate() * gno;
+                                    Double TotalAmountWithTax = Double.parseDouble(TotalAmount_text.getText());
+                                    // try{
+                                    Object[] value = new Object[]{UUID.randomUUID().toString(), customerInfo.getId(), d, gcat.getid(), amt, gno, name, rnum, m_App.getAppUserView().getUser().getName(),gcat.getTaxCategory(),Double.parseDouble(taxAmount_text.getText()) ,gcat.getTaxCategory2(),gcat.getTaxCategory3()};
+                                    new PreparedSentence(m_App.getSession(), "INSERT INTO GUESTLOG(ID,MEMNO,DATE,GUESTCAT,AMOUNT,NUM,NAMES,RECEIPTNO,CREATEDBY,TAXCAT,TAXAMOUNT,TAXCAT1,TAXCAT2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.DOUBLE, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING,Datas.STRING,Datas.DOUBLE,Datas.STRING,Datas.STRING})).exec(value);
+                                    printTicket(lnames, rnum, cinfo.getName(), pinfo, amt, gcat, gno, cinfo.getSearchkey(),TaxCatName,Double.parseDouble(taxAmount_text.getText()),TaxCatName2,TaxCatName3,binfo);
+                                    checkForSMS(ticket, amt+Double.parseDouble(taxAmount_text.getText()));
                                     
-                                }
-                                if (i % 3 != 0) {
-                                    lnames.add(nametemp);
-                                }
-                                
-                                Double amt = gcat.getrate() * gno;
-                                Double TotalAmountWithTax = Double.parseDouble(TotalAmount_text.getText());
-                                // try{
-                                Object[] value = new Object[]{UUID.randomUUID().toString(), customerInfo.getId(), d, gcat.getid(), amt, gno, name, rnum, m_App.getAppUserView().getUser().getName(),gcat.getTaxCategory(),Double.parseDouble(taxAmount_text.getText()) ,gcat.getTaxCategory2(),gcat.getTaxCategory3()};
-                                new PreparedSentence(m_App.getSession(), "INSERT INTO GUESTLOG(ID,MEMNO,DATE,GUESTCAT,AMOUNT,NUM,NAMES,RECEIPTNO,CREATEDBY,TAXCAT,TAXAMOUNT,TAXCAT1,TAXCAT2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.DOUBLE, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING,Datas.STRING,Datas.DOUBLE,Datas.STRING,Datas.STRING})).exec(value);
-                                printTicket(lnames, rnum, cinfo.getName(), pinfo, amt, gcat, gno, cinfo.getSearchkey(),TaxCatName,Double.parseDouble(taxAmount_text.getText()),TaxCatName2,TaxCatName3,binfo);
-                                loadData();
-                                memno.setText(null);
-                                //}
-                            } else {
-                                if (rnum.equals("false")) {
-                                    JOptionPane.showMessageDialog(null, "Please reset the system time or consult your system admin", "Sorry Cannot Create Receipt", JOptionPane.OK_OPTION);
-                                } else {
-                                    JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.OK_OPTION);
+                                    loadData();
+                                    memno.setText(null);
+                                    //}
+                                } 
+                                else 
+                                {
+                                    if (rnum.equals("false"))
+                                    {
+                                        JOptionPane.showMessageDialog(null, "Please reset the system time or consult your system admin", "Sorry Cannot Create Receipt", JOptionPane.OK_OPTION);
+                                    } 
+                                    else 
+                                    {
+                                        JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.OK_OPTION);
+                                    }
                                 }
                             }
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "The Guest limit exceeds for the category", "Guest Limit Exceeds", JOptionPane.WARNING_MESSAGE);
-                        
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "The Guest list does not match with guest number", null, JOptionPane.WARNING_MESSAGE);
-                }
-            } else {
-                //exceeds
-                JOptionPane.showMessageDialog(null, "Please Fill the form completely", null, JOptionPane.WARNING_MESSAGE);
-            }
-//            else {
-//                    if (customerInfo == null) {
-//                    JOptionPane.showMessageDialog(null, "Please Select Member First", null, JOptionPane.OK_OPTION);
-////        reset();
-//                    }
-//                    
-//                    
-//                    }
-            return null;
-        }
-    };
-            t.execute();
+                        } 
+                        else
+                        {
+                            JOptionPane.showMessageDialog(null, "The Guest limit exceeds for the category", "Guest Limit Exceeds", JOptionPane.WARNING_MESSAGE);
 
-        } catch (Exception e) {
-             Logger.getLogger(GuestsEntryPanel.class.getName()).log(Level.SEVERE, null, e);
-             new MessageInf(e).show(new JFrame());
-        }
+                        }
+                    }
+                    else 
+                    {
+                        JOptionPane.showMessageDialog(null, "The Guest list does not match with guest number", null, JOptionPane.WARNING_MESSAGE);
+                    }
+                } 
+                else 
+                {
+                    //exceeds
+                    JOptionPane.showMessageDialog(null, "Please Fill the form completely", null, JOptionPane.WARNING_MESSAGE);
+                }
+    //            else {
+    //                    if (customerInfo == null) {
+    //                    JOptionPane.showMessageDialog(null, "Please Select Member First", null, JOptionPane.OK_OPTION);
+    ////        reset();
+    //                    }
+    //                    
+    //                    
+    //                    }
+                return null;
+            }
+        };
+                t.execute();
+
+            } catch (Exception e) {
+                 Logger.getLogger(GuestsEntryPanel.class.getName()).log(Level.SEVERE, null, e);
+                 new MessageInf(e).show(new JFrame());
+            }
 //        }
         
 }//GEN-LAST:event_PayActionPerformed
 
+    
+    public void checkForSMS(BillInfo ticket, Double totalAmount)
+    {
+        boolean sendSMSwhileGuestCharges =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_GUEST_ID);
+        if(sendSMSwhileGuestCharges)
+        {
+            createSMS(ticket, totalAmount);
+        }
+    }
+    
+    public void createSMS(BillInfo ticket, Double totalAmount)
+    {
+        String smsString = smsDBSettings.getMessage(SMSgeneralDBSettings.SMS_GUEST_ID);
+        if(smsString != null)
+        {
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, ticket.getReceiptRef());
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , Formats.TIMESTAMP.formatValue(new Date()));
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY , decimalFormat.format(totalAmount));
+            
+            if(ticket.getCustomer() != null)
+            {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, ticket.getCustomer().getName()); 
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, ticket.getCustomer().getSearchkey()); 
+            }
+            if(smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE) || smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER))
+            {
+                String[] balArr = getCustomerBalDue();
+                if(balArr != null && balArr.length > 0 )
+                {
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE, balArr[0]);
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER, balArr[1]);
+                }
+            }
+            
+            if(customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() > 0)
+            {
+                smsDBSettings.insertSMStoActiveMsgTable(smsString, customerInfo.getMobile());
+            }
+        }
+    }
+    
+    
     private void gnameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_gnameKeyPressed
         // TODO add your handling code here:
          if (customerInfo != null) {

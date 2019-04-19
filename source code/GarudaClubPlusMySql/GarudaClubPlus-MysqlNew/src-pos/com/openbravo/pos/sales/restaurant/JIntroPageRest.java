@@ -22,30 +22,23 @@ import javax.swing.*;
 import com.openbravo.pos.sales.*;
 import com.openbravo.pos.forms.*;
 import com.openbravo.data.loader.StaticSentence;
-//import com.openbravo.data.loader.SerializerReadClass;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.data.loader.SentenceList;
 import com.openbravo.pos.customers.CustomerInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.customers.DataLogicCustomers;
-//import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.customers.JCustomerFinder;
 import com.openbravo.data.gui.ComboBoxValModel;
-//import com.openbravo.data.loader.Datas;
 import com.openbravo.data.loader.Datas;
 import com.openbravo.data.loader.LocalRes;
 import com.openbravo.data.loader.PreparedSentence;
 import com.openbravo.data.loader.SerializerReadBasic;
-//import com.openbravo.data.loader.SerializerReadInteger;
-//import com.openbravo.data.loader.SerializerWriteBasic;
-//import com.openbravo.data.loader.SerializerWriteBasicExt;
+
 import com.openbravo.data.loader.SerializerReadString;
 import com.openbravo.data.loader.SerializerWriteBasic;
 import com.openbravo.data.loader.SerializerWriteString;
-//import com.openbravo.data.loader.Session;
-//import com.openbravo.data.user.DirtyManager;
-//import com.openbravo.pos.mant.FloorsInfo;
+
 import com.openbravo.data.loader.Session;
 import com.openbravo.data.loader.Transaction;
 import com.openbravo.format.Formats;
@@ -56,13 +49,13 @@ import com.openbravo.pos.clubmang.FacilityLimitCheck;
 import com.openbravo.pos.clubmang.MemberDebtBilling;
 import com.openbravo.pos.customers.memberPhotoInfo;
 import static com.openbravo.pos.panels.PaymentsModel.roundTwoDecimals;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-//import javax.swing.text.TableView;
-//import javax.swing.table.DefaultTableColumnModel;
+
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import cos.card.acs.Cosacs;
@@ -85,9 +78,7 @@ public class JIntroPageRest extends JTicketsBag implements CardSwipeNotifier {
     private ComboBoxValModel m_table;
     private ComboBoxValModel m_waiter;
     private ComboBoxValModel m_floor;
-//    private SentenceList m_tlist;
-//    private SentenceList m_wlist;
-//    private SentenceList m_flist;
+
     Object table, wait;
     private ArrayList<TicketInfo> m_ticketList;
     private IntroTableModel m_introtablemodel;
@@ -95,10 +86,9 @@ public class JIntroPageRest extends JTicketsBag implements CardSwipeNotifier {
     private AppView m_App;
     public static boolean dflag = false;
     private FacilityLimitCheck flcheck;
-//    private FacilityLimitCheck.FacilityLimitMaster facmas;
-//    private String portNumber;
+
     private CardReader cr;
-    //initiator changes - start
+   
     private String initiator;
     private boolean flag = true;
     private Session session;
@@ -464,8 +454,10 @@ public class JIntroPageRest extends JTicketsBag implements CardSwipeNotifier {
         }
     }
 
-    private void createSharedTicket(CustomerInfoExt ac_cust, String ac_place, String ac_waiter, String ac_floor) {
-        try {
+    private void createSharedTicket(CustomerInfoExt ac_cust, String ac_place, String ac_waiter, String ac_floor) 
+    {
+        try 
+        {
             m_oTicket = new TicketInfo();
             m_oTicket.setCustomer(ac_cust);
             m_oTicket.setPlace(dlSales.getPlaceByID(ac_place));
@@ -473,13 +465,17 @@ public class JIntroPageRest extends JTicketsBag implements CardSwipeNotifier {
             m_oTicket.setFloor(dlSales.getFloorByID(ac_floor));
             m_oTicket.setUser(m_App.getAppUserView().getUser().getUserInfo());
             int flag = addNewTicket(m_oTicket);
-            if (flag == 1) {
+            if (flag == 1)
+            {
                 m_panelticket.setActiveTicket(m_oTicket, ac_place);
             }
-            if (cr.getSerialConnection() != null) {
+            if (cr.getSerialConnection() != null) 
+            {
                 cr.getSerialConnection().setIncommingString("");
             }
-        } catch (BasicException e) {
+        } 
+        catch (BasicException e)
+        {
             MessageInf msg = new MessageInf(MessageInf.SGN_CAUTION, AppLocal.getIntString("message.ticketalreadyexists"), e);
             msg.show(this);
         }
@@ -1670,90 +1666,80 @@ public class JIntroPageRest extends JTicketsBag implements CardSwipeNotifier {
 
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        /* String custid=jTextField2.getText();
-        String custoid;
-        if(customer == null && custid != null)
-        {
-        try{
-        Object[] obj=(Object[])   new StaticSentence(m_App.getSession()
-        , "SELECT ID FROM CUSTOMERS WHERE SEARCHKEY = ?"
-        ,SerializerWriteString.INSTANCE
-        ,new SerializerReadBasic(new Datas[] { Datas.STRING})).find(custid);
-        if(obj==null)
-        {
-        }
-        else
-        {
-        custoid=obj[0].toString();
-        customer = dlSales.loadCustomerExt(custoid);
-        }
-        }
-        catch(Exception e)
-        {
-        }
-        }*/
+       
         //praveen:added to check facility limit
         Boolean PendingBillsCheck = false;
-        try {
-            
+        try 
+        {
             PendingBillsCheck = DeactivationOfMemberForPendingBills();
-            
-            if(PendingBillsCheck){
+            if(PendingBillsCheck)
+            {
                 Timestamp ts = new Timestamp(new Date().getTime());
-                    try {
+                try 
+                {
 
-                        Statement s = m_App.getSession().getConnection().createStatement();
-                        ResultSet r = s.executeQuery("select curdate() date"); //getting server time for the first time when app is started
-                        if (r.next()) {
-                            ts = r.getTimestamp("date");
-                            // System.out.println(ts);
-                        }
-
-
-                    } catch (SQLException ex) {
-                        Logger.getLogger(RetrieveData.class.getName()).log(Level.SEVERE, null, ex);
+                    Statement s = m_App.getSession().getConnection().createStatement();
+                    ResultSet r = s.executeQuery("select curdate() date"); //getting server time for the first time when app is started
+                    if (r.next()) 
+                    {
+                        ts = r.getTimestamp("date");
+                        // System.out.println(ts);
                     }
+                }
+                catch (SQLException ex) 
+                {
+                    Logger.getLogger(RetrieveData.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-                    final Date d = ts;
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(d);
-                    cal.set(Calendar.HOUR_OF_DAY, 00);
-                    cal.set(Calendar.MINUTE, 00);
-                    cal.set(Calendar.SECOND, 00);
-                    cal.set(Calendar.MILLISECOND, 00);
+                final Date d = ts;
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(d);
+                cal.set(Calendar.HOUR_OF_DAY, 00);
+                cal.set(Calendar.MINUTE, 00);
+                cal.set(Calendar.SECOND, 00);
+                cal.set(Calendar.MILLISECOND, 00);
 
-                    Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CALDATE FROM FACILITYLIMITMASTER", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.TIMESTAMP})).find();
-                    if (obj != null) {
-                        Date cdate = (Date) obj[0];
-                        Calendar cal2 = Calendar.getInstance();
-                        cal2.setTime(cdate);
-                        cal2.set(Calendar.HOUR_OF_DAY, 00);
-                        cal2.set(Calendar.MINUTE, 00);
-                        cal2.set(Calendar.SECOND, 00);
-                        cal2.set(Calendar.MILLISECOND, 00);
-                        if (cal.compareTo(cal2) == 0) {
-                            setActiveChoice(customer, (String) m_table.getSelectedKey(), (String) m_waiter.getSelectedKey(), (String) m_floor.getSelectedKey());
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Please calculate facility limit.........");
-                        }
-                    } else {
+                Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CALDATE FROM FACILITYLIMITMASTER", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.TIMESTAMP})).find();
+                if (obj != null) 
+                {
+                    Date cdate = (Date) obj[0];
+                    Calendar cal2 = Calendar.getInstance();
+                    cal2.setTime(cdate);
+                    cal2.set(Calendar.HOUR_OF_DAY, 00);
+                    cal2.set(Calendar.MINUTE, 00);
+                    cal2.set(Calendar.SECOND, 00);
+                    cal2.set(Calendar.MILLISECOND, 00);
+                    if (cal.compareTo(cal2) == 0)
+                    {
                         setActiveChoice(customer, (String) m_table.getSelectedKey(), (String) m_waiter.getSelectedKey(), (String) m_floor.getSelectedKey());
-                    } 
+                    }
+                    else 
+                    {
+                        JOptionPane.showMessageDialog(this, "Please calculate facility limit.........");
+                    }
+                } 
+                else 
+                {
+                    setActiveChoice(customer, (String) m_table.getSelectedKey(), (String) m_waiter.getSelectedKey(), (String) m_floor.getSelectedKey());
+                } 
                 
             }
-            else{
+            else
+            {
                 
-                if(PendingBillsAmount> 0.00){
+                if(PendingBillsAmount> 0.00)
+                {
                    JOptionPane.showMessageDialog(this, "Pending bills limit reached. \n  There are more pending bills for selected customer.  \n Please clear pending bills and try again.  \n Limit reached : "+Formats.DOUBLE.formatValue(PendingBillsAmount)); 
                 }
-                else{
+                else
+                {
                     JOptionPane.showMessageDialog(this, "Pending bills limit reached. \n  There are more pending bills for selected customer.  \n Please clear pending bills and try again.");
                 }
                 
             }
-            
-            
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jButton4ActionPerformed
