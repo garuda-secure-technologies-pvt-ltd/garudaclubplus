@@ -61,12 +61,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private static final String SPACE_TEXT = " ";
     private List<String> qt_selected_facility = new ArrayList();
     private List<String> bill_selected_facility = new ArrayList();
-    private List<String> st_selected_facility = new ArrayList();
+  
     
     private DefaultListModel qt_fac_list_model  = new DefaultListModel();
     private DefaultListModel bill_fac_list_model  = new DefaultListModel();
-    private DefaultListModel st_fac_list_model  = new DefaultListModel();
-    
     
     public SMSGeneralSettings()
     {
@@ -107,8 +105,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         predefine_list.put("Member Name", SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY);
         predefine_list.put("Member No.", SMSgeneralDBSettings.SMS_MEMBER_NO_KEY);
         predefine_list.put("Total Amount", SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY);
-        predefine_list.put("Member bal. before bill", SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE);
-        predefine_list.put("Member bal. after bill", SMSgeneralDBSettings.SMS_CUST_BAL_AFTER);
+        predefine_list.put("Net bal. before bill", SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE);
+        predefine_list.put("Net bal. after bill", SMSgeneralDBSettings.SMS_CUST_BAL_AFTER);
         
         
         List list  = new ArrayList<Object>(predefine_list.values());
@@ -122,7 +120,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         
         qt_fac_list_model  = new DefaultListModel();
         bill_fac_list_model  = new DefaultListModel();
-        st_fac_list_model  = new DefaultListModel();
+        
     }
     
     private void loadSmsMasterInfo()
@@ -146,9 +144,9 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                         setBillDetails(list.get(i));
                         break;
                     }
-                    case SMSgeneralDBSettings.SMS_SHARED_TKT_ID:
+                    case SMSgeneralDBSettings.SMS_GUEST_CHRG_CASH_ID:
                     {
-                        setSharedTktDetails(list.get(i));
+                        setGuestChrgCashDetails(list.get(i));
                         break;
                     }
                     case SMSgeneralDBSettings.SMS_ACCOUNT_ID:
@@ -160,7 +158,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                         text_area_account.setText(list.get(i).getMessage());
                         break;
                     }
-                    case SMSgeneralDBSettings.SMS_GUEST_ID:
+                    case SMSgeneralDBSettings.SMS_GUEST_CHRG_DEBIT_ID:
                     {
                         if(list.get(i).getActive().equals("0"))
                             guest_radio_button_no.setSelected(true);
@@ -223,33 +221,22 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     
     
     // set shared ticket details
-     public void setSharedTktDetails(SMSgeneralDBSettings.SmsMasterInfo smsInfo)
+     public void setGuestChrgCashDetails(SMSgeneralDBSettings.SmsMasterInfo smsInfo)
     { 
         if(smsInfo.getActive().equals("0"))
-            st_radio_button_no.setSelected(true);
+            gcc_radio_button_no.setSelected(true);
         else
-             st_radio_button_yes.setSelected(true);
+             gcc_radio_button_yes.setSelected(true);
+        
+        
         text_area_st.setText(smsInfo.getMessage());
-
-
-        st_selected_facility = smsInfo.getFacilityList();
-        if(smsInfo.getFacilityList().size() > 0 )
-        {
-            List<String> st_fac_list = smsInfo.getFacilityList();
-            st_fac_list_model = new DefaultListModel();
-            for(String  x : st_fac_list)
-            {
-                st_fac_list_model.addElement(x);
-            }
-        }
-        st_facility_jList.setModel(st_fac_list_model);
     }
     
     public void resetAllMenu()
     {
         qt_radio_button_no.setSelected(true);
         bill_radio_button_no.setSelected(true);
-        st_radio_button_no.setSelected(true);
+        gcc_radio_button_no.setSelected(true);
         account_radio_button_no.setSelected(true);
         guest_radio_button_no.setSelected(true);
     }
@@ -271,8 +258,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         billGroup.add(bill_radio_button_yes);
         
         ButtonGroup stGroup = new ButtonGroup();
-        stGroup.add(st_radio_button_no);
-        stGroup.add(st_radio_button_yes);
+        stGroup.add(gcc_radio_button_no);
+        stGroup.add(gcc_radio_button_yes);
         
         ButtonGroup accountGroup = new ButtonGroup();
         accountGroup.add(account_radio_button_no);
@@ -387,19 +374,14 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         bill_fac_remove_btn = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        st_radio_button_yes = new javax.swing.JRadioButton();
-        st_radio_button_no = new javax.swing.JRadioButton();
-        save_st_btn = new javax.swing.JButton();
+        gcc_radio_button_yes = new javax.swing.JRadioButton();
+        gcc_radio_button_no = new javax.swing.JRadioButton();
+        save_gcc_btn = new javax.swing.JButton();
         shared_tkt_panel = new javax.swing.JPanel();
-        clear_button_shared = new javax.swing.JButton();
+        clear_button_guest_chrg_ch = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         text_area_st = new javax.swing.JTextArea();
         jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jScrollPane8 = new javax.swing.JScrollPane();
-        st_facility_jList = new javax.swing.JList<>();
-        st_fac_add_btn = new javax.swing.JButton();
-        st_fac_remove_btn = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         guest_radio_button_yes = new javax.swing.JRadioButton();
@@ -689,7 +671,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                         .addComponent(bill_radio_button_yes)
                         .addGap(18, 18, 18)
                         .addComponent(bill_radio_button_no)
-                        .addGap(0, 265, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(bill_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -716,28 +698,28 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel4.setText("Send SMS while creating Shared Ticket ");
+        jLabel4.setText("Send SMS while creating Guest Charges (Cash)");
 
-        st_radio_button_yes.setText("Yes");
+        gcc_radio_button_yes.setText("Yes");
 
-        st_radio_button_no.setText("No");
-        st_radio_button_no.addItemListener(new java.awt.event.ItemListener() {
+        gcc_radio_button_no.setText("No");
+        gcc_radio_button_no.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                st_radio_button_noItemStateChanged(evt);
+                gcc_radio_button_noItemStateChanged(evt);
             }
         });
 
-        save_st_btn.setText("Save");
-        save_st_btn.addActionListener(new java.awt.event.ActionListener() {
+        save_gcc_btn.setText("Save");
+        save_gcc_btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                save_st_btnActionPerformed(evt);
+                save_gcc_btnActionPerformed(evt);
             }
         });
 
-        clear_button_shared.setText("Clear Message");
-        clear_button_shared.addActionListener(new java.awt.event.ActionListener() {
+        clear_button_guest_chrg_ch.setText("Clear Message");
+        clear_button_guest_chrg_ch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clear_button_sharedActionPerformed(evt);
+                clear_button_guest_chrg_chActionPerformed(evt);
             }
         });
 
@@ -749,81 +731,28 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         jLabel13.setText("Type SMS here :");
         jLabel13.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
-        jLabel14.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel14.setText("Select facility : ");
-        jLabel14.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-
-        st_facility_jList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane8.setViewportView(st_facility_jList);
-
-        st_fac_add_btn.setText("Add Facility");
-        st_fac_add_btn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                st_fac_add_btnActionPerformed(evt);
-            }
-        });
-
-        st_fac_remove_btn.setText("Remove");
-        st_fac_remove_btn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                st_fac_remove_btnActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout shared_tkt_panelLayout = new javax.swing.GroupLayout(shared_tkt_panel);
         shared_tkt_panel.setLayout(shared_tkt_panelLayout);
         shared_tkt_panelLayout.setHorizontalGroup(
             shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(shared_tkt_panelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(110, 110, 110)
                 .addGroup(shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(clear_button_shared))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(shared_tkt_panelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(st_fac_add_btn)
-                            .addComponent(st_fac_remove_btn))))
-                .addContainerGap(25, Short.MAX_VALUE))
-            .addGroup(shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(shared_tkt_panelLayout.createSequentialGroup()
-                    .addContainerGap()
+                    .addComponent(clear_button_guest_chrg_ch)
                     .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(407, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(142, Short.MAX_VALUE))
         );
         shared_tkt_panelLayout.setVerticalGroup(
             shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(shared_tkt_panelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, shared_tkt_panelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(clear_button_shared)
-                        .addGap(39, 39, 39))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, shared_tkt_panelLayout.createSequentialGroup()
-                        .addGroup(shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(shared_tkt_panelLayout.createSequentialGroup()
-                                .addComponent(st_fac_add_btn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(st_fac_remove_btn))
-                            .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(19, 19, 19))))
-            .addGroup(shared_tkt_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(shared_tkt_panelLayout.createSequentialGroup()
-                    .addGap(13, 13, 13)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(192, Short.MAX_VALUE)))
+                .addContainerGap(15, Short.MAX_VALUE)
+                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(clear_button_guest_chrg_ch)
+                .addGap(39, 39, 39))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -834,17 +763,17 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 330, Short.MAX_VALUE)
-                        .addComponent(save_st_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(save_gcc_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(181, 181, 181))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(31, 31, 31)
-                                .addComponent(st_radio_button_yes)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(st_radio_button_no))
+                                .addComponent(gcc_radio_button_yes)
+                                .addGap(18, 18, 18)
+                                .addComponent(gcc_radio_button_no))
                             .addComponent(shared_tkt_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -854,20 +783,20 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 .addGap(30, 30, 30)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(st_radio_button_yes)
-                    .addComponent(st_radio_button_no))
+                    .addComponent(gcc_radio_button_yes)
+                    .addComponent(gcc_radio_button_no))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(shared_tkt_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(shared_tkt_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(save_st_btn)
+                .addComponent(save_gcc_btn)
                 .addContainerGap(109, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Shared ticket", jPanel3);
+        jTabbedPane1.addTab("Guest Chrg. (Cash)", jPanel3);
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel5.setText("Send SMS while creating Guest Charges ");
+        jLabel5.setText("Send SMS while creating Guest Charges (A/c Debit)");
 
         guest_radio_button_yes.setText("Yes");
 
@@ -905,7 +834,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 .addGroup(guest_chrg_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(clear_button_guest))
-                .addContainerGap())
+                .addContainerGap(82, Short.MAX_VALUE))
         );
         guest_chrg_panelLayout.setVerticalGroup(
             guest_chrg_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -922,17 +851,21 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(guest_chrg_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(save_guest_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(26, 26, 26)
-                        .addComponent(guest_radio_button_yes)
-                        .addGap(18, 18, 18)
-                        .addComponent(guest_radio_button_no)))
-                .addContainerGap(215, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(guest_radio_button_yes)
+                .addGap(18, 18, 18)
+                .addComponent(guest_radio_button_no)
+                .addGap(152, 152, 152))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(guest_chrg_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(save_guest_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(125, 125, 125))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -949,7 +882,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 .addContainerGap(173, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Guest Charges", jPanel4);
+        jTabbedPane1.addTab("Guest Chrg. (A/c debit)", jPanel4);
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 51, 0));
@@ -1018,7 +951,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                         .addGap(18, 18, 18)
                         .addComponent(account_radio_button_no))
                     .addComponent(save_act_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(219, Short.MAX_VALUE))
+                .addContainerGap(193, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1065,8 +998,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 708, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(add_text_button)
                             .addComponent(jLabel7)
@@ -1085,8 +1018,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTabbedPane1)
-                        .addContainerGap())
+                        .addComponent(jTabbedPane1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(37, 37, 37)
                         .addComponent(jLabel7)
@@ -1096,7 +1028,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                         .addComponent(combo_box_smsPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(add_text_button)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1151,10 +1084,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
 
     }//GEN-LAST:event_save_bill_btn1ActionPerformed
 
-    private void save_st_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_st_btnActionPerformed
+    private void save_gcc_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_gcc_btnActionPerformed
         String message = text_area_st.getText().trim();
         String isActive = null;
-        if(st_radio_button_no.isSelected())
+        if(gcc_radio_button_no.isSelected())
         {
             isActive = "0";
         }
@@ -1166,14 +1099,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            else if(st_selected_facility.size() == 0)
-            {
-                JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_FAC_LIST_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);
-                return; 
-            }
+            
         }
-        setSMSFlag(SMSgeneralDBSettings.SMS_SHARED_TKT_ID , SMSgeneralDBSettings.SMS_SHARED_TKT_NAME , isActive, message, st_selected_facility);
-    }//GEN-LAST:event_save_st_btnActionPerformed
+        setSMSFlag(SMSgeneralDBSettings.SMS_GUEST_CHRG_CASH_ID , SMSgeneralDBSettings.SMS_GUEST_CHRG_CASH_NAME , isActive, message, null);
+    }//GEN-LAST:event_save_gcc_btnActionPerformed
 
     private void save_guest_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_guest_btnActionPerformed
         String message = text_area_guest.getText().trim();
@@ -1193,7 +1122,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                  
             
         }
-        setSMSFlag(SMSgeneralDBSettings.SMS_GUEST_ID , SMSgeneralDBSettings.SMS_GUEST_NAME , isActive, message, null);
+        setSMSFlag(SMSgeneralDBSettings.SMS_GUEST_CHRG_DEBIT_ID , SMSgeneralDBSettings.SMS_GUEST_CHRG_DEBIT_NAME , isActive, message, null);
     }//GEN-LAST:event_save_guest_btnActionPerformed
 
     private void save_act_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_act_btnActionPerformed
@@ -1314,7 +1243,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         }
     }//GEN-LAST:event_bill_radio_button_noItemStateChanged
 
-    private void st_radio_button_noItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_st_radio_button_noItemStateChanged
+    private void gcc_radio_button_noItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_gcc_radio_button_noItemStateChanged
         if(evt.getStateChange() == ItemEvent.SELECTED)
         {
             shared_tkt_panel.setVisible(false);
@@ -1323,7 +1252,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         {
             shared_tkt_panel.setVisible(true);
         }
-    }//GEN-LAST:event_st_radio_button_noItemStateChanged
+    }//GEN-LAST:event_gcc_radio_button_noItemStateChanged
 
     private void guest_radio_button_noItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_guest_radio_button_noItemStateChanged
        if(evt.getStateChange() == ItemEvent.SELECTED)
@@ -1355,9 +1284,9 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
          text_area_bill.setText("");
     }//GEN-LAST:event_clear_button_billActionPerformed
 
-    private void clear_button_sharedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clear_button_sharedActionPerformed
+    private void clear_button_guest_chrg_chActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clear_button_guest_chrg_chActionPerformed
          text_area_st.setText("");
-    }//GEN-LAST:event_clear_button_sharedActionPerformed
+    }//GEN-LAST:event_clear_button_guest_chrg_chActionPerformed
 
     private void clear_button_guestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clear_button_guestActionPerformed
         text_area_guest.setText("");
@@ -1427,34 +1356,6 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         
     }//GEN-LAST:event_bill_fac_add_btnActionPerformed
 
-    private void st_fac_add_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_fac_add_btnActionPerformed
-        String facility = facilityDialogBox();
-        if(facility != null)
-        {
-            if(!st_fac_list_model.contains(facility))
-            {
-                if(facility.equals("ALL"))
-                {
-                   st_fac_list_model = new DefaultListModel(); 
-                   st_selected_facility = new ArrayList();
-                }
-                else if(st_fac_list_model.contains("ALL"))
-                {
-                     st_fac_list_model = new DefaultListModel(); 
-                     st_selected_facility = new ArrayList();
-                }
-               st_fac_list_model.addElement(facility);
-               st_selected_facility.add(facility);
-               st_facility_jList.setModel(st_fac_list_model);
-            }
-            else
-            {
-                JOptionPane.showMessageDialog(SMSGeneralSettings.this,"Facility Already Selected", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        
-    }//GEN-LAST:event_st_fac_add_btnActionPerformed
-
     private void qt_fac_remove_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qt_fac_remove_btnActionPerformed
         if(!qt_facility_jList.isSelectionEmpty())
         {
@@ -1490,24 +1391,6 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         }
         
     }//GEN-LAST:event_bill_fac_remove_btnActionPerformed
-
-    private void st_fac_remove_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_fac_remove_btnActionPerformed
-        if(!st_facility_jList.isSelectionEmpty())
-        {
-            String facility = st_facility_jList.getSelectedValue();
-            if(st_selected_facility.contains(facility))
-            {
-                st_selected_facility.remove(facility);
-                st_fac_list_model.removeElement(facility);
-                st_facility_jList.setModel(st_fac_list_model);
-            }
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(SMSGeneralSettings.this,ERROR_EMPTY_FACILITY, "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        
-    }//GEN-LAST:event_st_fac_remove_btnActionPerformed
         
    
     
@@ -1527,9 +1410,11 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private javax.swing.JButton clear_button_account;
     private javax.swing.JButton clear_button_bill;
     private javax.swing.JButton clear_button_guest;
+    private javax.swing.JButton clear_button_guest_chrg_ch;
     private javax.swing.JButton clear_button_qt;
-    private javax.swing.JButton clear_button_shared;
     private javax.swing.JComboBox<String> combo_box_smsPrefix;
+    private javax.swing.JRadioButton gcc_radio_button_no;
+    private javax.swing.JRadioButton gcc_radio_button_yes;
     private javax.swing.JPanel guest_chrg_panel;
     private javax.swing.JRadioButton guest_radio_button_no;
     private javax.swing.JRadioButton guest_radio_button_yes;
@@ -1539,7 +1424,6 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1560,7 +1444,6 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton qt_fac_add_btn;
     private javax.swing.JButton qt_fac_remove_btn;
@@ -1570,15 +1453,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private javax.swing.JRadioButton qt_radio_button_yes;
     private javax.swing.JButton save_act_btn;
     private javax.swing.JButton save_bill_btn1;
+    private javax.swing.JButton save_gcc_btn;
     private javax.swing.JButton save_guest_btn;
     private javax.swing.JButton save_qt_btn;
-    private javax.swing.JButton save_st_btn;
     private javax.swing.JPanel shared_tkt_panel;
-    private javax.swing.JButton st_fac_add_btn;
-    private javax.swing.JButton st_fac_remove_btn;
-    private javax.swing.JList<String> st_facility_jList;
-    private javax.swing.JRadioButton st_radio_button_no;
-    private javax.swing.JRadioButton st_radio_button_yes;
     private javax.swing.JTextArea text_area_account;
     private javax.swing.JTextArea text_area_bill;
     private javax.swing.JTextArea text_area_guest;

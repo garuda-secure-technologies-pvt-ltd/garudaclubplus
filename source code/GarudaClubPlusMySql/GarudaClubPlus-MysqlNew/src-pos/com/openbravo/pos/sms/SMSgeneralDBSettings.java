@@ -44,14 +44,14 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_QT_ID =  "sms-101";
     public static final String SMS_BILL_ID =  "sms-102";
     public static final String SMS_ACCOUNT_ID =  "sms-103";
-    public static final String SMS_GUEST_ID =  "sms-104";
-    public static final String SMS_SHARED_TKT_ID =  "sms-105";
+    public static final String SMS_GUEST_CHRG_DEBIT_ID =  "sms-104";
+    public static final String SMS_GUEST_CHRG_CASH_ID =  "sms-105";
     
     public static final String SMS_QT_NAME =  "Master message for QT";
     public static final String SMS_BILL_NAME =  "Mastre message for BILL";
     public static final String SMS_ACCOUNT_NAME =  "Master message for Account";
-    public static final String SMS_GUEST_NAME =  "Master message for Guest charges";
-    public static final String SMS_SHARED_TKT_NAME =  "Master message for Shared ticket";
+    public static final String SMS_GUEST_CHRG_DEBIT_NAME =  "Master message for Guest charges - A/c debit";
+    public static final String SMS_GUEST_CHRG_CASH_NAME =  "Master message for Guest Charges - Cash";
     
     public static final String SMS_BILL_KEY = "###BILLNO###";
     public static final String SMS_DTM_KEY = "###DTM###";
@@ -342,7 +342,7 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     }
    
     
-    public void insertSMStoActiveMsgTable(String message, String mobile)
+    public void insertSMStoActiveMsgTable(String message, String mobile, String memid)
     {
         try 
         {
@@ -351,6 +351,10 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
                     new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING, Datas.INT, Datas.INT}))
                     .exec(new Object[]{id, message, mobile, 1, 0});
             
+            
+            new PreparedSentence(session, "INSERT INTO AUTOMSG(ID,MESSAGE,SENTDATE,MEMID) VALUES (?,?,?,?) ", 
+                    new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING}))
+                    .exec(new Object[]{id, message, new Date(), memid});
             
         } 
         catch (BasicException ex) 
