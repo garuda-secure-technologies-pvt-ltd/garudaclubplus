@@ -852,7 +852,7 @@ public class Billpage extends javax.swing.JDialog {
                         smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, custInfo.getSearchkey()); 
                         if(custInfo.getmobile() != null && !custInfo.getmobile().isEmpty())
                         {
-                           smsDBsettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile()); 
+                           smsDBsettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile(), custInfo.getId()); 
                         }
                     }
                 } 
@@ -868,7 +868,7 @@ public class Billpage extends javax.swing.JDialog {
             {
                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, ticket.getCustomer().getName());
                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, ticket.getCustomer().getSearchkey());
-               smsDBsettings.insertSMStoActiveMsgTable(smsString, ticket.getCustomer().getmobile());
+               smsDBsettings.insertSMStoActiveMsgTable(smsString, ticket.getCustomer().getmobile(), ticket.getCustomer().getId());
                Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
             }  
         }

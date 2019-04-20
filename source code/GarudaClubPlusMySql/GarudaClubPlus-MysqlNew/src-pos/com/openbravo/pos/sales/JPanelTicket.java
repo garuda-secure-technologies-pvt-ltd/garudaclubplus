@@ -1185,7 +1185,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                         smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, custInfo.getSearchkey()); 
                         if(custInfo.getmobile() != null && !custInfo.getmobile().isEmpty())
                         {
-                           smsDBSettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile()); 
+                           smsDBSettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile(), custInfo.getId()); 
                         }
                         
                     }
@@ -1202,7 +1202,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             {
                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, qTicket.getCustomer().getName());
                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, qTicket.getCustomer().getSearchkey());
-               smsDBSettings.insertSMStoActiveMsgTable(smsString, qTicket.getCustomer().getmobile());
+               smsDBSettings.insertSMStoActiveMsgTable(smsString, qTicket.getCustomer().getmobile(), qTicket.getCustomer().getId());
                Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
             }  
         }

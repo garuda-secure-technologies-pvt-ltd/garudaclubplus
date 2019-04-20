@@ -1524,7 +1524,7 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
                         GuestCategory gcat = (GuestCategory) jComboBox2.getSelectedItem();
 
                         int gno = Integer.parseInt(guestno.getText());
-                        //*/
+                        
                         if (gno == gmodel.getSize()) 
                         {
                             CustomerInfoExt cinfo = new CustomerInfoExt(customerInfo.getId());
@@ -1605,11 +1605,11 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
                                     Object[] value = new Object[]{UUID.randomUUID().toString(), customerInfo.getId(), d, gcat.getid(), amt, gno, name, rnum, m_App.getAppUserView().getUser().getName(),gcat.getTaxCategory(),Double.parseDouble(taxAmount_text.getText()) ,gcat.getTaxCategory2(),gcat.getTaxCategory3()};
                                     new PreparedSentence(m_App.getSession(), "INSERT INTO GUESTLOG(ID,MEMNO,DATE,GUESTCAT,AMOUNT,NUM,NAMES,RECEIPTNO,CREATEDBY,TAXCAT,TAXAMOUNT,TAXCAT1,TAXCAT2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.DOUBLE, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING,Datas.STRING,Datas.DOUBLE,Datas.STRING,Datas.STRING})).exec(value);
                                     printTicket(lnames, rnum, cinfo.getName(), pinfo, amt, gcat, gno, cinfo.getSearchkey(),TaxCatName,Double.parseDouble(taxAmount_text.getText()),TaxCatName2,TaxCatName3,binfo);
-                                    checkForSMS(ticket, amt+Double.parseDouble(taxAmount_text.getText()));
+                                    checkForCashSMS(ticket, amt+Double.parseDouble(taxAmount_text.getText()));
                                     
                                     loadData();
                                     memno.setText(null);
-                                    //}
+                                   
                                 } 
                                 else 
                                 {
@@ -1640,14 +1640,7 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
                     //exceeds
                     JOptionPane.showMessageDialog(null, "Please Fill the form completely", null, JOptionPane.WARNING_MESSAGE);
                 }
-    //            else {
-    //                    if (customerInfo == null) {
-    //                    JOptionPane.showMessageDialog(null, "Please Select Member First", null, JOptionPane.OK_OPTION);
-    ////        reset();
-    //                    }
-    //                    
-    //                    
-    //                    }
+   
                 return null;
             }
         };
@@ -1662,18 +1655,27 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
 }//GEN-LAST:event_PayActionPerformed
 
     
-    public void checkForSMS(BillInfo ticket, Double totalAmount)
+    public void checkForCashSMS(BillInfo ticket, Double totalAmount)
     {
-        boolean sendSMSwhileGuestCharges =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_GUEST_ID);
+        boolean sendSMSwhileGuestCharges =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_GUEST_CHRG_CASH_ID);
         if(sendSMSwhileGuestCharges)
         {
-            createSMS(ticket, totalAmount);
+            createSMS(ticket, totalAmount, SMSgeneralDBSettings.SMS_GUEST_CHRG_CASH_ID);
         }
     }
     
-    public void createSMS(BillInfo ticket, Double totalAmount)
+    public void checkForDebitSMS(BillInfo ticket, Double totalAmount)
     {
-        String smsString = smsDBSettings.getMessage(SMSgeneralDBSettings.SMS_GUEST_ID);
+        boolean sendSMSwhileGuestCharges =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_GUEST_CHRG_DEBIT_ID);
+        if(sendSMSwhileGuestCharges)
+        {
+            createSMS(ticket, totalAmount, SMSgeneralDBSettings.SMS_GUEST_CHRG_DEBIT_ID);
+        }
+    }
+    
+    public void createSMS(BillInfo ticket, Double totalAmount, String smsMessage_Id)
+    {
+        String smsString = smsDBSettings.getMessage(smsMessage_Id);
         if(smsString != null)
         {
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, ticket.getReceiptRef());
@@ -1697,7 +1699,7 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
             
             if(customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() > 0)
             {
-                smsDBSettings.insertSMStoActiveMsgTable(smsString, customerInfo.getMobile());
+                smsDBSettings.insertSMStoActiveMsgTable(smsString, customerInfo.getMobile(), customerInfo.getId());
             }
         }
     }
@@ -2234,7 +2236,7 @@ catch (Exception e) {
                                         
                                          printTicket(lnames, rnum, cinfo.getName(), pinfo, amt, gcat, gno, cinfo.getSearchkey(),TaxCatName,TaxAmount,TaxCatName2,TaxCatName3,binfo);
                                         
-                                        
+                                        checkForDebitSMS(ticket, (TotalAmountWithTax));
                                         
                                         
                                         if(TaxAmount1>0){
@@ -2304,7 +2306,7 @@ catch (Exception e) {
 //                                         }
 
                                          String id=null;
-                                        // System.out.println("customerid:::::"+id);
+                                      
                                          
                                         id=String.valueOf(customerInfo.getId());
                                          
@@ -2334,22 +2336,24 @@ catch (Exception e) {
 //                                                  dmang.updatetosendMsg(msg, customerInfo.getId(), customerInfo.getMobile(), 2);
 //                                         }
 
-                                   if (netBalance>0)
-                                   {
-                                       msg="Dear Member,\rYour a/c "+customerInfo.getSearchkey() +"  with us has been debited by Rs."+dmang.ConvertDoubleToString(TotalAmountWithTax)+" for Guest Entry on "+Formats.DATE.formatValue(d)+", Receipt no "+rnum+".Net Balance is Dr. Rs."+netBalance;
-                                   
-                                   }
-                                   if (netBalance<0)
-                                   {    
-                                       netBalance=(netBalance*(-1));
-                                       msg="Dear Member,\rYour a/c "+customerInfo.getSearchkey() +"  with us has been debited by Rs."+dmang.ConvertDoubleToString(TotalAmountWithTax)+" for Guest Entry on "+Formats.DATE.formatValue(d)+", Receipt no "+rnum+".Net Balance is Cr. Rs."+netBalance;
-                                   
-                                   } 
+//                                   if (netBalance>0)
+//                                   {
+//                                       checkForDebitSMS(ticket, (TotalAmountWithTax), netBalance);
+//                                       //msg="Dear Member,\rYour a/c "+customerInfo.getSearchkey() +"  with us has been debited by Rs."+dmang.ConvertDoubleToString(TotalAmountWithTax)+" for Guest Entry on "+Formats.DATE.formatValue(d)+", Receipt no "+rnum+".Net Balance is Dr. Rs."+netBalance;
+//                                   
+//                                   }
+//                                   if (netBalance<0)
+//                                   {    
+//                                       netBalance=(netBalance*(-1));
+//                                       checkForDebitSMS(ticket, (TotalAmountWithTax), netBalance);
+//                                       //msg="Dear Member,\rYour a/c "+customerInfo.getSearchkey() +"  with us has been debited by Rs."+dmang.ConvertDoubleToString(TotalAmountWithTax)+" for Guest Entry on "+Formats.DATE.formatValue(d)+", Receipt no "+rnum+".Net Balance is Cr. Rs."+netBalance;
+//                                   
+//                                   } 
                                          
                                          
-                                          if (customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() == 10) {
-                                                  dmang.updatetosendMsg(msg, customerInfo.getId(), customerInfo.getMobile(), 2);
-                                         }
+                                         // if (customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() == 10) {
+                                                // dmang.updatetosendMsg(msg, customerInfo.getId(), customerInfo.getMobile(), 2);
+                                         //}
                                          
                                          
                                          
