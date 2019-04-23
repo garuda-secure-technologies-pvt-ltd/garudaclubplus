@@ -1166,7 +1166,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, qTicket.getId());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getFacilityName(qTicket.getWarehouse()));
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRdisplayName(qTicket.getWarehouse())); 
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY, getRdisplayName(qTicket.getWarehouse()));
+        String x = m_App.getAppUserView().getUser().getRole();
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString()); 
         
         
         Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO, "SMS for QT is ON : Customer : "+qTicket.getCustomer().getId()+ " and  mobile number is "+qTicket.getCustomer().getmobile());

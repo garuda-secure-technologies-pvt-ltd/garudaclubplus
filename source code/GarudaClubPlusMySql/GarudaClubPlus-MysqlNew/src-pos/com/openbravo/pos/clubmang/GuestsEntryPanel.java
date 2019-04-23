@@ -1681,6 +1681,8 @@ public class GuestsEntryPanel extends javax.swing.JPanel implements JPanelView, 
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, ticket.getReceiptRef());
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , Formats.TIMESTAMP.formatValue(new Date()));
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY , decimalFormat.format(totalAmount));
+            String x = m_App.getAppUserView().getUser().getRole();
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY ,  LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
             
             if(ticket.getCustomer() != null)
             {

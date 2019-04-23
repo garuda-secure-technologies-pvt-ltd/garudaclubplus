@@ -815,7 +815,10 @@ public class Billpage extends javax.swing.JDialog {
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, ticket.getID());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , ticket.printDate());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getRDisplayName(ticket.getWarehouse()));
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, getRDisplayName(ticket.getWarehouse())); 
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY, getRDisplayName(ticket.getWarehouse()));
+        AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+        String x = m_App.getAppUserView().getUser().getRole();
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString()); 
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY, ticket.getTotal()+"");
         
         // check if string has balance due text 

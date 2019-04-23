@@ -57,8 +57,7 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_DTM_KEY = "###DTM###";
     public static final String SMS_FACILITY_KEY = "###FCLTNO###";
     public static final String SMS_ACCOUNT_KEY = "###ACTNO###";
-    public static final String SMS_GUEST_KEY = "###GUESTCHRGNO###";
-    public static final String SMS_WHAREHOUSE_NAME_KEY = "###WHAREHOUSE###";
+    public static final String SMS_WHAREHOUSE_NAME_KEY = "###WAREHOUSE###";
     public static final String SMS_ROLE_KEY = "###ROLE###";
     public static final String SMS_MEMBER_NAME_KEY = "###MEMNAME###";
     public static final String SMS_MEMBER_NO_KEY = "###MEMNO###";

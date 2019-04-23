@@ -95,18 +95,45 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     
     private void initializeList()
     {
+        
+        resetListForToken();
+        qt_fac_list_model  = new DefaultListModel();
+        bill_fac_list_model  = new DefaultListModel();
+        
+    }
+    
+    public void resetListForToken()
+    {
         predefine_list = new HashMap();
+        combo_box_model = new DefaultComboBoxModel();
+        
         predefine_list.put("Bill/QT/Receipt No.", SMSgeneralDBSettings.SMS_BILL_KEY);
         predefine_list.put("Date & Time", SMSgeneralDBSettings.SMS_DTM_KEY);
         predefine_list.put("Facility Name", SMSgeneralDBSettings.SMS_FACILITY_KEY);
-        predefine_list.put("Wharehouse", SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY);
+        predefine_list.put("Warehouse", SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY);
         predefine_list.put("Role", SMSgeneralDBSettings.SMS_ROLE_KEY);
         predefine_list.put("Member Name", SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY);
         predefine_list.put("Member No.", SMSgeneralDBSettings.SMS_MEMBER_NO_KEY);
-        predefine_list.put("Total Amount", SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY);
-        predefine_list.put("Net bal. before bill", SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE);
-        predefine_list.put("Net bal. after bill", SMSgeneralDBSettings.SMS_CUST_BAL_AFTER);
-        
+                
+        switch(jTabbedPane1.getSelectedIndex())
+        {
+           case 0:
+            {   
+                // QT table
+                 
+                break;
+            }  
+            case 1:  // bill
+            case 2:  // guest cash
+            case 3: // guest debit
+            case 4:    
+            {  // Bill Table
+                predefine_list.put("Total Amount", SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY);
+                predefine_list.put("Net bal. before bill", SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE);
+                predefine_list.put("Net bal. after bill", SMSgeneralDBSettings.SMS_CUST_BAL_AFTER); 
+            }
+            
+        }
         
         List list  = new ArrayList<Object>(predefine_list.values());
         Set<String> set = predefine_list.keySet();
@@ -116,11 +143,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             combo_box_model.addElement(key);
         }
         combo_box_smsPrefix.setModel(combo_box_model);
-        
-        qt_fac_list_model  = new DefaultListModel();
-        bill_fac_list_model  = new DefaultListModel();
-        
     }
+        
     
     private void loadSmsMasterInfo()
     {
@@ -413,6 +437,11 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         jTabbedPane1.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         jTabbedPane1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane1StateChanged(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 0, 0));
@@ -1390,6 +1419,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         }
         
     }//GEN-LAST:event_bill_fac_remove_btnActionPerformed
+
+    private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
+        resetListForToken();
+    }//GEN-LAST:event_jTabbedPane1StateChanged
         
    
     
