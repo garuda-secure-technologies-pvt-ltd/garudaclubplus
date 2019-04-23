@@ -99,7 +99,6 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         predefine_list.put("Bill/QT/Receipt No.", SMSgeneralDBSettings.SMS_BILL_KEY);
         predefine_list.put("Date & Time", SMSgeneralDBSettings.SMS_DTM_KEY);
         predefine_list.put("Facility Name", SMSgeneralDBSettings.SMS_FACILITY_KEY);
-        predefine_list.put("Guest Chrg No.", SMSgeneralDBSettings.SMS_GUEST_KEY);
         predefine_list.put("Wharehouse", SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY);
         predefine_list.put("Role", SMSgeneralDBSettings.SMS_ROLE_KEY);
         predefine_list.put("Member Name", SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY);
@@ -1167,46 +1166,46 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             {   
                 // QT table
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_qt.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
-                text_area_qt.setText(text);
-                //addHighlighterTotext(text_area_qt, text, myText);
+                String text = SPACE_TEXT+ myText +SPACE_TEXT;
+                text_area_qt.insert(text, text_area_qt.getCaretPosition());
+                
                 text_area_qt.requestFocus();
                 break;
             }  
             case 1:
             {  // Bill Table
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_bill.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
-                text_area_bill.setText(text);
+                String text = SPACE_TEXT+ myText +SPACE_TEXT;
+                text_area_bill.insert(text, text_area_bill.getCaretPosition());
                 text_area_bill.requestFocus();
-                //addHighlighterTotext(text_area_bill, text, myText);
+               
                 break;
             }
             case 2:
             {  //  Shared Ticket
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_st.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
-                text_area_st.setText(text);
+                String text = SPACE_TEXT+ myText +SPACE_TEXT;
+                text_area_st.insert(text, text_area_st.getCaretPosition());
                 text_area_st.requestFocus();
-                //addHighlighterTotext(text_area_st, text, myText);
+               
                 break;
             }
             case 3:
             {   //  GUEST charges
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_guest.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
-                text_area_guest.setText(text);
+                String text = SPACE_TEXT+ myText +SPACE_TEXT;
+                text_area_guest.insert(text, text_area_guest.getCaretPosition());
                 text_area_guest.requestFocus();
-                //addHighlighterTotext(text_area_guest, text, myText);
+                
                 break;
             }
             case 4:
             {   // ACCOUNTS
                 String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
-                String text = text_area_account.getText() +SPACE_TEXT+ myText +SPACE_TEXT;
-                text_area_account.setText(text);
+                String text = SPACE_TEXT+ myText +SPACE_TEXT;
+                text_area_account.insert(text, text_area_account.getCaretPosition());
                 text_area_account.requestFocus();
-                //addHighlighterTotext(text_area_account, text, myText);
+               
                 break;
             }
                 
