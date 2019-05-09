@@ -32,6 +32,8 @@ import com.openbravo.pos.admin.CardReader;
 import com.openbravo.pos.admin.RoleInfo;
 import com.openbravo.pos.clubmang.DataLogicFacilities;
 import com.openbravo.pos.customers.CustomerInfo;
+import com.openbravo.pos.customers.CustomerInfoExt;
+import com.openbravo.pos.customers.DataLogicCustomers;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppUser;
 import com.openbravo.pos.forms.AppView;
@@ -53,6 +55,7 @@ import com.openbravo.pos.sales.CreditConfirm_UsbCard;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.util.StringUtils;
 import java.awt.Color;
@@ -98,7 +101,8 @@ public class DebtBillList extends javax.swing.JDialog {
     private CustomerInfo customer;
     private AppView app;
     private List<CreditConfirmList> list;
-   
+    private SMSgeneralDBSettings smsDBSettings;
+    private DataLogicCustomers dlCustomers;
     private List<PendingCreditConfirmListT> Pendinglist;
     
     private boolean flag;
@@ -244,10 +248,12 @@ public class DebtBillList extends javax.swing.JDialog {
 
     private void confirm(final CreditConfirmList c) throws BasicException {
         try {
-            Transaction t = new Transaction(app.getSession()) {
+            Transaction t = new Transaction(app.getSession()) 
+            {
 
                 @Override
-                protected Object transact() throws BasicException {
+                protected Object transact() throws BasicException
+                {
                     //CreditConfirmList c = list.get(row);
                     String s = c.getCustomerID();
                     String s1 = c.getID();
@@ -255,22 +261,31 @@ public class DebtBillList extends javax.swing.JDialog {
                     Object[] obj = (Object[]) new PreparedSentence(app.getSession(), "SELECT C.MOBILE,M.NAME FROM CUSTOMERS C JOIN MEMTYPE M ON C.MEMTYPE=M.ID WHERE C.ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING, Datas.STRING})).find(s);
                     String str = null;
                     String memtype = null;
-                    if (obj != null) {
-                        if (obj[0] != null) {
+                    if (obj != null) 
+                    {
+                        if (obj[0] != null) 
+                        {
                             str = String.valueOf(obj[0]);
                         }
-                        if (obj[1] != null) {
+                        if (obj[1] != null) 
+                        {
                             memtype = String.valueOf(obj[0]);
-                        } else {
+                        } 
+                        else 
+                        {
                             flag = false;
                         }
-                    } else {
+                    } 
+                    else
+                    {
                         flag = false;
                     }
-                    if (flag && memtype.equals("Affiliated Member")) {
+                    if (flag && memtype.equals("Affiliated Member"))
+                    {
                         flag = false;
                     }
-                    if (flag) {
+                    if (flag) 
+                    {
                         //warehouse changes - start
                         //praveen:initiator changes---start
                         BillInfo binfo = (BillInfo) new StaticSentence(app.getSession(), "SELECT BILL.ID, BILL.CUSTOMER, BILL.WAITER, BILL.PLACE, FLOORS.NAME, BILL.AMOUNT, BILL.CREATEDBY, BILL.CREATEDDATE, BILL.PAID, BILL.RECEIPT,BILL.WAREHOUSE,BILL.INITIATOR,BILL.TAXTOTAL FROM BILL,FLOORS WHERE  BILL.ID=? AND BILL.FLOOR=FLOORS.ID AND BILL.PAID=TRUE ", SerializerWriteString.INSTANCE, new SerializerReadClass(BillInfo.class)).find(c.getBillref());
@@ -278,10 +293,13 @@ public class DebtBillList extends javax.swing.JDialog {
                         //warehouse changes - end
                         //praveen:checking bill is paid or not
                         Object obj1 = new StaticSentence(app.getSession(), "SELECT RECEIPT FROM BILL WHERE ID=?", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE).find(binfo.getID());
-                        if (obj1 != null) {
+                        if (obj1 != null) 
+                        {
                             JOptionPane.showMessageDialog(null, "Already billed.Press OK to reresh the list", "warning", JOptionPane.OK_OPTION);
                             loadData();
-                        } else {
+                        } 
+                        else 
+                        {
                             String rno = dlSales.getNextReceiptID(app.getAppUserView().getUser().getRole());//praveen:changed from name to role
                             binfo.setReceiptRef(rno);
                             BillLogic bl = LookupUtilityImpl.getInstance(null).getDataLogicBill();
@@ -291,7 +309,8 @@ public class DebtBillList extends javax.swing.JDialog {
                            
                             
                             int count = new StaticSentence(app.getSession(), "DELETE FROM CREDITCONFLIST WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.STRING})).exec(new Object[]{c.getID()});
-                            if (count > 0) {
+                            if (count > 0) 
+                            {
                                 //praveen:confirmer changes---start
                                  //added by pratima: query to insert data into creditconflist_arv
                                  new StaticSentence(app.getSession(), "INSERT INTO CREDITCONFLIST_ARV (ID,datenew,ruser,customer,billref,waiter,amount) VALUES (?,?,?,?,?,?,?)", new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.STRING,Datas.STRING,Datas.DOUBLE})).exec(new Object[]{c.getID(),c.getDate(),c.getRuser(),c.getCustomerID(),c.getBillref(),c.getWaiter(),c.getAmount()});
@@ -301,7 +320,8 @@ public class DebtBillList extends javax.swing.JDialog {
                                 setConfirmer("");
                                 //praveen:confirmer changes---end
                                 boolean status = markBillAsPaid(binfo);
-                                if (status == false) {
+                                if (status == false) 
+                                {
                                     throw new BasicException();
                                 }
                                 try {
@@ -309,7 +329,8 @@ public class DebtBillList extends javax.swing.JDialog {
                                                                       
                                     Object facility = new StaticSentence(app.getSession(), " SELECT SMSFORM FROM facility F WHERE F.ID=? ", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE).find(FacilityID);
                                     String SMSFac = "";
-                                    if(facility!=null){
+                                    if(facility!=null)
+                                    {
                                         SMSFac = facility.toString().trim();
                                     }
                                     //by pratima:query to get net balance to add in msg 
@@ -317,31 +338,39 @@ public class DebtBillList extends javax.swing.JDialog {
                                     Object[] objBalance2=(Object[])new StaticSentence(app.getSession(), "select sum(total) from payments where receipt in (select id from receipts where id in(select receipt from bill where id in(select billref from creditconflist_arv where customer=? and receipt is not null)) and closecashseq is null) " , SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(c.getCustomerID());
                                     
                                      
-                                 Double netBalance=Double.parseDouble(objBalance1[0].toString())+Double.parseDouble(objBalance2[0].toString());
+                                    Double netBalance=Double.parseDouble(objBalance1[0].toString())+Double.parseDouble(objBalance2[0].toString());
                                  
-                                   System.out.println("unformated netBalance is"+netBalance);
-                                  DecimalFormat df = new DecimalFormat("#.00"); 
-                                   netBalance=Double.parseDouble(df.format(netBalance));
-                                   String msg=null;
-                                   if (netBalance>0)
-                                   {
-                                       msg = "Dear Member,\rYour a/c "+c.getSearchkey() +" with us has been debited by " + Formats.CURRENCY.formatValue(c.getAmount()) + " for "+SMSFac+" usage.Bill no. " + c.getBillref() + " On " + Formats.DATE.formatValue(c.getDate())+".Net Balance is Dr. Rs."+netBalance;
-                                   
-                                   }
-                                   if (netBalance<0)
-                                   {    
-                                       netBalance=(netBalance*(-1));
-                                       msg = "Dear Member,\rYour a/c "+c.getSearchkey() +" with us has been debited by " + Formats.CURRENCY.formatValue(c.getAmount()) + " for "+SMSFac+" usage.Bill no. " + c.getBillref() + " On " + Formats.DATE.formatValue(c.getDate())+".Net Balance is Cr. Rs."+netBalance;
-                                   
-                                   }
-                                   //ended by pratima 
-                                  //  String msg = "Dear Member,\rYour a/c "+c.getSearchkey() +" with us has been debited by " + Formats.CURRENCY.formatValue(c.getAmount()) + " for "+SMSFac+" usage.Bill no. " + c.getBillref() + " On " + Formats.DATE.formatValue(c.getDate());
-                                    System.out.println(msg.length());
-                                    if (str != null && str.length() == 10) {
-                                        dlSales.updatetosendMsg(msg, c.getCustomerID(), str, 2);
+                                    System.out.println("unformated netBalance is"+netBalance);
+                                    DecimalFormat df = new DecimalFormat("#.00"); 
+                                    netBalance=Double.parseDouble(df.format(netBalance));
+                                    /*String msg=null;
+                                    if (netBalance>0)
+                                    {
+                                        msg = "Dear Member,\rYour a/c "+c.getSearchkey() +" with us has been debited by " + Formats.CURRENCY.formatValue(c.getAmount()) + " for "+SMSFac+" usage.Bill no. " + c.getBillref() + " On " + Formats.DATE.formatValue(c.getDate())+".Net Balance is Dr. Rs."+netBalance;
+
                                     }
-                                // }
-                                } catch (Exception e) {e.printStackTrace();
+                                    if (netBalance<0)
+                                    {    
+                                        netBalance=(netBalance*(-1));
+                                        msg = "Dear Member,\rYour a/c "+c.getSearchkey() +" with us has been debited by " + Formats.CURRENCY.formatValue(c.getAmount()) + " for "+SMSFac+" usage.Bill no. " + c.getBillref() + " On " + Formats.DATE.formatValue(c.getDate())+".Net Balance is Cr. Rs."+netBalance;
+
+                                    }
+                                    //ended by pratima 
+                                   //  String msg = "Dear Member,\rYour a/c "+c.getSearchkey() +" with us has been debited by " + Formats.CURRENCY.formatValue(c.getAmount()) + " for "+SMSFac+" usage.Bill no. " + c.getBillref() + " On " + Formats.DATE.formatValue(c.getDate());
+                                     System.out.println(msg.length());
+                                     if (str != null && str.length() == 10) {
+                                         dlSales.updatetosendMsg(msg, c.getCustomerID(), str, 2);
+                                     }
+                                      } */
+                                   
+                                    // check for SMS master
+                                    checkForSMS(c, netBalance, SMSFac);
+                                   
+                                   
+                                }
+                                catch (Exception e) 
+                                {
+                                    e.printStackTrace();
                                 }
                                 loadData();
                             }
@@ -353,6 +382,73 @@ public class DebtBillList extends javax.swing.JDialog {
             t.execute();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+    
+    
+    
+    
+    public void checkForSMS(CreditConfirmList c, Double netBalance, String facilitySMSName)
+    {
+        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_ACCOUNT_ID);
+        if(sendSMSforActDebit)
+        {
+            createSMS(c, SMSgeneralDBSettings.SMS_ACCOUNT_ID, netBalance, facilitySMSName);
+        }
+    }
+    
+    
+    public void createSMS(CreditConfirmList c, String smsMessage_Id, Double netBalance, String facilitySMSName)
+    {
+        String smsString = smsDBSettings.getMessage(smsMessage_Id);
+        if(smsString != null)
+        {
+            CustomerInfoExt customerInfoExt = null;
+            try
+            {   // get customer details
+                customerInfoExt = dlCustomers.getCustomerByID(c.getCustomerID());
+            } 
+            catch (BasicException ex) 
+            {
+                Logger.getLogger(DebtBillList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, c.getBillref());
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , Formats.TIMESTAMP.formatValue(new Date()));
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY , Formats.CURRENCY.formatValue(c.getAmount()));
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY , facilitySMSName);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY , facilitySMSName);
+             
+            String x = app.getAppUserView().getUser().getRole();
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY ,  LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
+            
+            if(c.getCustomer() != null)
+            {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, c.getCustomer()); 
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, c.getSearchkey()); 
+            }
+            if(smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE) || smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER))
+            {
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE, getFormatedNetBalance(netBalance));
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER, getFormatedNetBalance(netBalance));
+            }
+            
+            if(customerInfoExt != null && customerInfoExt.getmobile() != null && customerInfoExt.getmobile().trim().length() > 0)
+            {
+                smsDBSettings.insertSMStoActiveMsgTable(smsString, customerInfoExt.getmobile(), customerInfoExt.getId());
+            }
+        }
+    }
+    
+    public String getFormatedNetBalance(Double netBalance)
+    {
+        if(netBalance >= 0)
+        {
+            return Formats.CURRENCY.formatValue(netBalance) + " Dr.";
+        }
+        else 
+        {
+            netBalance=(netBalance*(-1));  
+            return Formats.CURRENCY.formatValue(netBalance) + " Cr.";
         }
     }
 
@@ -470,6 +566,8 @@ public class DebtBillList extends javax.swing.JDialog {
         initComponents();
         
         dlfac = (DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
+        smsDBSettings = (SMSgeneralDBSettings) app.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
+        dlCustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomersCreate");
         jButton1.setText("Confirm");
         jButton2.setText("<html>Change to<br>Cash Bill</html>");
         jButton3.setText("Reprint");
