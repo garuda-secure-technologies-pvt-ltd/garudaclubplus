@@ -138,13 +138,18 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             }  
             case 1:  // bill
             case 2:  // guest cash
-            case 3: // guest debit
+            case 3:  // guest debit
             case 4:    
             {  // Bill Table
                 predefine_list.put("Total Amount", SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY);
                 predefine_list.put("Net bal. before bill", SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE);
                 predefine_list.put("Net bal. after bill", SMSgeneralDBSettings.SMS_CUST_BAL_AFTER); 
+                if(jTabbedPane1.getSelectedIndex() == 4)
+                {
+                  predefine_list.put("Due Date", SMSgeneralDBSettings.SMS_DUE_DATE_KEY);   
+                }
             }
+            
             
         }
         

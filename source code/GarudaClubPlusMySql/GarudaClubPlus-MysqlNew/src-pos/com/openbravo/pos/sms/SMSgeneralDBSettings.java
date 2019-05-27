@@ -20,6 +20,7 @@ import com.openbravo.data.loader.Datas;
 import com.openbravo.data.loader.IKeyed;
 import com.openbravo.data.loader.SerializableRead;
 import com.openbravo.data.loader.Transaction;
+import com.openbravo.pos.clubmang.FacilityLogic;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryData;
@@ -64,6 +65,7 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_TOT_AMOUNT_KEY = "###TOTAMOUNT###";
     public static final String SMS_CUST_BAL_BEFORE = "###CUSTBALBEFORE###";
     public static final String SMS_CUST_BAL_AFTER = "###CUSTBALAFTER###";
+    public static final String SMS_DUE_DATE_KEY = "###DUEDATE###";
     
     private List<SmsMasterInfo> smsMasterClassList; 
     
@@ -428,6 +430,26 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
             if (roleObj != null && roleObj[0] != null) 
             {
                 return roleObj[0].toString();
+            }
+        } 
+        catch (BasicException ex) 
+        {
+            Logger.getLogger(Billpage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public String getFacDueDate(String FacID)
+    {
+        AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+        Object[] facDueDateID;
+        try 
+        {
+            facDueDateID = (Object[]) new StaticSentence(m_App.getSession(), " SELECT DUEPERIOD FROM facility F WHERE F.ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(FacID);
+            
+            if (facDueDateID != null && facDueDateID[0] != null) 
+            {
+                return facDueDateID[0].toString();
             }
         } 
         catch (BasicException ex) 

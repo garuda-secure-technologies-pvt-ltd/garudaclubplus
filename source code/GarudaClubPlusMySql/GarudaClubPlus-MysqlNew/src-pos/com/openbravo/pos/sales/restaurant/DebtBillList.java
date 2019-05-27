@@ -31,6 +31,8 @@ import com.openbravo.format.Formats;
 import com.openbravo.pos.admin.CardReader;
 import com.openbravo.pos.admin.RoleInfo;
 import com.openbravo.pos.clubmang.DataLogicFacilities;
+import com.openbravo.pos.clubmang.DebtTypeTableModel;
+import com.openbravo.pos.clubmang.FacilityLogic;
 import com.openbravo.pos.customers.CustomerInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.customers.DataLogicCustomers;
@@ -84,6 +86,7 @@ import javax.swing.JPasswordField;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.text.DecimalFormat;
+import java.util.Calendar;
 /**
  *
  * @author swathi
@@ -98,6 +101,7 @@ public class DebtBillList extends javax.swing.JDialog {
     private BillLogic blogic;
     private DataLogicSales dlSales;
     private boolean resultok = false;
+    private FacilityLogic flogic;
     private CustomerInfo customer;
     private AppView app;
     private List<CreditConfirmList> list;
@@ -431,7 +435,27 @@ public class DebtBillList extends javax.swing.JDialog {
                smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE, getFormatedNetBalance(netBalance));
                smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER, getFormatedNetBalance(netBalance));
             }
-            
+            if(smsString.contains(SMSgeneralDBSettings.SMS_DUE_DATE_KEY))
+            {
+                DebtTypeTableModel.DebtTypeline dueperiod;
+                try 
+                {
+                    Date duedate = new Date();
+                    
+                    Calendar caltemp = Calendar.getInstance();
+                    caltemp.setTimeInMillis((new Date()).getTime());
+                    
+                    dueperiod = dlfac.getDebtTypebyid(smsDBSettings.getFacDueDate(FacilityID));
+                    duedate.setTime(flogic.getDueDate(dueperiod, caltemp.getTime()).getTime());
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_DUE_DATE_KEY, Formats.DATE.formatValue(duedate));
+                }
+                catch (BasicException ex)
+                {
+                    Logger.getLogger(DebtBillList.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                   
+                    
+            }
             if(customerInfoExt != null && customerInfoExt.getmobile() != null && customerInfoExt.getmobile().trim().length() > 0)
             {
                 smsDBSettings.insertSMStoActiveMsgTable(smsString, customerInfoExt.getmobile(), customerInfoExt.getId());
@@ -583,6 +607,7 @@ public class DebtBillList extends javax.swing.JDialog {
         taxcollection = new ListKeyed<TaxInfo>(taxlist);
         jButton1.setEnabled(flag);
         jButton2.setEnabled(flag);
+        flogic = new FacilityLogic(dlfac);
         dlSystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystemCreate");
         m_TTP = new TicketParser(app.getDeviceTicket(), LookupUtilityImpl.getInstance(null).getDataLogicSystem());
 
