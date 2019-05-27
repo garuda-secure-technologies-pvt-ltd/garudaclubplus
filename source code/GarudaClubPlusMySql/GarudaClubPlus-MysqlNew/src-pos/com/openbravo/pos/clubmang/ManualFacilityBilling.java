@@ -1267,25 +1267,34 @@ if(TaxAmount3==0.0){
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        try {
+        try 
+        {
             list = mfmodel.getReceiptlist();
             totaltax = 0.0;
             totalamt = 0.0;
-            for (ManualFacilityBillingTableModel.Receiptline line : list) {
+            for (ManualFacilityBillingTableModel.Receiptline line : list) 
+            {
                 totaltax += line.getTaxamt();
                 totalamt += line.getAmount();
             }
 
-            Transaction t = new Transaction(m_App.getSession()) {
+            Transaction t = new Transaction(m_App.getSession()) 
+            {
 
-                public Object transact() throws BasicException {
-                     if (customerInfo != null && jLabel9.isVisible() == false && totalamt + totaltax > 0) {
+                public Object transact() throws BasicException 
+                {
+                     if (customerInfo != null && jLabel9.isVisible() == false && totalamt + totaltax > 0) 
+                     {
                         int dblen = 0;
                         String dbname = "";
-                        try {
+                        try 
+                        {
                             dbname = m_App.getSession().getDatabaseName();
                             dblen = dbname.length();
-                        } catch (Exception e) {
+                        } 
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
                         }
                         Date date = getdate();
                         AppUser user = m_App.getAppUserView().getUser();
@@ -1302,8 +1311,8 @@ if(TaxAmount3==0.0){
                         int j = 0;
                         // String smstemp3=null;
                         Map<String, GeneralSettingInfo> gs = LookupUtilityImpl.getInstance(null).getGeneralSettingsMap();
-                       // GeneralSettingInfo sinfo = gs.get("Datestart");
-                      //  GeneralSettingInfo einfo = gs.get("Dateend");         // changed by aakash 
+                        // GeneralSettingInfo sinfo = gs.get("Datestart");
+                        //  GeneralSettingInfo einfo = gs.get("Dateend");         // changed by aakash 
                         GeneralSettingInfo sinfo = gs.get("Voucher Entry Restricted From");
                         GeneralSettingInfo einfo = gs.get("Voucher Entry Restricted Upto");
                         
@@ -1324,13 +1333,14 @@ if(TaxAmount3==0.0){
                         fecal.set(Calendar.SECOND, 00);
                         fecal.set(Calendar.MILLISECOND, 00);
                         billnumAll= "";
-                        for (ManualFacilityBillingTableModel.Receiptline line : list) {
+                        for (ManualFacilityBillingTableModel.Receiptline line : list)
+                        {
                             FacilityInfo ftmp = LookupUtilityImpl.getInstance(null).getFacilityMap().get(line.getFacilityid());
                             String billnum = dmang.getnewbillno(ftmp.getID());
                             if(billnumAll.trim().equals(""))
-                                    {
-                                         billnumAll = billnum;
-                                    }
+                            {
+                                 billnumAll = billnum;
+                            }
                             else
                             {
                                  billnumAll = billnumAll+"#"+billnum;
@@ -1338,7 +1348,8 @@ if(TaxAmount3==0.0){
                            
                             String smstemp3 = smstemp1;
                             String smstemp5 = null;
-                            if (smstemp1 != null && j == 0) {
+                            if (smstemp1 != null && j == 0) 
+                            {
                                 
                                // smstemp1 += "(" + ftmp.getSMSForm() + " Rs." + dmang.ConvertDoubleToString(line.getAmount()) + " due on " + Formats.DATE.formatValue(line.getDuedate());
                                // smstemp5 = ftmp.getSMSForm() + " Rs." + dmang.ConvertDoubleToString(line.getAmount()) + " due on " + Formats.DATE.formatValue(line.getDuedate());
@@ -1346,17 +1357,22 @@ if(TaxAmount3==0.0){
                                 smstemp5 = ftmp.getSMSForm() + " Rs." + dmang.ConvertDoubleToString(line.getAmount()) + " due on " + Formats.DATE.formatValue(line.getDuedate());
                             
                             
-                            } else if (smstemp1 != null && j != 0) {
+                            } 
+                            else if (smstemp1 != null && j != 0) 
+                            {
                                 
                                 smstemp1 += "," + ftmp.getSMSForm() + " Rs." + dmang.ConvertDoubleToString(line.getAmount()) + " due on " + Formats.DATE.formatValue(line.getDuedate());
                                 smstemp5 = ftmp.getSMSForm() + " Rs." + dmang.ConvertDoubleToString(line.getAmount()) + " due on " + Formats.DATE.formatValue(line.getDuedate());
                             
                             
-                            } else {
+                            } 
+                            else 
+                            {
                                 
                                 smstemp1 = ftmp.getSMSForm() + " Rs." + dmang.ConvertDoubleToString(line.getAmount()) + " due on " + Formats.DATE.formatValue(line.getDuedate());
                                 smstemp5 = ftmp.getSMSForm() + " Rs." + dmang.ConvertDoubleToString(line.getAmount()) + " due on " + Formats.DATE.formatValue(line.getDuedate());
-                                if (smstemp1.length() > 155) {
+                                if (smstemp1.length() > 155) 
+                                {
                                     smstemp1 = null;
                                 
                                 }
@@ -1365,24 +1381,31 @@ if(TaxAmount3==0.0){
                             }
                             j++;
 //                            System.out.println("temp1 length" + smstemp1.length());
-                            if (smstemp1 != null && smstemp1.length() > 160 - (9) && i - 1 == list.size()) {
-                                if (smstemp2 == null) {
+                            if (smstemp1 != null && smstemp1.length() > 160 - (9) && i - 1 == list.size()) 
+                            {
+                                if (smstemp2 == null) 
+                                {
                                     smstemp2 = smstemp3;
-                                } else {
+                                } 
+                                else 
+                                {
                                     smstemp2 += smstemp3;
                                 }
-//                                System.out.println("temp1 length" + smstemp1.length());
-//                                System.out.println("temp3 length" + smstemp3.length());
+
                                 smstemp1 = "#MSG" + i + " " + smstemp5;
                                 i++;
-                            } else if (smstemp1 != null && smstemp1.length() > 160 - 8 - " cntd..-".length() && i - 1 != list.size()) {
-                                if (smstemp2 == null) {
+                            } 
+                            else if (smstemp1 != null && smstemp1.length() > 160 - 8 - " cntd..-".length() && i - 1 != list.size()) 
+                            {
+                                if (smstemp2 == null)
+                                {
                                     smstemp2 = smstemp3 + " cntd..";
-                                } else {
+                                } 
+                                else 
+                                {
                                     smstemp2 += smstemp3 + " cntd..";
                                 }
-//                                System.out.println("temp1 length" + smstemp1.length());
-//                                System.out.println("temp3 length" + smstemp3.length());
+                               
                                 smstemp1 = "#MSG" + i + " " + smstemp5;
                                 i++;
                             }
@@ -1405,7 +1428,6 @@ if(TaxAmount3==0.0){
                             String fnarrationbegin = null;
                             String fnarrationend = null;
                             int pLen = line.getNoOfPeriod();
-//                            System.out.println(">>>>>>>>>>>>. NO OF PERIOD >>>>>>>>>>>>>>>>>" + pLen);
 
                             double pamt = amtwithoutTax / pLen;// value for 1 month
                             rscal.setTimeInMillis(line.getSdate().getTime());
@@ -1413,14 +1435,10 @@ if(TaxAmount3==0.0){
                             rscal.set(Calendar.MINUTE, 00);
                             rscal.set(Calendar.SECOND, 00);
                             rscal.set(Calendar.MILLISECOND, 00);
-//                            System.out.println(">>>>>>>>>> rscal >>>>>>>>>>>>>>>" + rscal.getTime());
-//                            System.out.println(">>>>>>>>>> fscal >>>>>>>>>>>>>>>" + fscal.getTime());
-//                            System.out.println(">>>>>>>>>> recal >>>>>>>>>>>>>>>" + recal.getTime());
-//                            System.out.println(">>>>>>>>>> fecal >>>>>>>>>>>>>>>" + fecal.getTime());
-//                            
+
                             
-                            if (rscal.before(fscal)) {
-                                 
+                            if (rscal.before(fscal)) 
+                            {
                                 double prevamt=0.00;
                                 int cnt = 0;
                                 Calendar caltemp = Calendar.getInstance();
@@ -1429,136 +1447,94 @@ if(TaxAmount3==0.0){
                                 
                                 
                                String PeroidTypeTemp = getPeriodTypeBYFacility(line.getFacilityid());  
-                                if(PeroidTypeTemp.equals("Years")){
-//                                     System.out.println("Period Type : "+PeroidTypeTemp);
+                               if(PeroidTypeTemp.equals("Years"))
+                               {
                                 
-                                        Date FacilityStartDate = rscal.getTime();
-//                                        System.out.println("Financial Year start Date : "+fsdate);
-//                                        System.out.println("Financial Year End Date : "+fedate);
-//                                        System.out.println("Facility  Start Date : "+FacilityStartDate);
-                                        
-                                        Calendar c1 = Calendar.getInstance();
-                                        Calendar c2 = Calendar.getInstance();
-                                        c1.setTime(FacilityStartDate);
-                                        c2.setTime(fsdate);
-                                        int DiffInYear = c2.get(Calendar.YEAR) - c1.get(Calendar.YEAR);
-                                        int difInMonths = c2.get(Calendar.MONTH) - c1.get(Calendar.MONTH);
+                                    Date FacilityStartDate = rscal.getTime();
+                                    Calendar c1 = Calendar.getInstance();
+                                    Calendar c2 = Calendar.getInstance();
+                                    c1.setTime(FacilityStartDate);
+                                    c2.setTime(fsdate);
+                                    int DiffInYear = c2.get(Calendar.YEAR) - c1.get(Calendar.YEAR);
+                                    int difInMonths = c2.get(Calendar.MONTH) - c1.get(Calendar.MONTH);
+
+                                    if(DiffInYear>0)
+                                    {
+                                        int x = DiffInYear*12;
+                                        difInMonths=difInMonths+x;
+                                    }
+                                    prevamt = (pamt/12)*difInMonths;
+
+                                    amtwithoutTax = amtwithoutTax - prevamt;
+                                }
+                                else
+                               {
                                        
-                                        if(DiffInYear>0){
-                                            int x = DiffInYear*12;
-                                            difInMonths=difInMonths+x;
-                                        }
-//                                        System.out.println("Diffenece in date : "+difInMonths + " Months");
-//                                        System.out.println("Diffenece in years : "+DiffInYear + " Years"); 
-//                                     
-//                                        System.out.println("Diffenece in date : "+difInMonths + " Months");
-//                                        System.out.println("Diffenece in years : "+DiffInYear + " Years");
-                                        
-                                        prevamt = (pamt/12)*difInMonths;
-                                        
-//                                        System.out.println("prevamt Amount : "+prevamt);
-                                        amtwithoutTax = amtwithoutTax - prevamt;
-                                     
-                                          // while (!caltemp.after(fscal) && !caltemp.after(recal)) {
-                                           //     cnt++;
-                                          //      caltemp.setTime(flogic.addOnePeriod(caltemp.getTime(), p));
-                                            //    if ((caltemp.after(fscal) && fscal.before(recal)) || (caltemp.after(recal) && recal.before(fscal))) {
-                                             //       cnt--;
-                                              //      break;
-                                              //  }
-                                          // / 
-                                          //  }
-                                           // prevamt = pamt * cnt;
-                                           // amtwithoutTax = amtwithoutTax - prevamt;
-                                
-                                
+                                    while (!caltemp.after(fscal) && !caltemp.after(recal))
+                                    {
+                                         cnt++;
+                                         caltemp.setTime(flogic.addOnePeriod(caltemp.getTime(), p));
+                                         if ((caltemp.after(fscal) && fscal.before(recal)) || (caltemp.after(recal) && recal.before(fscal))) 
+                                         {
+                                             cnt--;
+                                             break;
+                                         }
+                                     }
+                                     prevamt = pamt * cnt;
+                                     amtwithoutTax = amtwithoutTax - prevamt;
                                 }
                                 
-                                
-                                else{
-                                        ///////////////////////////////////////////////////////////////////////
-                                           while (!caltemp.after(fscal) && !caltemp.after(recal)) {
-                                                cnt++;
-                                                caltemp.setTime(flogic.addOnePeriod(caltemp.getTime(), p));
-                                                if ((caltemp.after(fscal) && fscal.before(recal)) || (caltemp.after(recal) && recal.before(fscal))) {
-                                                    cnt--;
-                                                    break;
-                                                }
-                                            // caltemp.add(Calendar.MONTH, 1);
-                                            }
-                                            prevamt = pamt * cnt;
-                                            amtwithoutTax = amtwithoutTax - prevamt;
-                                    /////////////////////////////////////////////////////////////////////////
-                                    
-                                    
-                                    
-                                }
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-//////////
-                                if (recal.before(fscal)) {
+                                if (recal.before(fscal)) 
+                                {
                                     caltemp.setTimeInMillis(recal.getTimeInMillis());
-                                } else {
+                                 } 
+                                else 
+                                {
                                     caltemp.setTimeInMillis(fscal.getTimeInMillis());
                                     caltemp.add(Calendar.DATE, -1);
                                 }
                                 
- //////////////
+
                                 
                                 fnarrationbegin = "Renewal fees Period: " + Formats.DATE.formatValue(line.getSdate());
-                                if (line.getUserId() != null) {
+                                if (line.getUserId() != null) 
+                                {
                                     narration = "Renewal fees Period: " + Formats.DATE.formatValue(line.getSdate()) + " to " + Formats.DATE.formatValue(caltemp.getTime()) + "- " + line.getUserName();
-                                } else {
+                                }
+                                else 
+                                {
                                     narration = "Renewal fees Period: " + Formats.DATE.formatValue(line.getSdate()) + " to " + Formats.DATE.formatValue(caltemp.getTime());
                                 }
                                 Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", line.getFacilityid(), billnum, prevamt, date, true, user.getName(), m_App.getProperties().getHost(), narration, prevFySubIncome, 0.0, true};
                                 dmang.insertintoaccjoutnal(value);
-// Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", line.getFacilityid(), billnum, prevamt, date, true, user.getName(), m_App.getProperties().getHost(), narration, prevFySubIncome, 0.0, true};
-//                                dmang.insertintoaccjoutnal(value);
+
                             }
                             
-                            
-                            
-                            
-                            
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////                          
-                            
-                            
-                            if (recal.after(fecal)) {
+                            if (recal.after(fecal)) 
+                            {
                                 int cnt = 0;
                                 Calendar caltemp1 = Calendar.getInstance();//copy of financial year end
-                                if (rscal.after(fecal)) {
+                                if (rscal.after(fecal))
+                                {
                                     caltemp1.setTimeInMillis(rscal.getTimeInMillis());
-                                } else {
+                                } 
+                                else 
+                                {
                                     caltemp1.setTimeInMillis(fecal.getTimeInMillis());
                                     caltemp1.add(Calendar.DATE, 1);
                                 }
-//                                System.out.println(">>>>>>>>>> caltemp1 >>>>>>>>>>>>>>>" + caltemp1.getTime());
                               
-                     double advamt=0.00;           
-                               
-                     
-                    ///////////////////////////////////////// # AAKASH #EDITED            
-                                
+                                double advamt=0.00;           
                                 String PeroidTypeTemp = getPeriodTypeBYFacility(line.getFacilityid());
                                
-                                if(PeroidTypeTemp.equals("Years")){
-//                                     System.out.println("Period Type : "+PeroidTypeTemp);
-                                    if (!caltemp1.after(recal)) {
-                                        
+                                if(PeroidTypeTemp.equals("Years"))
+                                {
+                                    if (!caltemp1.after(recal))
+                                    {
                                         Date FacilityEndDate = recal.getTime();
                                         Date FacilityStartDate = rscal.getTime();
-//                                        System.out.println("Financial Year start Date : "+fsdate);
-//                                        System.out.println("Financial Year End Date : "+fedate);
-//                                        System.out.println("Facility  End Date : "+FacilityEndDate);
-//                                        
-                                        if(FacilityStartDate.before(fedate)){
-                                            
+                                        if(FacilityStartDate.before(fedate))
+                                        {
                                             Calendar c1 = Calendar.getInstance();
                                             Calendar c2 = Calendar.getInstance();
                                             c1.setTime(FacilityEndDate);
@@ -1566,206 +1542,50 @@ if(TaxAmount3==0.0){
                                             int DiffInYear = c1.get(Calendar.YEAR) - c2.get(Calendar.YEAR);
                                             int difInMonths = c1.get(Calendar.MONTH) - c2.get(Calendar.MONTH);
 
-                                            if(DiffInYear>0){
+                                            if(DiffInYear>0)
+                                            {
                                                 int x = DiffInYear*12;
                                                 difInMonths=difInMonths+x;
                                             }
-//                                            System.out.println("Diffenece in date : "+difInMonths + " Months");
-//                                            System.out.println("Diffenece in years : "+DiffInYear + " Years");
-
                                             advamt = (pamt/12)*difInMonths;
-
-//                                            System.out.println("Advance Amount : "+advamt);
-
                                             amtwithoutTax = amtwithoutTax - advamt;
-                                        
-                                            
                                         }
-                                        else{
-                                            
+                                        else
+                                        {
                                             advamt = pamt;
-
-//                                            System.out.println("Advance Amount : "+advamt);
-
                                             amtwithoutTax = 0.00;
-                                            
-                                            
-                                            
-                                            
                                         }
-                                        
-                                        
-                                        
-                                       
-                                        
-                                        
-                                        
-//                                        
-//                                        System.out.println("amtwithoutTax Amount : "+amtwithoutTax);
-//                                        System.out.println("Main  Amount : "+amt);
-                                        
-                                                    // while (caltemp1.after(recal)) {
-                                                   //     cnt++;
-                                                   //    caltemp1.setTime(flogic.addOnePeriod(caltemp1.getTime(), p));
-                                                   //    System.out.println(">>>>>>>>>> caltemp1 >>>>>>>>>>>>>>>" + caltemp1.getTime());
-                                                    //caltemp1.set(Calendar.DATE, caltemp1.getActualMaximum(Calendar.DATE));
-                                                 //  System.out.println(">>>>>>>>>> recal >>>>>>>>>>>>>>>" + recal.getTime());
-
-                                    
                                     }
-                                    
-                                    
-                                    
                                 }
-                                else{
-  ///////////////                              
-                                    while (!caltemp1.after(recal)) {
-                                     // while (caltemp1.after(recal)) {
-                                         cnt++;
+                                else
+                                {
+                             
+                                    while (!caltemp1.after(recal)) 
+                                    {
+                                        cnt++;
                                         caltemp1.setTime(flogic.addOnePeriod(caltemp1.getTime(), p));
-//                                        System.out.println(">>>>>>>>>> caltemp1 >>>>>>>>>>>>>>>" + caltemp1.getTime());
-                                     //caltemp1.set(Calendar.DATE, caltemp1.getActualMaximum(Calendar.DATE));
-//                                    System.out.println(">>>>>>>>>> recal >>>>>>>>>>>>>>>" + recal.getTime());
                                     }
-                                
-                                 advamt = pamt * cnt;
-                                amtwithoutTax = amtwithoutTax - advamt;
-                                    
- //////////////                     
-                                }
+                                    advamt = pamt * cnt;
+                                    amtwithoutTax = amtwithoutTax - advamt;
+                               }
                                
-                               
-                               
-                               
-                           ///////////////////////////////////////// # AAKASH #EDITED            
-                                
-//                                added by shweta
-//                       double taxamt=0.0;
-//         double taxamt1=0.0;
-//         double taxamt2=0.0;
-//          double taxamtt=0.0;
-//         double taxamt11=0.0;
-//         double taxamt21=0.0;
-//      if(f.getramt()>0){
-//          TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(f.getservicetax());
-////          name=tinfo.getName();
-//           TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
-//           taxamt=taxinfo1.getRate()*f.getramt();
-//           taxamtt=taxamt*pLen;
-//          
-//          if(f.getTaxcat_2()!=null){
-//               TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(f.getTaxcat_2());
-////           name1=tinfo1.getName();
-//            TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
-//           if(f.getCascade1()==true){
-//               taxamt1=taxinfo2.getRate()*(f.getramt()+taxamt);
-//               taxamt11=taxamt1*pLen;
-//           }
-//           else{
-//              taxamt1=taxinfo2.getRate()*f.getramt(); 
-//               taxamt11=taxamt1*pLen;
-//           }
-//          }
-//          if(f.getTaxcat_3()!=null){
-//              TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(f.getTaxcat_3());
-////           name2=tinfo3.getName();
-//             TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
-//              if(f.getCascade2()==true){
-//               taxamt2=taxinfo3.getRate()*(f.getramt()+taxamt+taxamt1);
-//                taxamt21=taxamt2*pLen;
-//           }
-//           else{
-//              taxamt21=taxinfo3.getRate()*f.getramt()*pLen; 
-//           }
-//          }
-//      }
-//       if(f.getjamt()>0){
-//           TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(f.getservicetax());
-////          name=tinfo.getName();
-//           TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
-//           taxamt=taxinfo1.getRate()*f.getjamt();
-//            taxamtt=taxamt*pLen;
-//          
-//          if(f.getTaxcat_2()!=null){
-//               TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(f.getTaxcat_2());
-////           name1=tinfo1.getName();
-//            TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
-//           if(f.getCascade1()==true){
-//               taxamt1=taxinfo2.getRate()*(f.getjamt()+taxamt);
-//                taxamt11=taxamt1*pLen;
-//           }
-//           else{
-//              taxamt1=taxinfo2.getRate()*f.getjamt(); 
-//               taxamt11=taxamt1*pLen;
-//           }
-//          }
-//          if(f.getTaxcat_3()!=null){
-//              TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(f.getTaxcat_3());
-////           name2=tinfo3.getName();
-//             TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
-//              if(f.getCascade2()==true){
-//               taxamt2=taxinfo3.getRate()*(f.getjamt()+taxamt+taxamt1);
-//                taxamt21=taxamt2*pLen;
-//           }
-//           else{
-//              taxamt2=taxinfo3.getRate()*f.getjamt(); 
-//               taxamt21=taxamt2*pLen;
-//           }
-//          }
-//       }
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//if ( taxamtt> 0) {
-//                            getServiceTaxacc();
-//                            
-//                          
-//                            
-//                            if (servicetaxacc != null) {
-////                                Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, totaltax, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax on renewalfee", servicetaxacc, 0.0, true,servicetaxacc1,servicetaxacc2};
-////                                dmang.insertintoaccjoutnalmanual(value);
-//                                 Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamtt, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax1 on renewalfee", servicetaxacc, 0.0, true};
-//                                dmang.insertintoaccjoutnal(value);
-//                                 
-//                                
-//                            }
-//                              
-//                               
-//                        }
-//if(taxamt11>0){
-//    getServiceTaxacc1();
-//    if ( servicetaxacc1 != null) {
-//                              Object[] value1 = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamt11, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax2 on renewalfee", servicetaxacc1, 0.0, true};
-//                                dmang.insertintoaccjoutnal(value1);
-//                              }
-//}
-//if(taxamt21>0){
-//      getServiceTaxacc2();
-//     if (servicetaxacc2 != null) {
-//                                 Object[] value2 = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamt21, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax3 on renewalfee", servicetaxacc2, 0.0, true};
-//                                dmang.insertintoaccjoutnal(value2);
-//                                }
-//}
-//ended by shweta
-
-                                
-                                Calendar caltemp = Calendar.getInstance();
-                                if (rscal.after(fecal)) {
+                               Calendar caltemp = Calendar.getInstance();
+                                if (rscal.after(fecal))
+                                {
                                     caltemp.setTimeInMillis(rscal.getTimeInMillis());
-                                } else {
+                                } 
+                                else 
+                                {
                                     caltemp.setTimeInMillis(fecal.getTimeInMillis());
                                     caltemp.add(Calendar.DATE, 1);
                                 }
-                                if (line.getUserId() != null) {
+                                if (line.getUserId() != null) 
+                                {
                                     fnarrationend = " to " + Formats.DATE.formatValue(fecal.getTime()) + "- " + line.getUserName();
                                     narration = "Renewal fees Period: " + Formats.DATE.formatValue(caltemp.getTime()) + " to " + Formats.DATE.formatValue(line.getEdate()) + "- " + line.getUserName();
-                                } else {
+                                } 
+                                else 
+                                {
                                     fnarrationend = " to " + Formats.DATE.formatValue(fecal.getTime());
                                     narration = "Renewal fees Period: " + Formats.DATE.formatValue(caltemp.getTime()) + " to " + Formats.DATE.formatValue(line.getEdate());
                                 }
@@ -1773,26 +1593,32 @@ if(TaxAmount3==0.0){
                                 dmang.insertintoaccjoutnal(value);
                             }
                             
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////                          
                             //totalamt += amt;
-                            if (fnarrationbegin == null) {
+                            if (fnarrationbegin == null) 
+                            {
                                 fnarrationbegin = "Renewal fees Period: " + Formats.DATE.formatValue(line.getSdate());
                             }
-                            if (line.getUserId() != null) {
+                            if (line.getUserId() != null)
+                            {
                                 narration = "Renewal fees Period: " + Formats.DATE.formatValue(line.getSdate()) + " to " + Formats.DATE.formatValue(line.getEdate()) + "- " + line.getUserName();
-                                if (fnarrationend == null) {
+                                if (fnarrationend == null)
+                                {
                                     fnarrationend = " to " + Formats.DATE.formatValue(line.getEdate()) + "- " + line.getUserName();
                                 }
-                            } else {
+                            } 
+                            else 
+                            {
                                 narration = "Renewal fees Period: " + Formats.DATE.formatValue(line.getSdate()) + " to " + Formats.DATE.formatValue(line.getEdate());
-                                if (fnarrationend == null) {
+                                if (fnarrationend == null) 
+                                {
                                     fnarrationend = " to " + Formats.DATE.formatValue(line.getEdate());
                                 }
                             }
 
                             Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", line.getFacilityid(), billnum, amtwithoutTax, date, true, user.getName(), m_App.getProperties().getHost(), fnarrationbegin + fnarrationend, line.getFacilityAccount(), 0.0, true};
                             dmang.insertintoaccjoutnal(value);
-                            if (amt > 0) {
+                            if (amt > 0)
+                            {
                                 Object[] value1 = new Object[]{UUID.randomUUID().toString(), tid, customerInfo.getId(), new Date(), "D", line.getFacilityid(), billnum, amt, line.getDuedate(), false, user.getName(), m_App.getProperties().getHost(), narration, cacc, amt, true};
                                 dmang.insertintoaccjoutnal(value1);
                             }
@@ -1804,211 +1630,211 @@ if(TaxAmount3==0.0){
                             calp.setTimeInMillis(line.getEdate().getTime());
                             Calendar callb = Calendar.getInstance();
                             callb.setTimeInMillis(line.getlBilldate().getTime());
-                            if (calp.after(callb) == true) {
+                            if (calp.after(callb) == true) 
+                            {
                                 String userid = line.getUserId();
-
-                                // if(dependent.getSelectedIndex()!=-1 && dependent.isVisible()){
-                                //   MemberDependent md=(MemberDependent)dependent.getSelectedItem();
-                                //    userid=md.getID();
-                                // }
-                                if (userid != null) {
+                                if (userid != null) 
+                                {
                                     Object[] value2 = new Object[]{line.getEdate(), new Date(), billnum, customerInfo.getId(), line.getFacilityid(), userid};
                                     dmang.UpdateMemberFacilityUsage(value2);
-                                } else {
+                                } 
+                                else 
+                                {
                                     Object[] value2 = new Object[]{line.getEdate(), new Date(), billnum, customerInfo.getId(), line.getFacilityid()};
                                     dmang.UpdateMemberFacilityUsage1(value2);
                                 }
                             }
                             
-                           dmang.updatebillno(ftmp.getID());
+                            dmang.updatebillno(ftmp.getID());
                             dmang.setmemberDebt(customerInfo.getId(), line.getFacilityid(), amt);
                         }
-                        if (smstemp1 != null) {
-                            if (smstemp2 != null) {
+                        if (smstemp1 != null)
+                        {
+                            if (smstemp2 != null) 
+                            {
                                 smstemp2 += smstemp1 + " bill no " + billnumAll;
-                            } else {
+                            } 
+                            else 
+                            {
                                 smstemp2 = smstemp1 + " bill no " + billnumAll;
                             }
-                        } else {
-                            if (smstemp2 != null) {
+                        } 
+                        else 
+                        {
+                            if (smstemp2 != null)
+                            {
                                 smstemp2 += " bill no " + billnumAll;
                             }
                         }
-//                        if (totaltax > 0) {
-//                            getServiceTaxacc();
-//                            getServiceTaxacc1();
-//                            getServiceTaxacc2();
-//                            
-//                            if (servicetaxacc != null) {
-////                                Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, totaltax, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax on renewalfee", servicetaxacc, 0.0, true,servicetaxacc1,servicetaxacc2};
-////                                dmang.insertintoaccjoutnalmanual(value);
-//                                 Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, totaltax, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax on renewalfee", servicetaxacc, 0.0, true};
-//                                dmang.insertintoaccjoutnal(value);
-//                                 
-//                                
-//                            }
-//                              if ( servicetaxacc1 != null) {
-//                              Object[] value1 = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, totaltax, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax on renewalfee", servicetaxacc1, 0.0, true};
-//                                dmang.insertintoaccjoutnal(value1);
-//                              }
-//                                if (servicetaxacc2 != null) {
-//                                 Object[] value2 = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, totaltax, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax on renewalfee", servicetaxacc2, 0.0, true};
-//                                dmang.insertintoaccjoutnal(value2);
-//                                }
-//                        }
-//   Facility factemp=(Facility)facilitylist.getSelectedItem();
-//added by shweta
-// int num = Integer.parseInt(nperiod.getText());
-//   int pLen = line.getNoOfPeriod();
-  CustomerInfoExt cinfo=new CustomerInfoExt(customerInfo.getId());
-int num=1;
- for (ManualFacilityBillingTableModel.Receiptline line : list) {
-//                totaltax += line.getTaxamt();
-//                totalamt += line.getAmount();
- num=line.getNoOfPeriod();
-            }
- double taxamt=0.0;
-         double taxamt1=0.0;
-         double taxamt2=0.0;
-          double taxamtt=0.0;
-         double taxamt11=0.0;
-         double taxamt21=0.0;
-      if(f.getramt()>0){
-          TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(f.getservicetax());
-//          name=tinfo.getName();
-           TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
-           taxamt=taxinfo1.getRate()*f.getramt();
-           taxamtt=taxamt*num;
-           decimalFormat.format(taxamtt);
-           
-          
-          if(f.getTaxcat_2()!=null){
-               TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(f.getTaxcat_2());
-//           name1=tinfo1.getName();
-            TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
-           if(f.getCascade1()==true){
-               taxamt1=taxinfo2.getRate()*(f.getramt()+taxamt);
-               taxamt11=taxamt1*num;
-                decimalFormat.format(taxamt11);
-           }
-           else{
-              taxamt1=taxinfo2.getRate()*f.getramt(); 
-               taxamt11=taxamt1*num;
-               decimalFormat.format(taxamt11);
-           }
-          }
-          if(f.getTaxcat_3()!=null){
-              TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(f.getTaxcat_3());
-//           name2=tinfo3.getName();
-             TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
-              if(f.getCascade2()==true){
-               taxamt2=taxinfo3.getRate()*(f.getramt()+taxamt+taxamt1);
-                taxamt21=taxamt2*num;
-                decimalFormat.format(taxamt21);
-           }
-           else{
-              taxamt21=taxinfo3.getRate()*f.getramt()*num; 
-               decimalFormat.format(taxamt21);
-           }
-          }
-      }
-       if(f.getjamt()>0){
-           TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(f.getservicetax());
-//          name=tinfo.getName();
-           TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
-           taxamt=taxinfo1.getRate()*f.getjamt();
-            taxamtt=taxamt*num;
-          
-          if(f.getTaxcat_2()!=null){
-               TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(f.getTaxcat_2());
-//           name1=tinfo1.getName();
-            TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
-           if(f.getCascade1()==true){
-               taxamt1=taxinfo2.getRate()*(f.getjamt()+taxamt);
-                taxamt11=taxamt1*num;
-           }
-           else{
-              taxamt1=taxinfo2.getRate()*f.getjamt(); 
-               taxamt11=taxamt1*num;
-           }
-          }
-          if(f.getTaxcat_3()!=null){
-              TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(f.getTaxcat_3());
-//           name2=tinfo3.getName();
-             TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
-              if(f.getCascade2()==true){
-               taxamt2=taxinfo3.getRate()*(f.getjamt()+taxamt+taxamt1);
-                taxamt21=taxamt2*num;
-           }
-           else{
-              taxamt2=taxinfo3.getRate()*f.getjamt(); 
-               taxamt21=taxamt2*num;
-           }
-          }
-       }
 
+                        CustomerInfoExt cinfo=new CustomerInfoExt(customerInfo.getId());
+                        int num=1;
+                        for (ManualFacilityBillingTableModel.Receiptline line : list)
+                        {
+                            num=line.getNoOfPeriod();
+                        }
+                        double taxamt=0.0;
+                        double taxamt1=0.0;
+                        double taxamt2=0.0;
+                        double taxamtt=0.0;
+                        double taxamt11=0.0;
+                        double taxamt21=0.0;
+                        if(f.getramt()>0)
+                        {
+                                TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(f.getservicetax());
+                                TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
+                                taxamt=taxinfo1.getRate()*f.getramt();
+                                taxamtt=taxamt*num;
+                                decimalFormat.format(taxamtt);
 
-
-
-
-
-
-
-
-if ( taxamtt> 0) {
-                            getServiceTaxacc();
-                            
-                          
-                            
-                            if (servicetaxacc != null) {
-//                                Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, totaltax, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax on renewalfee", servicetaxacc, 0.0, true,servicetaxacc1,servicetaxacc2};
-//                                dmang.insertintoaccjoutnalmanual(value);
-                                 Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamtt, date, true, user.getName(), m_App.getProperties().getHost(),name + " "+"on renewalfee", servicetaxacc, 0.0, true};
-                                dmang.insertintoaccjoutnal(value);
+                                if(f.getTaxcat_2()!=null)
+                                {
+                                    TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(f.getTaxcat_2());
+                                    TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
+                                    if(f.getCascade1()==true)
+                                    {
+                                        taxamt1=taxinfo2.getRate()*(f.getramt()+taxamt);
+                                        taxamt11=taxamt1*num;
+                                        decimalFormat.format(taxamt11);
                                  
+                                    }
+                                 
+                                    else
+                                    {
+                                        taxamt1=taxinfo2.getRate()*f.getramt(); 
+                                         taxamt11=taxamt1*num;
+                                         decimalFormat.format(taxamt11);
+                                 
+                                    }
                                 
-                            }
-                              
-                               
-                        }
-if(taxamt11>0){
-    getServiceTaxacc1();
-    if ( servicetaxacc1 != null) {
-                              Object[] value1 = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamt11, date, true, user.getName(), m_App.getProperties().getHost(),name1 + " "+"on renewalfee", servicetaxacc1, 0.0, true};
-                                dmang.insertintoaccjoutnal(value1);
-                              }
-}
-if(taxamt21>0){
-      getServiceTaxacc2();
-     if (servicetaxacc2 != null) {
-                                 Object[] value2 = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamt21, date, true, user.getName(), m_App.getProperties().getHost(),name2 + " "+"on renewalfee", servicetaxacc2, 0.0, true};
-                                dmang.insertintoaccjoutnal(value2);
                                 }
-}
+                                if(f.getTaxcat_3()!=null)
+                                {
+                                    TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(f.getTaxcat_3());
+                                    TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
+                                    if(f.getCascade2()==true)
+                                    {
+                                     taxamt2=taxinfo3.getRate()*(f.getramt()+taxamt+taxamt1);
+                                      taxamt21=taxamt2*num;
+                                      decimalFormat.format(taxamt21);
+                                    }
+                                    else
+                                    {
+                                        taxamt21=taxinfo3.getRate()*f.getramt()*num; 
+                                        decimalFormat.format(taxamt21);
+                                    }
+                                }
+                            }
+                             
+                            if(f.getjamt()>0)
+                            {
+                                TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(f.getservicetax());
+                                TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
+                                taxamt=taxinfo1.getRate()*f.getjamt();
+                                taxamtt=taxamt*num;
 
-                        dmang.updateBillNum("Manual Facility Billing Seq");
-                        if (customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() == 10) {
-                            dmang.updatetosendMsg(smstemp2, customerInfo.getId(), customerInfo.getMobile(), 2);
-                        }
-                        try {
-                            printTicket(billnumAll, totalamt, list,taxamtt,taxamt11,taxamt21,num);
-                        } catch (Exception e) {
-                        }
-                        activate();
-                    // jLabel11.setVisible(true);
-                    // prevbillno.setVisible(true);
-                    // prevbillno.setText(rnum);
+                                if(f.getTaxcat_2()!=null)
+                                {
+                                    TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(f.getTaxcat_2());
+                                    TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
+                                    if(f.getCascade1()==true)
+                                    {
+                                        taxamt1=taxinfo2.getRate()*(f.getjamt()+taxamt);
+                                        taxamt11=taxamt1*num;
+                                    }
+                                    else
+                                    {
+                                        taxamt1=taxinfo2.getRate()*f.getjamt(); 
+                                        taxamt11=taxamt1*num;
+                                    }
+                                }
+                                if(f.getTaxcat_3()!=null)
+                                {
+                                    TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(f.getTaxcat_3());
+                                    TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
+                                    if(f.getCascade2()==true)
+                                    {
+                                        taxamt2=taxinfo3.getRate()*(f.getjamt()+taxamt+taxamt1);
+                                        taxamt21=taxamt2*num;
+                                    }
+                                    else
+                                    {
+                                        taxamt2=taxinfo3.getRate()*f.getjamt(); 
+                                        taxamt21=taxamt2*num;
+                                    }
+                                }
+                             }
 
-                    } else {
+                            if ( taxamtt> 0) 
+                            {
+                                getServiceTaxacc();
+                                if (servicetaxacc != null) 
+                                {
+//                                  Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, totaltax, date, true, user.getName(), m_App.getProperties().getHost(), "Service tax on renewalfee", servicetaxacc, 0.0, true,servicetaxacc1,servicetaxacc2};
+//                                  dmang.insertintoaccjoutnalmanual(value);
+                                    Object[] value = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamtt, date, true, user.getName(), m_App.getProperties().getHost(),name + " "+"on renewalfee", servicetaxacc, 0.0, true};
+                                    dmang.insertintoaccjoutnal(value);
+                                }
+                            }
+                            if(taxamt11>0)
+                            {
+                                getServiceTaxacc1();
+                                if ( servicetaxacc1 != null) 
+                                {
+                                    Object[] value1 = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamt11, date, true, user.getName(), m_App.getProperties().getHost(),name1 + " "+"on renewalfee", servicetaxacc1, 0.0, true};
+                                    dmang.insertintoaccjoutnal(value1);
+                                     
+                                }
+
+                            }
+
+                            if(taxamt21>0)
+                            {
+      
+                                getServiceTaxacc2();
+     
+                                if (servicetaxacc2 != null) 
+                                {
+                                    Object[] value2 = new Object[]{UUID.randomUUID().toString(), tid, null, new Date(), "C", f.getid(), billnumAll, taxamt21, date, true, user.getName(), m_App.getProperties().getHost(),name2 + " "+"on renewalfee", servicetaxacc2, 0.0, true};
+                                    dmang.insertintoaccjoutnal(value2);
+                                }
+                            }
+
+                        
+                            dmang.updateBillNum("Manual Facility Billing Seq");
+                        
+                            if (customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() == 10) 
+                            {
+                                dmang.updatetosendMsg(smstemp2, customerInfo.getId(), customerInfo.getMobile(), 2);
+                            }
+                            try 
+                            {
+                                printTicket(billnumAll, totalamt, list,taxamtt,taxamt11,taxamt21,num);
+                            } 
+                            catch (Exception e) 
+                            {
+                        
+                            }
+                            activate();
+                    
+
+                    
+                     } 
+                     else 
+                     {
                         //exceeds
                         JOptionPane.showMessageDialog(null, "Please Fill the form completely", null, JOptionPane.WARNING_MESSAGE);
-                    }
-                    return null;
+                    
+                     }
+                    
+                     return null;
                 }
             };
 
             t.execute();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             e.printStackTrace();
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, "Error", e);
             msg.show(this);
