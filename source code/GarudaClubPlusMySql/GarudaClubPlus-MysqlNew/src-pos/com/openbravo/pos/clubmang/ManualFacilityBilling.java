@@ -47,9 +47,11 @@ import com.openbravo.pos.printer.TicketParser;
 import com.openbravo.pos.printer.TicketPrinterException;
 //import com.openbravo.pos.sales.BillInfo;
 import com.openbravo.pos.sales.TaxesLogic;
+import com.openbravo.pos.sales.restaurant.DebtBillList;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.util.StringUtils;
 import java.awt.event.KeyEvent;
@@ -89,21 +91,23 @@ public class ManualFacilityBilling extends javax.swing.JPanel implements JPanelV
     private DataLogicSystem dlsystem;
     private TicketParser ttp;
     private String servicetaxacc;
-     private String servicetaxacc1;
-      private String servicetaxacc2;
+    private String servicetaxacc1;
+    private String servicetaxacc2;
     private double taxrate=0.0;
-      private double taxrate1=0.0;
-        private double taxrate2=0.0;
+    private double taxrate1=0.0;
+    private double taxrate2=0.0;
     private double total=0.0;
     private double taxtotal=0.0;
-      private double taxtotal1=0.0;
-        private double taxtotal2=0.0;
-          private double taxtotal3=0.0;
+    private double taxtotal1=0.0;
+    private double taxtotal2=0.0;
+    private double taxtotal3=0.0;
         
     private FacilityLogic flogic;
     private ManualFacilityBillingTableModel mfmodel;
     List<ManualFacilityBillingTableModel.Receiptline> list;
     private String billnumAll;
+    private SMSgeneralDBSettings smsDBSettings;
+    
     private double totalamt = 0.0,  totaltax = 0.0;
     private String t;
       DecimalFormat decimalFormat = new DecimalFormat("#0.00");
@@ -145,6 +149,7 @@ public class ManualFacilityBilling extends javax.swing.JPanel implements JPanelV
         dmang = (DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
         dlCustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomersCreate");
         m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
+        smsDBSettings = (SMSgeneralDBSettings) app.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
         dlsystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystemCreate");
         ttp = new TicketParser(app.getDeviceTicket(), dlsystem);
         UIManager.put("Button.defaultButtonFollowsFocus", Boolean.TRUE);
@@ -1265,6 +1270,10 @@ if(TaxAmount3==0.0){
         }
     }//GEN-LAST:event_facilitylistItemStateChanged
 
+    String facilitySMSName = "";
+    String facAmount = "";
+    String dueDate = "";
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         try 
@@ -1348,6 +1357,13 @@ if(TaxAmount3==0.0){
                            
                             String smstemp3 = smstemp1;
                             String smstemp5 = null;
+                            
+                            // sms abrevations
+                            
+                            facilitySMSName = ftmp.getSMSForm();
+                            facAmount = dmang.ConvertDoubleToString(line.getAmount());
+                            dueDate = Formats.DATE.formatValue(line.getDuedate());
+                            
                             if (smstemp1 != null && j == 0) 
                             {
                                 
@@ -1805,7 +1821,8 @@ if(TaxAmount3==0.0){
                         
                             if (customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() == 10) 
                             {
-                                dmang.updatetosendMsg(smstemp2, customerInfo.getId(), customerInfo.getMobile(), 2);
+                                checkForSMS();
+                               // dmang.updatetosendMsg(smstemp2, customerInfo.getId(), customerInfo.getMobile(), 2);
                             }
                             try 
                             {
@@ -1813,7 +1830,7 @@ if(TaxAmount3==0.0){
                             } 
                             catch (Exception e) 
                             {
-                        
+                                
                             }
                             activate();
                     
@@ -1842,6 +1859,55 @@ if(TaxAmount3==0.0){
 
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    public void checkForSMS()
+    {
+        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_ACCOUNT_ID);
+        if(sendSMSforActDebit)
+        {
+            createSMS(SMSgeneralDBSettings.SMS_ACCOUNT_ID);
+        }
+    }
+    public void createSMS(String messageID)
+    {
+        String smsString = smsDBSettings.getMessage(messageID);
+        if(smsString != null)
+        {
+            
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, billnumAll);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , Formats.TIMESTAMP.formatValue(new Date()));
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY , facAmount);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY , facilitySMSName);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY , facilitySMSName);
+             
+            String x = m_App.getAppUserView().getUser().getRole();
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY ,  LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
+            
+            if(customerInfo != null)
+            {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, customerInfo.getName()); 
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, customerInfo.getSearchkey()); 
+            }
+            if(smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE) || smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER))
+            {
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE, "");
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER, "");
+            }
+            if(smsString.contains(SMSgeneralDBSettings.SMS_DUE_DATE_KEY))
+            {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_DUE_DATE_KEY, dueDate);
+            }
+            if(customerInfo != null && customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() > 0)
+            {
+                smsDBSettings.insertSMStoActiveMsgTable(smsString, customerInfo.getMobile(), customerInfo.getId());
+            }
+        }
+        
+        
+    }
+    
+    
+    
+    
     private void nperiodKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nperiodKeyReleased
         // TODO add your handling code here:
         try {
