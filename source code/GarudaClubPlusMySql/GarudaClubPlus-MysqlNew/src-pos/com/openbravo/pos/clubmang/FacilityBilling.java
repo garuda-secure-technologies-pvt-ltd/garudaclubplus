@@ -21,17 +21,20 @@ import com.openbravo.data.loader.SerializerWriteString;
 import com.openbravo.data.loader.StaticSentence;
 import com.openbravo.data.loader.Transaction;
 import com.openbravo.format.Formats;
+import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
 import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.LookupUtilityImpl;
 import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.inventory.TaxCategoryInfo1;
 import com.openbravo.pos.inventory.TaxCategoryInfo2;
 import com.openbravo.pos.printer.TicketParser;
 import com.openbravo.pos.sales.TaxesLogic;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import com.openbravo.pos.ticket.TaxInfo;
 import java.awt.Color;
 import java.awt.Component;
@@ -67,14 +70,15 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
     private String facility;
     private double rate;
     private double taxrate;
-       private double taxrate1;
-         private double taxrate2;
+    private double taxrate1;
+    private double taxrate2;
     private double taxamt;
-      private double taxamt1;
-       private double taxamt2;
-        private double taxamt3;
+    private double taxamt1;
+    private double taxamt2;
+    private double taxamt3;
     private String taxid;
     private String taxid1;
+    private DataLogicSales dlsales;
     //private double frate;
     private String period;
     private String billnum;
@@ -83,13 +87,14 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
     private String id;
     private String id1;
     private String id2;
-     private Boolean cascade1;
-      private Boolean cascade2;
-       String name=null;
-        String name1=null;
-         String name2=null;
-//      private FacilitytableModel.Facility facline=null;
-//       private Facility1 f1 = null;
+    private Boolean cascade1;
+    private Boolean cascade2;
+    String name=null;
+    String name1=null;
+    String name2=null;
+        
+    private SMSgeneralDBSettings smsDBSettings;
+    
     public FacilityBilling() {
         initComponents();
 
@@ -97,6 +102,8 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
 
    public void init(AppView app) throws BeanFactoryException {
        dmang=(DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
+       smsDBSettings = (SMSgeneralDBSettings) app.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
+       dlsales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
        m_App=app;
        jTable1.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
        m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
@@ -294,10 +301,59 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
         
         String smsmsg="Dear Member,\rYour a/c "+fmodel.getTableModel().getValueAt(index, 0) +" with us has been debited by Rs "+dmang.ConvertDoubleToString(amt1)+" for "+fac.getName()+" due on "+Formats.DATE.formatValue(duedate)+" bill no "+billno+".Total debit amount is "+totalDebt+".Thank u for using the facility";
        
-       if(mobile!=null && mobile.toString().trim().length()==10)
-            dmang.updatetosendMsg(smsmsg, memid, mobile.toString(),2);
+        CustomerInfoExt customerInfo = dlsales.loadCustomerExt(memid);
+        checkForSMS(billno, dmang.ConvertDoubleToString(amt1), fac.getName(), customerInfo, Formats.DATE.formatValue(duedate));
+        
+        //if(mobile!=null && mobile.toString().trim().length()==10)
+          //  dmang.updatetosendMsg(smsmsg, memid, mobile.toString(),2);
+     }
+     
+     public void checkForSMS(String billNo, String FacilityAmount, String FacilityName, CustomerInfoExt customerInfo, String dueDate)
+     {
+        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_ACCOUNT_ID);
+        if(sendSMSforActDebit)
+        {
+            createSMS(SMSgeneralDBSettings.SMS_ACCOUNT_ID,billNo,FacilityAmount, FacilityName, customerInfo, dueDate);
+        }
      }
   
+     public void createSMS(String messageID, String billNo, String FacilityAmount, String FacilityName, CustomerInfoExt customerInfo, String dueDate)
+    {
+        String smsString = smsDBSettings.getMessage(messageID);
+        if(smsString != null)
+        {
+            
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, billNo);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , Formats.TIMESTAMP.formatValue(new Date()));
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY , FacilityAmount);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY , FacilityName);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY , FacilityName);
+             
+            String x = m_App.getAppUserView().getUser().getRole();
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY ,  LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
+            
+            if(customerInfo != null)
+            {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, customerInfo.getName()); 
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, customerInfo.getSearchkey()); 
+            }
+            if(smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE) || smsString.contains(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER))
+            {
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE, "");
+               smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER, "");
+            }
+            if(smsString.contains(SMSgeneralDBSettings.SMS_DUE_DATE_KEY))
+            {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_DUE_DATE_KEY, dueDate);
+            }
+            if(customerInfo != null && customerInfo.getmobile() != null && customerInfo.getmobile().trim().length() > 0)
+            {
+                smsDBSettings.insertSMStoActiveMsgTable(smsString, customerInfo.getmobile(), customerInfo.getId());
+            }
+        }
+        
+        
+    }
  
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
