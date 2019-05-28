@@ -258,9 +258,10 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
 //           return false;
 //         }
      }
-     private void createbill(int index,String billno,Facility fac,Date bdate,String tid,String memid) throws BasicException{
-       //  Date d=new Date();
-       Double totalDebt=0.00;//added by pratima
+     
+     private void createbill(int index,String billno,Facility fac,Date bdate,String tid,String memid) throws BasicException
+     {
+        Double totalDebt=0.00;//added by pratima
         Object mobile=fmodel.getTableModel().getValueAt(index, 14);
         Timestamp bt=new Timestamp(bdate.getTime());
         Date duedate=new Date();
@@ -268,78 +269,19 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
         String customeraccount=fmodel.getTableModel().getValueAt(index,10).toString();
         String amt=fmodel.getTableModel().getValueAt(index,5).toString();
         String user=fmodel.getTableModel().getValueAt(index,1).toString();
-//          String taxcat_2=fmodel.getTableModel().getValueAt(index,17).toString();
-//           String taxcat_3=fmodel.getTableModel().getValueAt(index,18).toString();
-        //Object last=fmodel.getTableModel().getValueAt(index,3);
+
         Date sdate=(Date) fmodel.getTableModel().getValueAt(index,16);
-        if(sdate==null){
+        if(sdate==null)
+        {
           sdate=(Date)fmodel.getTableModel().getValueAt(index,15);
         }
-        //else{
-           Calendar cal=Calendar.getInstance();
-           //cal.setTimeInMillis(((Date)fmodel.getTableModel().getValueAt(index,3)).getTime());
-           cal.setTimeInMillis(sdate.getTime());
-           cal.add(Calendar.DATE, 1);
-           sdate.setTime(cal.getTimeInMillis());
-       // }
-//          Facility factemp=(Facility)facilityType.getSelectedItem();
-//       String name=null;
-//        String name1=null;
-//         String name2=null;
-//      //fac.getramt().toString();
-//          TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(factemp.getservicetax());
-//          name=tinfo.getName();
-//          if(factemp.getTaxcat_2()!=null){
-//               TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(factemp.getTaxcat_2());
-//           name1=tinfo1.getName();
-//          }
-//          if(factemp.getTaxcat_3()!=null){
-//              TaxCategoryInfo2 tinfo2=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(factemp.getTaxcat_3());
-//           name2=tinfo2.getName();
-//          }
-//          
-//           String servicetaxacc=null;
-//             String servicetaxacc1=null;
-//             String servicetaxacc2=null;
-//          if(name!=null){
-//              
-////       Object stacc=new StaticSentence(m_App.getSession()
-////                       , "SELECT VALUE FROM GENERALTABLE WHERE NAME = ? "
-////                       , SerializerWriteString.INSTANCE
-////                       ,SerializerReadString.INSTANCE).find("Service Tax Account");
-//        Object stacc=new StaticSentence(m_App.getSession()
-//                       , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
-//                       , SerializerWriteString.INSTANCE
-//                       ,SerializerReadString.INSTANCE).find(name);
-//         servicetaxacc=stacc.toString();
-//          }
-//          if(name1!=null){
-//            
-////       Object stacc=new StaticSentence(m_App.getSession()
-////                       , "SELECT VALUE FROM GENERALTABLE WHERE NAME = ? "
-////                       , SerializerWriteString.INSTANCE
-////                       ,SerializerReadString.INSTANCE).find("Service Tax Account");
-//        Object stacc1=new StaticSentence(m_App.getSession()
-//                       , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
-//                       , SerializerWriteString.INSTANCE
-//                       ,SerializerReadString.INSTANCE).find(name1);
-//        servicetaxacc1=stacc1.toString();
-//          }
-//     
-//         if(name2!=null)
-//         {
-//             
-////       Object stacc=new StaticSentence(m_App.getSession()
-////                       , "SELECT VALUE FROM GENERALTABLE WHERE NAME = ? "
-////                       , SerializerWriteString.INSTANCE
-////                       ,SerializerReadString.INSTANCE).find("Service Tax Account");
-//        Object stacc2=new StaticSentence(m_App.getSession()
-//                       , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
-//                       , SerializerWriteString.INSTANCE
-//                       ,SerializerReadString.INSTANCE).find(name2);
-//          servicetaxacc2=stacc2.toString();
-//         }
-//         
+        
+        Calendar cal=Calendar.getInstance();
+        //cal.setTimeInMillis(((Date)fmodel.getTableModel().getValueAt(index,3)).getTime());
+        cal.setTimeInMillis(sdate.getTime());
+        cal.add(Calendar.DATE, 1);
+        sdate.setTime(cal.getTimeInMillis());
+       
         String to=Formats.DATE.formatValue(bdate);
         String narration="Renewal fees for period :"+Formats.DATE.formatValue(sdate)+" To "+to +" : "+user;
         Double amt1=Double.parseDouble(amt);
@@ -349,29 +291,13 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
         totalsum += amt1;
         dmang.setmemberDebt(memid,fac.getid(),amt1);
         totalDebt=dmang.getmemberDebt(memid,fac.getid());//added by pratima
-        //String dbname="";
-        //dbname=
-       // String smsmsg="Dear Member,\rYour a/c "+fmodel.getTableModel().getValueAt(index, 0) +" with us has been debited by Rs "+dmang.ConvertDoubleToString(amt1)+" for "+fac.getName()+" due on "+Formats.DATE.formatValue(duedate)+" bill no "+billno+".Thank u for using the facility";
+        
         String smsmsg="Dear Member,\rYour a/c "+fmodel.getTableModel().getValueAt(index, 0) +" with us has been debited by Rs "+dmang.ConvertDoubleToString(amt1)+" for "+fac.getName()+" due on "+Formats.DATE.formatValue(duedate)+" bill no "+billno+".Total debit amount is "+totalDebt+".Thank u for using the facility";
        
        if(mobile!=null && mobile.toString().trim().length()==10)
-        dmang.updatetosendMsg(smsmsg, memid, mobile.toString(),2);
+            dmang.updatetosendMsg(smsmsg, memid, mobile.toString(),2);
      }
-   //  public void columnSelectionChanged(e)
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-   /*   public void tableChanged(TableModelEvent e) {
-        int row = e.getFirstRow();
-        int column = e.getColumn();
-        TableModel model = (TableModel)e.getSource();
-        String columnName = model.getColumnName(column);
-        Object data = model.getValueAt(row, column);
-
-
-    }*/
+  
  
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -705,235 +631,203 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
     private Double totalsum;
       private Double totalreg;
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    try{
-      totalsum=0.0;
-      totalreg=0.0;
-      String tid=UUID.randomUUID().toString();
-      Facility factemp=(Facility)facilityType.getSelectedItem();
-      String billno=dmang.getnewbillno(factemp.getid());
-      jTextField1.setText(billno);
-      billnum=billno;
-      int noofrows=  fmodel.getTableModel().getRowCount();
-      int j=0;
-       String user=null;
-Date sdate = null;
-   Date  bdate=null;
-      String to=null;
-      for(int i=0;i<noofrows;i++){
-        // FacilityBillingTableModel.Facilityline fline=fmodel.getfacilityline().get(i);
-         boolean selected=(Boolean)fmodel.getTableModel().getValueAt(i,6);
-         String amt=fmodel.getTableModel().getValueAt(i,5).toString();
-         if(selected==true && !amt.equals("0.0")){
+        
+        try
+        {
+            totalsum=0.0;
+            totalreg=0.0;
+            String tid=UUID.randomUUID().toString();
+            Facility factemp=(Facility)facilityType.getSelectedItem();
+            String billno=dmang.getnewbillno(factemp.getid());
+            jTextField1.setText(billno);
+            billnum=billno;
+            int noofrows=  fmodel.getTableModel().getRowCount();
+            int j=0;
+            String user=null;
+            Date sdate = null;
+            Date  bdate=null;
+            String to=null;
+            for(int i=0;i<noofrows;i++)
+            {
+                // FacilityBillingTableModel.Facilityline fline=fmodel.getfacilityline().get(i);
+                boolean selected=(Boolean)fmodel.getTableModel().getValueAt(i,6);
+                String amt=fmodel.getTableModel().getValueAt(i,5).toString();
+                if(selected==true && !amt.equals("0.0"))
+                {
+                    updatememusage(i,billno,factemp,tid);
+                
+                    user=fmodel.getTableModel().getValueAt(i,1).toString();
+                    sdate=(Date) fmodel.getTableModel().getValueAt(i,16);
+                    bdate=new Date(((Timestamp)fmodel.getTableModel().getValueAt(i,7 )).getTime());
+                    to=Formats.DATE.formatValue(bdate);
+                    j++;
+                }
+            }
 
-             updatememusage(i,billno,factemp,tid);
-              user=fmodel.getTableModel().getValueAt(i,1).toString();
-                sdate=(Date) fmodel.getTableModel().getValueAt(i,16);
-                 bdate=new Date(((Timestamp)fmodel.getTableModel().getValueAt(i,7 )).getTime());
-                 to=Formats.DATE.formatValue(bdate);
-                    
      
-             j++;
-         }
-      }
-//       String user=fmodel.getTableModel().getValueAt(j,1).toString();
-//               Date sdate=(Date) fmodel.getTableModel().getValueAt(j,16);
-//                Date bdate=new Date(((Timestamp)fmodel.getTableModel().getValueAt(j,7 )).getTime());
-//                String to=Formats.DATE.formatValue(bdate);
-     /* Double totaltax=0.0;
-      if(factemp.getservicetax()!=null){
-       TaxCategoryInfo tinfo=m_dlSales.getTaxCategoryByid(factemp.getservicetax());
-       TaxInfo tax = taxeslogic.getTaxInfo(tinfo);
-       totaltax=factemp.getramt() * tax.getRate()* j;
-      }*/
-     
-      dmang.updatebillno(factemp.getid());
-//       List list = dlfac.getMembersToBeBilled1(edate,edatePlusOne, fac1.getid(),type);
+            dmang.updatebillno(factemp.getid());
 
-      
-//      String name=null;
-//        String name1=null;
-//         String name2=null;
-         double taxamt=0.0;
-         double taxamt1=0.0;
-         double taxamt2=0.0;
-           double taxamtt=0.0;
-         double taxamt11=0.0;
-         double taxamt21=0.0;
+            double taxamt=0.0;
+            double taxamt1=0.0;
+            double taxamt2=0.0;
+            double taxamtt=0.0;
+            double taxamt11=0.0;
+            double taxamt21=0.0;
          
-      if(factemp.getramt()>0){
-          TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(factemp.getservicetax());
-          name=tinfo.getName();
-           TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
-           taxamt=taxinfo1.getRate()*factemp.getramt();
-           taxamtt=taxamt*j;
+            if(factemp.getramt()>0)
+            {
+                TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(factemp.getservicetax());
+                name=tinfo.getName();
+                TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
+                taxamt=taxinfo1.getRate()*factemp.getramt();
+                taxamtt=taxamt*j;
           
-          if(factemp.getTaxcat_2()!=null){
-               TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(factemp.getTaxcat_2());
-           name1=tinfo1.getName();
-            TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
-           if(factemp.getCascade1()==true){
-               taxamt1=taxinfo2.getRate()*(factemp.getramt()+taxamt);
-               taxamt11=taxamt1*j;
-           }
-           else{
-              taxamt1=taxinfo2.getRate()*factemp.getramt(); 
-               taxamt11=taxamt1*j;
-           }
-          }
-          if(factemp.getTaxcat_3()!=null){
-              TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(factemp.getTaxcat_3());
-           name2=tinfo3.getName();
-             TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
-              if(factemp.getCascade2()==true){
-               taxamt2=taxinfo3.getRate()*(factemp.getramt()+taxamt+taxamt1);
-               taxamt21=taxamt2*j;
-           }
-           else{
-              taxamt2=taxinfo3.getRate()*factemp.getramt();
-                taxamt21=taxamt2*j;
-           }
-          }
-      }
-       if(factemp.getjamt()>0){
-           TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(factemp.getservicetax());
-          name=tinfo.getName();
-           TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
-           taxamt=taxinfo1.getRate()*factemp.getjamt();
-           taxamtt=taxamt*j;
+                if(factemp.getTaxcat_2()!=null)
+                {
+                    TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(factemp.getTaxcat_2());
+                    name1=tinfo1.getName();
+                    TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
+                    if(factemp.getCascade1()==true)
+                    {
+                        taxamt1=taxinfo2.getRate()*(factemp.getramt()+taxamt);
+                        taxamt11=taxamt1*j;
+                    }
+                    else
+                    {
+                        taxamt1=taxinfo2.getRate()*factemp.getramt(); 
+                        taxamt11=taxamt1*j;
+                    }
+                }
+                if(factemp.getTaxcat_3()!=null)
+                {
+                    TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(factemp.getTaxcat_3());
+                    name2=tinfo3.getName();
+                    TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
+                    if(factemp.getCascade2()==true)
+                    {
+                        taxamt2=taxinfo3.getRate()*(factemp.getramt()+taxamt+taxamt1);
+                        taxamt21=taxamt2*j;
+                    }
+                    else
+                    {
+                        taxamt2=taxinfo3.getRate()*factemp.getramt();
+                        taxamt21=taxamt2*j;
+                    }
+                }
+            }
+            if(factemp.getjamt()>0)
+            {
+                TaxCategoryInfo tinfo=(TaxCategoryInfo)m_dlSales.getTaxCategoryByid(factemp.getservicetax());
+                name=tinfo.getName();
+                TaxInfo taxinfo1 = taxeslogic.getTaxInfo(tinfo);
+                taxamt=taxinfo1.getRate()*factemp.getjamt();
+                taxamtt=taxamt*j;
           
-          if(factemp.getTaxcat_2()!=null){
-               TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(factemp.getTaxcat_2());
-           name1=tinfo1.getName();
-            TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
-           if(factemp.getCascade1()==true){
-               taxamt1=taxinfo2.getRate()*(factemp.getjamt()+taxamt);
-               taxamt11=taxamt1*j;
-           }
-           else{
-              taxamt1=taxinfo2.getRate()*factemp.getjamt();
-               taxamt11=taxamt1*j;
-           }
-          }
-          if(factemp.getTaxcat_3()!=null){
-              TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(factemp.getTaxcat_3());
-           name2=tinfo3.getName();
-             TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
-              if(factemp.getCascade2()==true){
-               taxamt2=taxinfo3.getRate()*(factemp.getjamt()+taxamt+taxamt1);
-               taxamt21=taxamt2*j;
-           }
-           else{
-              taxamt2=taxinfo3.getRate()*factemp.getjamt(); 
-               taxamt21=taxamt2*j;
-           }
-          }
-       }
-      //fac.getramt().toString();
+                if(factemp.getTaxcat_2()!=null)
+                {
+                    TaxCategoryInfo1 tinfo1=(TaxCategoryInfo1)m_dlSales.getTaxCategoryByid1(factemp.getTaxcat_2());
+                    name1=tinfo1.getName();
+                    TaxInfo taxinfo2 = taxeslogic.getTaxInfo(tinfo1);
+                    if(factemp.getCascade1()==true)
+                    {
+                        taxamt1=taxinfo2.getRate()*(factemp.getjamt()+taxamt);
+                        taxamt11=taxamt1*j;
+                    }
+                    else
+                    {
+                        taxamt1=taxinfo2.getRate()*factemp.getjamt();
+                        taxamt11=taxamt1*j;
+                    }
+                }
+                if(factemp.getTaxcat_3()!=null)
+                {
+                    TaxCategoryInfo2 tinfo3=(TaxCategoryInfo2)m_dlSales.getTaxCategoryByid2(factemp.getTaxcat_3());
+                    name2=tinfo3.getName();
+                    TaxInfo taxinfo3 = taxeslogic.getTaxInfo(tinfo3);
+                    if(factemp.getCascade2()==true)
+                    {
+                        taxamt2=taxinfo3.getRate()*(factemp.getjamt()+taxamt+taxamt1);
+                        taxamt21=taxamt2*j;
+                    }
+                    else
+                    {
+                        taxamt2=taxinfo3.getRate()*factemp.getjamt(); 
+                        taxamt21=taxamt2*j;
+                    }
+                }
+            }
+       
           
-          totalreg=factemp.getramt()*j;
-//          System.out.println("totalreg:::::"+totalreg);
-           String servicetaxacc=null;
-           String servicetaxacc1=null;
-           String servicetaxacc2=null;
-          if(name!=null){
+            totalreg=factemp.getramt()*j;
+//          
+            String servicetaxacc=null;
+            String servicetaxacc1=null;
+            String servicetaxacc2=null;
+            if(name!=null)
+            {
               
-//       Object stacc=new StaticSentence(m_App.getSession()
-//                       , "SELECT VALUE FROM GENERALTABLE WHERE NAME = ? "
-//                       , SerializerWriteString.INSTANCE
-//                       ,SerializerReadString.INSTANCE).find("Service Tax Account");
-        Object stacc=new StaticSentence(m_App.getSession()
-                       , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
-                       , SerializerWriteString.INSTANCE
-                       ,SerializerReadString.INSTANCE).find(name);
-         servicetaxacc=stacc.toString();
-          }
-          if(name1!=null){
+
+                Object stacc=new StaticSentence(m_App.getSession()
+                               , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
+                               , SerializerWriteString.INSTANCE
+                               ,SerializerReadString.INSTANCE).find(name);
+                 servicetaxacc=stacc.toString();
+            }
+            if(name1!=null)
+            {
             
-//       Object stacc=new StaticSentence(m_App.getSession()
-//                       , "SELECT VALUE FROM GENERALTABLE WHERE NAME = ? "
-//                       , SerializerWriteString.INSTANCE
-//                       ,SerializerReadString.INSTANCE).find("Service Tax Account");
-        Object stacc1=new StaticSentence(m_App.getSession()
-                       , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
-                       , SerializerWriteString.INSTANCE
-                       ,SerializerReadString.INSTANCE).find(name1);
-        servicetaxacc1=stacc1.toString();
-          }
+
+                Object stacc1=new StaticSentence(m_App.getSession()
+                               , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
+                               , SerializerWriteString.INSTANCE
+                               ,SerializerReadString.INSTANCE).find(name1);
+                servicetaxacc1=stacc1.toString();
+            }
      
-         if(name2!=null)
-         {
+            if(name2!=null)
+            {
              
-//       Object stacc=new StaticSentence(m_App.getSession()
-//                       , "SELECT VALUE FROM GENERALTABLE WHERE NAME = ? "
-//                       , SerializerWriteString.INSTANCE
-//                       ,SerializerReadString.INSTANCE).find("Service Tax Account");
-        Object stacc2=new StaticSentence(m_App.getSession()
-                       , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
-                       , SerializerWriteString.INSTANCE
-                       ,SerializerReadString.INSTANCE).find(name2);
-          servicetaxacc2=stacc2.toString();
-         }
+
+                Object stacc2=new StaticSentence(m_App.getSession()
+                               , "SELECT ACCOUNT FROM TAXCATEGORIES WHERE NAME = ? "
+                               , SerializerWriteString.INSTANCE
+                               ,SerializerReadString.INSTANCE).find(name2);
+                  servicetaxacc2=stacc2.toString();
+            }
          
-//         if(stacc!=null)
-//           servicetaxacc=stacc.toString();
-//         if(stacc1!=null)
-//           servicetaxacc1=stacc.toString();
-//         if(stacc2!=null)
-//           servicetaxacc2=stacc.toString();
-      //ID,TID,DATE,TRANSTYPE,TRANSREF,TRANSNO,AMOUNT,DUEDATE,ADJUSTED,CREATEDBY,COUNTER,NARRATION,ACCOUNTID,BALANCEAMOUNT,CLEARDATE
-//      Object[] value1=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),factemp.getName()+" on " +Formats.DATE.formatValue(dnow),factemp.getRenewalacc(),0.0,dnow,true,servicetaxacc1,servicetaxacc2};
-//      dmang.insertintoaccjoutnal11(value1);
- String narration=Formats.DATE.formatValue(sdate)+" To "+to;
-      Object[] value1=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),factemp.getName()+" "+"for period : "+" " +narration,factemp.getRenewalacc(),0.0,dnow,true};
-      dmang.insertintoaccjoutnal1(value1);
 
-// Object[] value1=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,totalreg,dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),factemp.getName()+" on " +Formats.DATE.formatValue(dnow),factemp.getRenewalacc(),0.0,dnow,true};
-//      dmang.insertintoaccjoutnal1(value1);
-//      Object[] value1=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,totalreg,dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),factemp.getName()+" on " +narration,factemp.getRenewalacc(),0.0,dnow,true};
-//      dmang.insertintoaccjoutnal1(value1);
-//      if(fmodel.getTaxtotal()>0 && servicetaxacc!=null){
-////       Object[] value2=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),"Service tax for bill number "+billno,servicetaxacc,0.0,dnow,true,servicetaxacc1,servicetaxacc2};
-////       dmang.insertintoaccjoutnal11(value2);
-//       Object[] value2=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),"Service tax for bill number "+billno,servicetaxacc,0.0,dnow,true};
-//       dmang.insertintoaccjoutnal1(value2);
-//       
-//       
-//      }
+            String narration=Formats.DATE.formatValue(sdate)+" To "+to;
+            Object[] value1=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),factemp.getName()+" "+"for period : "+" " +narration,factemp.getRenewalacc(),0.0,dnow,true};
+            dmang.insertintoaccjoutnal1(value1);
 
-      if(fmodel.getTaxtotal()>0 && servicetaxacc!=null){
-//       Object[] value2=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),"Service tax for bill number "+billno,servicetaxacc,0.0,dnow,true,servicetaxacc1,servicetaxacc2};
-//       dmang.insertintoaccjoutnal11(value2);
-       Object[] value2=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),name+" "+"on bill number"+" "+billno,servicetaxacc,0.0,dnow,true};
-       dmang.insertintoaccjoutnal1(value2);
+
+
+            if(fmodel.getTaxtotal()>0 && servicetaxacc!=null)
+            {
+                Object[] value2=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),name+" "+"on bill number"+" "+billno,servicetaxacc,0.0,dnow,true};
+                dmang.insertintoaccjoutnal1(value2);
        
        
-      }
-//       if(fmodel.getTaxtotal()>0 && servicetaxacc1!=null){
-//            Object[] value21=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),"Service tax for bill number "+billno,servicetaxacc1,0.0,dnow,true};
-//       dmang.insertintoaccjoutnal1(value21);
-//       }
-        if(fmodel.getTaxtotal1()>0 && servicetaxacc1!=null){
-            Object[] value21=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal1(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),name1+" "+ "on bill number"+" "+billno,servicetaxacc1,0.0,dnow,true};
-       dmang.insertintoaccjoutnal1(value21);
-       }
-//        if(fmodel.getTaxtotal()>0 && servicetaxacc2!=null){
-//            Object[] value22=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),"Service tax for bill number "+billno,servicetaxacc2,0.0,dnow,true};
-//       dmang.insertintoaccjoutnal1(value22);
-//       }
-         if(fmodel.getTaxtotal2()>0 && servicetaxacc2!=null){
-            Object[] value22=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal2(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),name2+" "+"on bill number"+" "+billno,servicetaxacc2,0.0,dnow,true};
-       dmang.insertintoaccjoutnal1(value22);
-       }
-//        else{
-//         if(servicetaxacc==null)
-//             JOptionPane.showMessageDialog(this, "Please Create a service tax account", null, JOptionPane.OK_OPTION);
-//      }
-      jTextField2.setText(String.valueOf(dnow));
-      jButton2.setVisible(false);
-      jButton3.setVisible(true);
+            }
+
+            if(fmodel.getTaxtotal1()>0 && servicetaxacc1!=null)
+            {
+                Object[] value21=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal1(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),name1+" "+ "on bill number"+" "+billno,servicetaxacc1,0.0,dnow,true};
+                dmang.insertintoaccjoutnal1(value21);
+            }
+
+            if(fmodel.getTaxtotal2()>0 && servicetaxacc2!=null)
+            {
+               Object[] value22=new Object[]{UUID.randomUUID().toString(),tid,dnow,"C",factemp.getid(),billno,fmodel.getTaxtotal2(),dnow,true,m_App.getAppUserView().getUser().getName(),m_App.getProperties().getHost(),name2+" "+"on bill number"+" "+billno,servicetaxacc2,0.0,dnow,true};
+               dmang.insertintoaccjoutnal1(value22);
+            }
+
+            jTextField2.setText(String.valueOf(dnow));
+            jButton2.setVisible(false);
+            jButton3.setVisible(true);
         }
-        catch(BasicException e){
+        catch(BasicException e)
+        {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jButton2ActionPerformed
