@@ -44,15 +44,17 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     private Session session;
     public static final String SMS_QT_ID =  "sms-101";
     public static final String SMS_BILL_ID =  "sms-102";
-    public static final String SMS_ACCOUNT_ID =  "sms-103";
+    public static final String SMS_FACILITY_ID =  "sms-103";
     public static final String SMS_GUEST_CHRG_DEBIT_ID =  "sms-104";
     public static final String SMS_GUEST_CHRG_CASH_ID =  "sms-105";
+    public static final String SMS_CREDIT_CONF_ID = "sms-106";
     
     public static final String SMS_QT_NAME =  "Master message for QT";
     public static final String SMS_BILL_NAME =  "Mastre message for BILL";
-    public static final String SMS_ACCOUNT_NAME =  "Master message for Account";
+    public static final String SMS_FACILITY_NAME =  "Master message for Account";
     public static final String SMS_GUEST_CHRG_DEBIT_NAME =  "Master message for Guest charges - A/c debit";
     public static final String SMS_GUEST_CHRG_CASH_NAME =  "Master message for Guest Charges - Cash";
+     public static final String SMS_CREDIT_CONF_NAME =  "Master message for credit confirmation";
     
     public static final String SMS_BILL_KEY = "###BILLNO###";
     public static final String SMS_DTM_KEY = "###DTM###";

@@ -310,10 +310,10 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
      
      public void checkForSMS(String billNo, String FacilityAmount, String FacilityName, CustomerInfoExt customerInfo, String dueDate)
      {
-        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_ACCOUNT_ID);
+        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_FACILITY_ID);
         if(sendSMSforActDebit)
         {
-            createSMS(SMSgeneralDBSettings.SMS_ACCOUNT_ID,billNo,FacilityAmount, FacilityName, customerInfo, dueDate);
+            createSMS(SMSgeneralDBSettings.SMS_FACILITY_ID,billNo,FacilityAmount, FacilityName, customerInfo, dueDate);
         }
      }
   
@@ -327,7 +327,6 @@ public class FacilityBilling extends javax.swing.JPanel implements JPanelView,Be
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , Formats.TIMESTAMP.formatValue(new Date()));
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY , FacilityAmount);
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY , FacilityName);
-            smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY , FacilityName);
              
             String x = m_App.getAppUserView().getUser().getRole();
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY ,  LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());

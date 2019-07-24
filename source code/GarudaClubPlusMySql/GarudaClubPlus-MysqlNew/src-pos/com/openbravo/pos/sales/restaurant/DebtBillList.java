@@ -394,10 +394,10 @@ public class DebtBillList extends javax.swing.JDialog {
     
     public void checkForSMS(CreditConfirmList c, Double netBalance, String facilitySMSName)
     {
-        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_ACCOUNT_ID);
+        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_CREDIT_CONF_ID);
         if(sendSMSforActDebit)
         {
-            createSMS(c, SMSgeneralDBSettings.SMS_ACCOUNT_ID, netBalance, facilitySMSName);
+            createSMS(c, SMSgeneralDBSettings.SMS_CREDIT_CONF_ID, netBalance, facilitySMSName);
         }
     }
     

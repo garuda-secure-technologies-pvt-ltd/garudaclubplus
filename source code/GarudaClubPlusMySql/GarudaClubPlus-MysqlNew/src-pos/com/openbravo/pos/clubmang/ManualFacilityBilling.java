@@ -1861,10 +1861,10 @@ if(TaxAmount3==0.0){
 
     public void checkForSMS()
     {
-        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_ACCOUNT_ID);
+        boolean sendSMSforActDebit =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_FACILITY_ID);
         if(sendSMSforActDebit)
         {
-            createSMS(SMSgeneralDBSettings.SMS_ACCOUNT_ID);
+            createSMS(SMSgeneralDBSettings.SMS_FACILITY_ID);
         }
     }
     public void createSMS(String messageID)
@@ -1877,7 +1877,6 @@ if(TaxAmount3==0.0){
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , Formats.TIMESTAMP.formatValue(new Date()));
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY , facAmount);
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY , facilitySMSName);
-            smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY , facilitySMSName);
              
             String x = m_App.getAppUserView().getUser().getRole();
             smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY ,  LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
