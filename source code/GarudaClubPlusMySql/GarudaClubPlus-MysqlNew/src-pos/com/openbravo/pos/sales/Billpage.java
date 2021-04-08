@@ -738,8 +738,25 @@ public class Billpage extends javax.swing.JDialog {
         return null;
     }
     
+    private String getFacilityName(String wareHouse) {
+        AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+        try {
+            Object[] obj = (Object[]) new StaticSentence(m_App.getSession(),
+                    "SELECT NAME FROM FACILITY WHERE ID = (SELECT FACILITY FROM LOCATIONS WHERE ID = ? )",
+                    SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING}))
+                    .find(wareHouse);
+            if (obj == null) {
+                return "";
+            } else {
+                return obj[0].toString();
+            }
+        } catch (BasicException ex) {
+            Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
     
-    
+  
     public String[] getCustomerBalanceDue(BillInfo ticket) throws BasicException
     {
         String[] balanceArr = new String[2];
@@ -814,7 +831,7 @@ public class Billpage extends javax.swing.JDialog {
         String sms = smsString;
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, ticket.getID());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , ticket.printDate());
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getRDisplayName(ticket.getWarehouse()));
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getFacilityName(ticket.getWarehouse()));
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY, getRDisplayName(ticket.getWarehouse()));
         AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
         String x = m_App.getAppUserView().getUser().getRole();

@@ -129,11 +129,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private JPaymentSelect paymentdialogreceipt;
     private JPaymentSelect paymentdialogrefund;
     protected String name;
-  
-  
-    
 
-    /** Creates new form JTicketView */
+    /**
+     * Creates new form JTicketView
+     */
     public JPanelTicket() {
 
         initComponents();
@@ -147,7 +146,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         dlCustomers = (DataLogicCustomers) m_App.getBean("com.openbravo.pos.customers.DataLogicCustomersCreate");
         dlReceipts = (DataLogicReceipts) app.getBean("com.openbravo.pos.sales.DataLogicReceipts");
         smsDBSettings = (SMSgeneralDBSettings) m_App.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
-  //      qtk = (QTKitchen) app.getBean("com.openbravo.pos.sales.QTKitchen");///aaa
+        //      qtk = (QTKitchen) app.getBean("com.openbravo.pos.sales.QTKitchen");///aaa
 
         qTicket = (Qticket) m_App.getBean("com.openbravo.pos.sales.Qticket");
         qTicket.setDataLogicSales(dlSales);
@@ -177,7 +176,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // El modelo de impuestos
         senttax = dlSales.getTaxList();
         senttaxcategories = dlSales.getTaxCategoriesList();
-        
 
         taxcategoriesmodel = new ComboBoxValModel();
 
@@ -197,11 +195,13 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         return this;
     }
 ///aaa  
+
     public double roundTwoDecimals(double d) {
         DecimalFormat twoDForm = new DecimalFormat("#.##");
         return new Double(twoDForm.format(d)).doubleValue();
     }
 ///aaa
+
     public void activate() throws BasicException {
 
         paymentdialogreceipt = JPaymentSelectReceipt.getDialog(this);
@@ -229,7 +229,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         } else {
             taxcategoriesmodel.setSelectedKey(taxesid);
         }
-
 
         taxeslogic = new TaxesLogic(taxlist);
 
@@ -264,7 +263,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     protected abstract Component getSouthComponent();
 
-    public void setActiveTicket(TicketInfo oTicket, Object oTicketExt){
+    public void setActiveTicket(TicketInfo oTicket, Object oTicketExt) {
 
         m_oTicket = oTicket;
         m_oTicketExt = oTicketExt;
@@ -274,7 +273,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             refreshTicket();
         } catch (BasicException ex) {
             Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
-            
+
         }
     }
 
@@ -309,90 +308,83 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             // The ticket name
             m_jTicketId.setText(m_oTicket.getName(m_oTicketExt));
 ///aaa
-  jTextField1.setRequestFocusEnabled(false);//*imp*
-       
-       jTextField1.setBackground(java.awt.Color.white);
-        jTextField1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jTextField1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        jTextField1.setOpaque(true);
-        jTextField1.setPreferredSize(new java.awt.Dimension(150, 25));
-        
-        
-        Font font = new Font("Times New Roman", Font.BOLD, 13);
+            jTextField1.setRequestFocusEnabled(false);//*imp*
+
+            jTextField1.setBackground(java.awt.Color.white);
+            jTextField1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            jTextField1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+            jTextField1.setOpaque(true);
+            jTextField1.setPreferredSize(new java.awt.Dimension(150, 25));
+
+            Font font = new Font("Times New Roman", Font.BOLD, 13);
             jTextField1.setFont(font);
-       
-    String cust=m_oTicket.getCustomerId();
-    String id=cust;
-     
-    try{
-       Object[] obj1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CAST((CURROPB)AS DECIMAL(10,2)) FROM billingmember where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(id.toString());
-       
-       if(obj1!=null){
-       String opb = obj1[0].toString();
-                   Double OPB = new Double(opb);
-                   
-                   //added by shweta
-                   Object[] objm = (Object[]) new StaticSentence(m_App.getSession(), "SELECT MEMTYPE FROM CUSTOMERS where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(id.toString());
-  
-     
-        if(objm==null){
-             String a = m_oTicket.getCustomerId();
-                String a1 = a.substring(0,36);
-                Object[] gobjm = (Object[]) new StaticSentence(m_App.getSession(), "SELECT MEMTYPE FROM CUSTOMERS where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(a1.toString());
-                String memtype = gobjm[0].toString();
-           
-                    Object[] gobj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
-                     String dMax = gobj2[0].toString();
-                  Double debtMax = new Double(dMax);
-                   Object[] objstotal1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT FROMDATE,TODATE,ADDAMOUNT FROM QTCR_LIMITAUTH WHERE CUSTOMER=? AND ACTIVE IS TRUE",
-                                        new SerializerWriteBasic(new Datas[]{Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.TIMESTAMP,Datas.TIMESTAMP,Datas.DOUBLE})).find(new Object[]{id});
-                              Date fromdate=new Date();
-                               Date todate=new Date();
-                             Date currentdate=new Date();
-                                double addmnt1=0.0;
-                                if(objstotal1 !=null){
-                                 fromdate     =(Date) objstotal1[0]; 
-                                 todate       =(Date) objstotal1[1];
-                                   addmnt1       =(double) objstotal1[2];
-                                   if(currentdate.after(fromdate) && currentdate.before(todate)){
-                                       debtMax=debtMax+addmnt1;
-                                   
-                                   if(OPB>debtMax){
-                                       OPB=OPB-addmnt1;
-                                   
-                        
-                                  }
-                          
-                     else if(OPB<debtMax){
-                       OPB=OPB-addmnt1;
-                        
-                            }
-                    else{
-                         OPB=OPB;                          
-                     }
-                                   }                                
+
+            String cust = m_oTicket.getCustomerId();
+            String id = cust;
+
+            try {
+                Object[] obj1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CAST((CURROPB)AS DECIMAL(10,2)) FROM billingmember where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(id.toString());
+
+                if (obj1 != null) {
+                    String opb = obj1[0].toString();
+                    Double OPB = new Double(opb);
+
+                    //added by shweta
+                    Object[] objm = (Object[]) new StaticSentence(m_App.getSession(), "SELECT MEMTYPE FROM CUSTOMERS where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(id.toString());
+
+                    if (objm == null) {
+                        String a = m_oTicket.getCustomerId();
+                        String a1 = a.substring(0, 36);
+                        Object[] gobjm = (Object[]) new StaticSentence(m_App.getSession(), "SELECT MEMTYPE FROM CUSTOMERS where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(a1.toString());
+                        String memtype = gobjm[0].toString();
+
+                        Object[] gobj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
+                        String dMax = gobj2[0].toString();
+                        Double debtMax = new Double(dMax);
+                        Object[] objstotal1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT FROMDATE,TODATE,ADDAMOUNT FROM QTCR_LIMITAUTH WHERE CUSTOMER=? AND ACTIVE IS TRUE",
+                                new SerializerWriteBasic(new Datas[]{Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.DOUBLE})).find(new Object[]{id});
+                        Date fromdate = new Date();
+                        Date todate = new Date();
+                        Date currentdate = new Date();
+                        double addmnt1 = 0.0;
+                        if (objstotal1 != null) {
+                            fromdate = (Date) objstotal1[0];
+                            todate = (Date) objstotal1[1];
+                            addmnt1 = (double) objstotal1[2];
+                            if (currentdate.after(fromdate) && currentdate.before(todate)) {
+                                debtMax = debtMax + addmnt1;
+
+                                if (OPB > debtMax) {
+                                    OPB = OPB - addmnt1;
+
+                                } else if (OPB < debtMax) {
+                                    OPB = OPB - addmnt1;
+
+                                } else {
+                                    OPB = OPB;
                                 }
-        }
-                   
-                   roundTwoDecimals(OPB);
-                    if(OPB>0){
-                         jTextField1.setForeground(Color.red);
-                        jTextField1.setText("Dr.  "+OPB);
-                           }
-                     else if(OPB<0){
-                         jTextField1.setForeground(Color.green);
-                         OPB = OPB*(-1);
-                         jTextField1.setText("Cr.  "+OPB);
-                             }
-                      else{jTextField1.setForeground(Color.black);
-                            jTextField1.setText(""+OPB);
                             }
-    }
+                        }
+                    }
+
+                    roundTwoDecimals(OPB);
+                    if (OPB > 0) {
+                        jTextField1.setForeground(Color.red);
+                        jTextField1.setText("Dr.  " + OPB);
+                    } else if (OPB < 0) {
+                        jTextField1.setForeground(Color.green);
+                        OPB = OPB * (-1);
+                        jTextField1.setText("Cr.  " + OPB);
+                    } else {
+                        jTextField1.setForeground(Color.black);
+                        jTextField1.setText("" + OPB);
+                    }
+                }
 ///aaa                       
-              }catch(Exception e){
-                       e.printStackTrace();
-                       throw new BasicException(e.getMessage());
-                                  }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new BasicException(e.getMessage());
+            }
             // Limpiamos todas las filas y anadimos las del ticket actual
             m_ticketlines.clearTicketLines();
 
@@ -416,111 +408,97 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-      private void printPartialTotals() {
+    private void printPartialTotals() {
 
         if (m_oTicket.getLinesCount() == 0) {
             m_jSubtotalEuros.setText(null);
             m_jTaxesEuros.setText(null);
             m_jTotalEuros.setText(null);
         } else {
-            
-              
-              m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
-              //  m_jTotalEuros.setText(m_oTicket.printTotal());
-                System.out.println(m_oTicket.getLines());
-                m_oTicket.getLinesCount();
-                System.out.println(m_oTicket.getLine(0).getTaxInfo().getId());
-                /////i got struck here
-         
-                String gett=m_oTicket.getLine(0).getTaxInfo().getId();
+
+            m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
+            //  m_jTotalEuros.setText(m_oTicket.printTotal());
+            System.out.println(m_oTicket.getLines());
+            m_oTicket.getLinesCount();
+            System.out.println(m_oTicket.getLine(0).getTaxInfo().getId());
+            /////i got struck here
+
+            String gett = m_oTicket.getLine(0).getTaxInfo().getId();
             ArrayList<TicketLineInfo> arrayList = (ArrayList<TicketLineInfo>) m_oTicket.getLines();
-                for (int i = 0; i <  arrayList.size(); i++) {
-                      
-                      Object st2=arrayList.size();
-                      int ib = (Integer)st2;
-                      int ib1=ib-1;
-                      String st1= m_oTicket.getLine(ib1).getTaxInfo().getId();
-                      name=st1;
-                      
-                      
-                      
-                      
-                       
-                        try {
-                            Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT RATEROUNDOFF FROM TAXES WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(st1);
-                                 if(obj[0].equals("yes")){
-                          System.out.println(obj[0]);
-                          System.out.println("yes");
+            for (int i = 0; i < arrayList.size(); i++) {
 
-                        double str =m_oTicket.getTax();
-                        System.out.println(new Float( Math.round(str)));
-                        Object f= new Float(Math.round(str));
-                        String st= f.toString();
+                Object st2 = arrayList.size();
+                int ib = (Integer) st2;
+                int ib1 = ib - 1;
+                String st1 = m_oTicket.getLine(ib1).getTaxInfo().getId();
+                name = st1;
+
+                try {
+                    Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT RATEROUNDOFF FROM TAXES WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(st1);
+                    if (obj[0].equals("yes")) {
+                        System.out.println(obj[0]);
+                        System.out.println("yes");
+
+                        double str = m_oTicket.getTax();
+                        System.out.println(new Float(Math.round(str)));
+                        Object f = new Float(Math.round(str));
+                        String st = f.toString();
                         m_jTaxesEuros.setText(Formats.CURRENCY.formatValue(new Double(st)));
-                        double str1=m_oTicket.getSubTotal();
-                        double str2=str1+Math.round(str);
-                        Object o1= new Double(str2);
+                        double str1 = m_oTicket.getSubTotal();
+                        double str2 = str1 + Math.round(str);
+                        Object o1 = new Double(str2);
                         o1.toString();
-                         m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(o1.toString())));
+                        m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(o1.toString())));
 
-
-
-                       }else if(obj[0].equals("yesnearest")){
-                           double str =m_oTicket.getTax();
-                        System.out.println(new Float( Math.round(str)));
-                        Object f= new Float(Math.round(str));
-                        String st= f.toString();
+                    } else if (obj[0].equals("yesnearest")) {
+                        double str = m_oTicket.getTax();
+                        System.out.println(new Float(Math.round(str)));
+                        Object f = new Float(Math.round(str));
+                        String st = f.toString();
                         m_jTaxesEuros.setText(Formats.CURRENCY.formatValue(new Double(st)));
-                        double str1=m_oTicket.getSubTotal();
-                        double str2=str1+Math.round(str);
-                        Object o1= new Double(str2);
+                        double str1 = m_oTicket.getSubTotal();
+                        double str2 = str1 + Math.round(str);
+                        Object o1 = new Double(str2);
                         o1.toString();
-                         m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(o1.toString())));
+                        m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(o1.toString())));
 
-
-                        }else if(obj[0].equals("yesnext")){
-                            double str =m_oTicket.getTax();
-                        System.out.println(new Float( Math.round(str)+1));
-                        Object f= new Float(Math.round(str)+1);
-                        String st= f.toString();
+                    } else if (obj[0].equals("yesnext")) {
+                        double str = m_oTicket.getTax();
+                        System.out.println(new Float(Math.round(str) + 1));
+                        Object f = new Float(Math.round(str) + 1);
+                        String st = f.toString();
                         m_jTaxesEuros.setText(Formats.CURRENCY.formatValue(new Double(st)));
-                        double str1=m_oTicket.getSubTotal();
-                        double str2=str1+Math.round(str)+1;
-                        Object o1= new Double(str2);
+                        double str1 = m_oTicket.getSubTotal();
+                        double str2 = str1 + Math.round(str) + 1;
+                        Object o1 = new Double(str2);
                         o1.toString();
-                         m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(o1.toString())));
+                        m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(o1.toString())));
 
-
-                        }else if(obj[0].equals("yesprevious")){
-                            double str =m_oTicket.getTax();
-                        System.out.println(new Float( Math.round(str)));
-                        Object f= new Float(Math.round(str)-1);
-                        String st= f.toString();
+                    } else if (obj[0].equals("yesprevious")) {
+                        double str = m_oTicket.getTax();
+                        System.out.println(new Float(Math.round(str)));
+                        Object f = new Float(Math.round(str) - 1);
+                        String st = f.toString();
                         m_jTaxesEuros.setText(Formats.CURRENCY.formatValue(new Double(st)));
-                        double str1=m_oTicket.getSubTotal();
-                        double str2=str1+Math.round(str)-1;
-                        Object o1= new Double(str2);
+                        double str1 = m_oTicket.getSubTotal();
+                        double str2 = str1 + Math.round(str) - 1;
+                        Object o1 = new Double(str2);
                         o1.toString();
-                         m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(o1.toString())));
+                        m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(o1.toString())));
 
+                    } else {
+                        System.out.println("no");
+                        System.out.println(obj[0]);
+                        m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
+                        m_jTaxesEuros.setText(m_oTicket.printTax());
+                        m_jTotalEuros.setText(m_oTicket.printTotal());
+                    }
+                } catch (BasicException ex) {
+                    Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
 
-                          }
-                                 else{
-                          System.out.println("no");
-                          System.out.println(obj[0]);
-                          m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
-                          m_jTaxesEuros.setText(m_oTicket.printTax());
-                          m_jTotalEuros.setText(m_oTicket.printTotal());
-                       }
-                        } catch (BasicException ex) {
-                            Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                  } 
-          
-             
-              
-               
-               }
+        }
     }
 
     private void paintTicketLine(int index, TicketLineInfo oLine) throws BasicException {
@@ -539,27 +517,25 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-    private void addTicketLine(ProductInfoExt oProduct, double dMul, double dPrice) throws BasicException{
+    private void addTicketLine(ProductInfoExt oProduct, double dMul, double dPrice) throws BasicException {
 
         TaxInfo tax = taxeslogic.getTaxInfo(oProduct.getTaxCategoryInfo(), m_oTicket.getCustomer());
         TaxInfo tax2 = taxeslogic.getTaxInfo(oProduct.getTaxCategoryInfo2(), m_oTicket.getCustomer());                                                             // edited by aakash
         TaxInfo tax3 = taxeslogic.getTaxInfo(oProduct.getTaxCategoryInfo3(), m_oTicket.getCustomer());
-        
+
         Boolean Basic2 = oProduct.getBASIC2();
         Boolean Basic3 = oProduct.getBASIC3();
-  // edited by aakash foe kitchen products ............................................................................
-        
-         String Productid=oProduct.getID();
-         Object[] prodDeac = (Object[]) new StaticSentence(m_App.getSession(), "SELECT PRODUCTID FROM deactiveproduct where PRODUCTID=? AND ACTIVE=1", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(Productid);
-         if(prodDeac!=null){
-               JOptionPane.showMessageDialog(null, "Product deactivated for the day... \n Sorry cannot create QT.", "Warning", JOptionPane.OK_OPTION);  
-         }
-         else{
-            
-             addTicketLine(new TicketLineInfo(oProduct, dMul, dPrice, tax, (java.util.Properties) (oProduct.getProperties().clone()) , tax2 , tax3 , Basic2 , Basic3));
-         }
-        
-       
+        // edited by aakash foe kitchen products ............................................................................
+
+        String Productid = oProduct.getID();
+        Object[] prodDeac = (Object[]) new StaticSentence(m_App.getSession(), "SELECT PRODUCTID FROM deactiveproduct where PRODUCTID=? AND ACTIVE=1", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(Productid);
+        if (prodDeac != null) {
+            JOptionPane.showMessageDialog(null, "Product deactivated for the day... \n Sorry cannot create QT.", "Warning", JOptionPane.OK_OPTION);
+        } else {
+
+            addTicketLine(new TicketLineInfo(oProduct, dMul, dPrice, tax, (java.util.Properties) (oProduct.getProperties().clone()), tax2, tax3, Basic2, Basic3));
+        }
+
     }
 
     protected void addTicketLine(TicketLineInfo oLine) {
@@ -719,7 +695,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 } else {
                     addTicketLine(oProduct, 1.0, dPriceSell);
                 }
-                
+
             }
         } catch (BasicException eData) {
             stateToZero();
@@ -750,20 +726,20 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // precondicion: prod != null
         addTicketLine(prod, dPor, prod.getPriceSell());
     }
- 
-    protected void buttonTransition(ProductInfoExt prod)  {
+
+    protected void buttonTransition(ProductInfoExt prod) {
         // precondicion: prod != null
-        
+
         if (m_iNumberStatusInput == NUMBERZERO && m_iNumberStatusPor == NUMBERZERO) {
             try {
-                  incProduct(prod);
+                incProduct(prod);
             } catch (BasicException ex) {
                 Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (m_iNumberStatusInput == NUMBERVALID && m_iNumberStatusPor == NUMBERZERO) {
             try {
                 incProduct(getInputValue(), prod);
-                
+
             } catch (BasicException ex) {
                 Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -776,15 +752,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         int i = m_ticketlines.getSelectedIndex();
         if (i >= 0) {
             TicketLineInfo oLine = m_oTicket.getLine(i);
-            double qty=oLine.getMultiply() + dUnits;
-            if(qty>0){
+            double qty = oLine.getMultiply() + dUnits;
+            if (qty > 0) {
                 oLine.setMultiply(oLine.getMultiply() + dUnits);
-               // paintTicketLine(i, oLine);
-            }else{
+                // paintTicketLine(i, oLine);
+            } else {
                 JOptionPane.showMessageDialog(null, "The Total Quantity Should Be Greater Then Zero");
             }
             paintTicketLine(i, oLine);
-        /*   InventoryLine inv = m_invlines.getLine(i);
+            /*   InventoryLine inv = m_invlines.getLine(i);
         double dunits = inv.getMultiply() + dUnits;
         if (dunits == 0.0) {
         deleteLine(i);
@@ -794,7 +770,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }*/
         }
     }
-  //  EDITED BY AAKASH
+    //  EDITED BY AAKASH
+
     private void stateTransition(char cTrans) throws BasicException {
 
         if (cTrans == '\u007f') {
@@ -824,8 +801,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPor.setText("");
         }
 
-        }*/ 
-      // EDITED BY AKASH
+        }*/ // EDITED BY AKASH
         else if (cTrans == ' ' || cTrans == '=') {
             //  if ( m_jPor.getCount() == 0) {
             // No podemos grabar, no hay ningun registro.
@@ -839,8 +815,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_jPor.setText(m_jPor.getText() + cTrans);
         }
     }
-  // EDITED BY AAKSH
-    
+    // EDITED BY AAKSH
+
     //******************************************** EDITED BY AAKASH *************************************** 
     /*
     private void stateTransition(char cTrans)  throws BasicException{
@@ -1119,98 +1095,76 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
     }
     }
-*/
-    
-    
+     */
     // ************************* EDITED BY AAKASH *******************************************************
-    
     private void createQTicket(TicketInfo ticket) throws Exception {
         QTLogic qtLogic = new QTLogic(ticket, dlSales, qTicket);
         qtLogic.dispatchQT();
         saveAndPrintQTs(qtLogic.getQTickets());
-        
+
     }
 
-    private void saveAndPrintQTs(final Collection<QticketInfo> qts) throws Exception 
-    {
-        
-        for (QticketInfo qtInfo : qts) 
-        {
+    private void saveAndPrintQTs(final Collection<QticketInfo> qts) throws Exception {
+
+        for (QticketInfo qtInfo : qts) {
             boolean flag = qTicket.saveQTicket(qtInfo);
-            if (flag == true) 
-            {
+            if (flag == true) {
                 printqt(qtInfo.getprCategory(), qtInfo);
                 checkSMSflagForQT(qtInfo);
-            } 
-            else 
-            {
+            } else {
                 break;
             }
         }
     }
-    
-    public void checkSMSflagForQT(QticketInfo qTicket)
-    {
-       boolean sendSMSwhileQT =  smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_QT_ID);
-       boolean isFacilityEnable = smsDBSettings.isFacilityEnable(SMSgeneralDBSettings.SMS_QT_ID, smsDBSettings.getFacilityId(qTicket.getWarehouse()) );
-       if(sendSMSwhileQT && isFacilityEnable)
-       {
-           String smsString = smsDBSettings.getMessage(SMSgeneralDBSettings.SMS_QT_ID);
-           createSMS(smsString, qTicket);
-       }
+
+    public void checkSMSflagForQT(QticketInfo qTicket) {
+        boolean sendSMSwhileQT = smsDBSettings.getSMSvalue(SMSgeneralDBSettings.SMS_QT_ID);
+        boolean isFacilityEnable = smsDBSettings.isFacilityEnable(SMSgeneralDBSettings.SMS_QT_ID, smsDBSettings.getFacilityId(qTicket.getWarehouse()));
+        if (sendSMSwhileQT && isFacilityEnable) {
+            String smsString = smsDBSettings.getMessage(SMSgeneralDBSettings.SMS_QT_ID);
+            createSMS(smsString, qTicket);
+        }
     }
-    
-    public void createSMS(String smsString, QticketInfo qTicket)
-    {
+
+    public void createSMS(String smsString, QticketInfo qTicket) {
         String sms = smsString;
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, qTicket.getId());
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , qTicket.printDate());
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY, qTicket.printDate());
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getFacilityName(qTicket.getWarehouse()));
         smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY, getRdisplayName(qTicket.getWarehouse()));
         String x = m_App.getAppUserView().getUser().getRole();
-        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString()); 
-        
-        
-        Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO, "SMS for QT is ON : Customer : "+qTicket.getCustomer().getId()+ " and  mobile number is "+qTicket.getCustomer().getmobile());
-        
-        if(qTicket.getCustomer().getId().contains("Guest"))
-        {
+        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
+
+        Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO, "SMS for QT is ON : Customer : " + qTicket.getCustomer().getId() + " and  mobile number is " + qTicket.getCustomer().getmobile());
+
+        if (qTicket.getCustomer().getId().contains("Guest")) {
             String custID = smsDBSettings.getCustIdFromGuestID(qTicket.getCustomer());
-             if(custID != null)
-             {
-                try 
-                {
-                    CustomerInfoExt custInfo =  dlSales.loadCustomerExt(custID);
-                    if(custInfo != null )
-                    {
+            if (custID != null) {
+                try {
+                    CustomerInfoExt custInfo = dlSales.loadCustomerExt(custID);
+                    if (custInfo != null) {
                         smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, custInfo.getName());
-                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, custInfo.getSearchkey()); 
-                        if(custInfo.getmobile() != null && !custInfo.getmobile().isEmpty())
-                        {
-                           smsDBSettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile(), custInfo.getId()); 
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, custInfo.getSearchkey());
+                        if (custInfo.getmobile() != null && !custInfo.getmobile().isEmpty()) {
+                            smsDBSettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile(), custInfo.getId());
                         }
-                        
+
                     }
-                } 
-                catch (BasicException ex)
-                {
+                } catch (BasicException ex) {
                     Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        } else {
+            if (qTicket.getCustomer().getmobile() != null && !qTicket.getCustomer().getmobile().isEmpty()) {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, qTicket.getCustomer().getName());
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, qTicket.getCustomer().getSearchkey());
+                smsDBSettings.insertSMStoActiveMsgTable(smsString, qTicket.getCustomer().getmobile(), qTicket.getCustomer().getId());
+                Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO, "SMS sent successfully : " + smsString);
+            }
         }
-        else
-        {
-           if(qTicket.getCustomer().getmobile() != null && !qTicket.getCustomer().getmobile().isEmpty())
-            {
-               smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, qTicket.getCustomer().getName());
-               smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, qTicket.getCustomer().getSearchkey());
-               smsDBSettings.insertSMStoActiveMsgTable(smsString, qTicket.getCustomer().getmobile(), qTicket.getCustomer().getId());
-               Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
-            }  
-        }
-       
+
     }
-    
+
     public void printqt(String prcategory, QticketInfo qTicket) throws BasicException {
         String sresource = LookupUtilityImpl.getInstance(null).getDataLogicSystem().getResourceAsXML("Printer.QT");
         String waitername;
@@ -1244,16 +1198,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 flag1 = 3;
             }
 
-            String Displayname="";
+            String Displayname = "";
             Displayname = getRdisplayName(qTicket.getWarehouse());
-            
-            
+
             // script.put("flag", flag);
             ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
             script.put("waiter", waitername);
             script.put("place", table1);
             script.put("flag", 4);
-            script.put("Displayname",Displayname);
+            script.put("Displayname", Displayname);
             script.put("ticket", qTicket);
             script.put("printer", LookupUtilityImpl.getInstance(null).getPRCategoriesMap().get(prcategory).getPrinter());
             m_TTP.printTicket(script.eval(sresource).toString());
@@ -1269,41 +1222,35 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             throw new BasicException(e.getMessage());
         }
     }
-    
-    private String getRdisplayName(String wareHouse)
-    {
-        try 
-        {
+
+    private String getRdisplayName(String wareHouse) {
+        try {
             Object[] obj = (Object[]) new StaticSentence(m_App.getSession(),
                     "select rdisplayname from locations where id=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING}))
                     .find(wareHouse);
-            if (obj == null)
+            if (obj == null) {
                 return "";
-            else
+            } else {
                 return obj[0].toString();
-        } 
-        catch (BasicException ex) 
-        {
+            }
+        } catch (BasicException ex) {
             Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
-    
-    private String getFacilityName(String wareHouse)
-    {
-        try 
-        {
+
+    private String getFacilityName(String wareHouse) {
+        try {
             Object[] obj = (Object[]) new StaticSentence(m_App.getSession(),
-                    "SELECT NAME FROM FACILITY WHERE ID = (SELECT FACILITY FROM LOCATIONS WHERE ID = ? )", 
+                    "SELECT NAME FROM FACILITY WHERE ID = (SELECT FACILITY FROM LOCATIONS WHERE ID = ? )",
                     SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING}))
                     .find(wareHouse);
-            if (obj == null)
+            if (obj == null) {
                 return "";
-            else
+            } else {
                 return obj[0].toString();
-        } 
-        catch (BasicException ex) 
-        {
+            }
+        } catch (BasicException ex) {
             Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -1323,7 +1270,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
                 // Muestro el total
                 printTicket("Printer.TicketTotal", ticket, ticketext);
-
 
                 // Select the Payments information
                 JPaymentSelect paymentdialog = ticket.getTotal() >= 0.0
@@ -1615,10 +1561,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the FormEditor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the FormEditor.
      */
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -2111,9 +2057,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         ProductInfoExt prod = JProductFinder.showMessage(JPanelTicket.this, dlSales);
         if (prod != null) {
-           
-                buttonTransition(prod);
-           
+
+            buttonTransition(prod);
+
         }
 
     }//GEN-LAST:event_m_jListActionPerformed
@@ -2184,23 +2130,24 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                                 }
                             }
                             j++;
-                        //   }
+                            //   }
 
                         }
                         createQTicket(ticket2);
 //                if (closeTicket(ticket2, m_oTicketExt)) { // already checked  that number of lines > 0
                         setActiveTicket(ticket1, m_oTicketExt);// set result ticket
                         dlReceipts.updateSharedTicket(ticket1.getCustomerId(), ticket1, m_App.getAppUserView().getUser().getRole());
-                    //  dlReceipts.updateLastQtTimeOfSharedTicket(new Date(),ticket1.getCustomerId(), m_App.getAppUserView().getUser().getRole());
+                        //  dlReceipts.updateLastQtTimeOfSharedTicket(new Date(),ticket1.getCustomerId(), m_App.getAppUserView().getUser().getRole());
                     } else {
                         // if(berror==true){
                         JOptionPane.showMessageDialog(this, "Please reset the system time or consult your system admin", "Sorry Cannot Create QT", JOptionPane.OK_OPTION);
-                    // }
+                        // }
                     }
                 }
                 //praveen:exit for every transaction for kiosk mode---start
-                if(m_App.getAppUserView().getUser().getTypeOfUser()==1)
-                JPrincipalApp.m_approot.closeAppView();
+                if (m_App.getAppUserView().getUser().getTypeOfUser() == 1) {
+                    JPrincipalApp.m_approot.closeAppView();
+                }
                 //praveen:exit for every transaction for kiosk mode---end
 
             }
@@ -2218,225 +2165,212 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         } catch (BasicException ex) {
             new MessageInf(ex).show(this);
         }
-        
+
 }//GEN-LAST:event_m_prTicketActionPerformed
-    Double AmtNotinStck =0.00;
-     Double DiscountAmt=0.00;
+    Double AmtNotinStck = 0.00;
+    Double DiscountAmt = 0.00;
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
-        AmtNotinStck =0.00;
-       
-        
-        try {
-        Transaction t = new Transaction(m_App.getSession()) {
 
-            @Override
-            protected Object transact() throws BasicException {
-                
-                int x=0;
-                Object[]stk=new Object[25];
-        
-            boolean berror = false;
-            Date date = new Date();
-            AppUser user = LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser();
-            Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT OPENSALE FROM PEOPLE WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.TIMESTAMP})).find(user.getId());
-            if (obj != null) {
-                if (obj[0] != null) {
-                    Date d = (Date) obj[0];
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    cal1.setTimeInMillis(date.getTime());
-                    cal2.setTimeInMillis(d.getTime());
-                    if (cal1.before(cal2)) {
-                        if (JOptionPane.showConfirmDialog(null, "Present Time is less than Open sale Time.Previous Open sale Time is " + d + " .Do you want to override the open sale time ?", "Error-System Time was reset", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-                            berror = true;
-                            
-                        } else {
-                            new PreparedSentence(m_App.getSession(), "UPDATE PEOPLE SET OPENSALE=? WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.TIMESTAMP, Datas.STRING})).exec(new Object[]{date, user.getId()});
+        AmtNotinStck = 0.00;
+
+        try {
+            Transaction t = new Transaction(m_App.getSession()) {
+
+                @Override
+                protected Object transact() throws BasicException {
+
+                    int x = 0;
+                    Object[] stk = new Object[25];
+
+                    boolean berror = false;
+                    Date date = new Date();
+                    AppUser user = LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser();
+                    Object[] obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT OPENSALE FROM PEOPLE WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.TIMESTAMP})).find(user.getId());
+                    if (obj != null) {
+                        if (obj[0] != null) {
+                            Date d = (Date) obj[0];
+                            Calendar cal1 = Calendar.getInstance();
+                            Calendar cal2 = Calendar.getInstance();
+                            cal1.setTimeInMillis(date.getTime());
+                            cal2.setTimeInMillis(d.getTime());
+                            if (cal1.before(cal2)) {
+                                if (JOptionPane.showConfirmDialog(null, "Present Time is less than Open sale Time.Previous Open sale Time is " + d + " .Do you want to override the open sale time ?", "Error-System Time was reset", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                                    berror = true;
+
+                                } else {
+                                    new PreparedSentence(m_App.getSession(), "UPDATE PEOPLE SET OPENSALE=? WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.TIMESTAMP, Datas.STRING})).exec(new Object[]{date, user.getId()});
+                                }
+                            }
                         }
                     }
-                }
-            }
-            if (berror == false && m_oTicket.getLinesCount() > 0) {
-                // temp=1;
-                TicketInfo ticket1 = m_oTicket.copyTicket();
-                TicketInfo ticket2 = new TicketInfo();
-               
-                ticket2.setCustomer(m_oTicket.getCustomer());
-                ticket2.setUser(ticket1.getUser());
-                ticket2.setPlace(ticket1.getPlace());
-                ticket2.setWaiter(ticket1.getWaiter());
-                ticket2.setFloor(ticket1.getFloor());
+                    if (berror == false && m_oTicket.getLinesCount() > 0) {
+                        // temp=1;
+                        TicketInfo ticket1 = m_oTicket.copyTicket();
+                        TicketInfo ticket2 = new TicketInfo();
 
-                int count = m_oTicket.getLinesCount();
-                int j = 0;
-                int size = ticket1.getLines().size();
-                // Boolean temp=LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().hasPermission("StockCheckNotRequired");
+                        ticket2.setCustomer(m_oTicket.getCustomer());
+                        ticket2.setUser(ticket1.getUser());
+                        ticket2.setPlace(ticket1.getPlace());
+                        ticket2.setWaiter(ticket1.getWaiter());
+                        ticket2.setFloor(ticket1.getFloor());
 
-                // if(!temp)
-                
- // edited by akash ................ 
-                
-                DiscountAmt=0.00;
-                String Taxcat2=null;
-                String Taxcat3=null;
-                while (j < size) {
-                    TicketLineInfo tl = ticket1.getLine(j);
+                        int count = m_oTicket.getLinesCount();
+                        int j = 0;
+                        int size = ticket1.getLines().size();
+                        // Boolean temp=LookupUtilityImpl.getInstance(null).getAppView().getAppUserView().getUser().hasPermission("StockCheckNotRequired");
+
+                        // if(!temp)
+                        // edited by akash ................ 
+                        DiscountAmt = 0.00;
+                        String Taxcat2 = null;
+                        String Taxcat3 = null;
+                        while (j < size) {
+                            TicketLineInfo tl = ticket1.getLine(j);
 //                    System.out.println(">>>>>>>>>>>>>>>>>tl.isStockCheckRequired() >>>>>>>>>>>>>>>>>>>>>>" + tl.isStockCheckRequired());
 //                    Object stockcheck = new PreparedSentence(m_App.getSession(), "SELECT INVENTRYMAINTAIN FROM PRODUCTS WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find(tl.getProductID().toString());
 //                    System.out.println(">>>>>>>>>>>>>>>>>tl.isStockCheckRequired() >>>>>>>>>>>>>>>>>>>>>>" + Boolean.valueOf(stockcheck.toString()));
 
-                    if (tl.isStockCheckRequired()) {
-                        Object o = dlSales.getStockVolume(tl.getProductID());
-                        stk[j] = o;
-                        Double sqty = 0.0;
-                        if (o != null) {
-                            sqty = Double.parseDouble(o.toString());
-                        }
-                        if (sqty >= tl.getMultiply()) {
-                            dlSales.updateStockVolume(-tl.getMultiply(), tl.getProductID());
-                            dlSales.updateStockVolume1(-tl.getMultiply(), tl.getProductID());
-                            j++;
-                        } else {
-                            
-                            if (sqty == 0.0) {
-		//						x=1;
-                                               AmtNotinStck = AmtNotinStck+ticket1.getSubTotal()+ticket1.getTax();
-                                               System.out.println("Amount of prod not in stock : "+AmtNotinStck);
-                                               JOptionPane.showMessageDialog(null, "\"" + tl.getProductName() + " \" is Empty.Cannot prepare QT for it", "Stock Empty", JOptionPane.WARNING_MESSAGE);
-                                               
-                                               Double CurrTaxRate=0.00;
-                                               Double TotalTaxAmount=0.00;
-                                               String Taxcat = tl.getProductTaxCategoryID();
-                                               CurrTaxRate=CurrTaxRate+getTaxrateByCategory(Taxcat);
-                                               if(tl.getProductTaxCategoryID2()!=null && tl.getProductTaxCategoryID2()!=""){
-                                                   Taxcat2 = tl.getProductTaxCategoryID2();
-                                                   CurrTaxRate=CurrTaxRate+getTaxrateByCategory(Taxcat2);
-                                               }
-                                               if(tl.getProductTaxCategoryID3()!=null && tl.getProductTaxCategoryID3()!=""){
-                                                   Taxcat3 = tl.getProductTaxCategoryID3();
-                                                   CurrTaxRate=CurrTaxRate+getTaxrateByCategory(Taxcat3);
-                                               }
-                                               TotalTaxAmount=tl.getSubValue()*CurrTaxRate;
-                                               DiscountAmt=DiscountAmt+ tl.getSubValue()+TotalTaxAmount;
-                                               
-                                               System.out.println("Tax category id : "+tl.getProductTaxCategoryID2());
-                                
+                            if (tl.isStockCheckRequired()) {
+                                Object o = dlSales.getStockVolume(tl.getProductID());
+                                stk[j] = o;
+                                Double sqty = 0.0;
+                                if (o != null) {
+                                    sqty = Double.parseDouble(o.toString());
+                                }
+                                if (sqty >= tl.getMultiply()) {
+                                    dlSales.updateStockVolume(-tl.getMultiply(), tl.getProductID());
+                                    dlSales.updateStockVolume1(-tl.getMultiply(), tl.getProductID());
+                                    j++;
+                                } else {
+
+                                    if (sqty == 0.0) {
+                                        //						x=1;
+                                        AmtNotinStck = AmtNotinStck + ticket1.getSubTotal() + ticket1.getTax();
+                                        System.out.println("Amount of prod not in stock : " + AmtNotinStck);
+                                        JOptionPane.showMessageDialog(null, "\"" + tl.getProductName() + " \" is Empty.Cannot prepare QT for it", "Stock Empty", JOptionPane.WARNING_MESSAGE);
+
+                                        Double CurrTaxRate = 0.00;
+                                        Double TotalTaxAmount = 0.00;
+                                        String Taxcat = tl.getProductTaxCategoryID();
+                                        CurrTaxRate = CurrTaxRate + getTaxrateByCategory(Taxcat);
+                                        if (tl.getProductTaxCategoryID2() != null && tl.getProductTaxCategoryID2() != "") {
+                                            Taxcat2 = tl.getProductTaxCategoryID2();
+                                            CurrTaxRate = CurrTaxRate + getTaxrateByCategory(Taxcat2);
+                                        }
+                                        if (tl.getProductTaxCategoryID3() != null && tl.getProductTaxCategoryID3() != "") {
+                                            Taxcat3 = tl.getProductTaxCategoryID3();
+                                            CurrTaxRate = CurrTaxRate + getTaxrateByCategory(Taxcat3);
+                                        }
+                                        TotalTaxAmount = tl.getSubValue() * CurrTaxRate;
+                                        DiscountAmt = DiscountAmt + tl.getSubValue() + TotalTaxAmount;
+
+                                        System.out.println("Tax category id : " + tl.getProductTaxCategoryID2());
+
+                                    } else {
+                                        AmtNotinStck = AmtNotinStck + ticket1.getSubTotal() + ticket1.getTax();
+                                        System.out.println("Amount of prod not in stock : " + AmtNotinStck);
+                                        JOptionPane.showMessageDialog(null, "QT quantity Exceed the quantity in stock for \"" + tl.getProductName() + " \"", "Cannot Prepare QT", JOptionPane.WARNING_MESSAGE);
+                                        DiscountAmt = DiscountAmt + tl.getSubValue() + tl.getTax();
+                                        System.out.println("Tax category id : " + tl.getTaxRate());
+                                    }
+                                    ticket1.deleteLine(j);
+
+                                    //j--;
+                                    for (int i = j; i < size; i++) {
+                                        stk[i] = stk[i++];
+                                    }
+
+                                    size--;
+
+                                }
                             } else {
-                                  AmtNotinStck =AmtNotinStck+ ticket1.getSubTotal()+ticket1.getTax();
-                                   System.out.println("Amount of prod not in stock : "+AmtNotinStck);
-                                JOptionPane.showMessageDialog(null, "QT quantity Exceed the quantity in stock for \"" + tl.getProductName() + " \"", "Cannot Prepare QT", JOptionPane.WARNING_MESSAGE);
-                                 DiscountAmt=DiscountAmt+ tl.getSubValue()+tl.getTax();
-                                 System.out.println("Tax category id : "+tl.getTaxRate());
+                                j++;
                             }
-                            ticket1.deleteLine(j);
-                            
-                          
-                            //j--;
-                            for(int i=j;i<size;i++){
-                                stk[i]=stk[i++];
-                            }
-                            
-                            size--;
-                            
                         }
-                    } else {
-                        j++;
-                    }
-            }   
-                
+
 ////////aaa..Start
-                
-  //           if(x==0){  
-              
-             System.out.println("Discounted Amount : "+DiscountAmt);   
-                
-             Double amt=0.0;
-             //////////////////////////////////////shiv
-             System.out.println(ticket1.getTax());
-             
-               Object[] obj4 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT RATEROUNDOFF FROM TAXES WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(name);
-                         if(obj4[0].equals("yes")){
-                              ticket1.getTax();
-                              Object f= new Float(Math.round(ticket1.getTax()));
-                              String st= f.toString();
-                              Double taxst= Double.parseDouble(st); 
-                              amt=ticket1.getSubTotal()+taxst;
-                              System.out.println(taxst);
-                             
-                         }else if(obj4[0].equals("yesnearest")){
-                              ticket1.getTax();
-                              System.out.println(ticket1.getTax());
-                                Object f= new Float(Math.round(ticket1.getTax()));
-                                 String st= f.toString();
-                                  Double taxst= Double.parseDouble(st); 
-                                  amt=ticket1.getSubTotal()+taxst;
-                                  System.out.println(taxst);
-                         }else if(obj4[0].equals("yesnext")){
-                              ticket1.getTax();
-                              System.out.println(ticket1.getTax());
-                                  Object f= new Float(Math.round(ticket1.getTax())+1);
-                                  String st= f.toString();
-                                   Double taxst= Double.parseDouble(st); 
-                                  amt=ticket1.getSubTotal()+taxst;
-                                  System.out.println(taxst);
-                          }else if(obj4[0].equals("yesprevious")){
-                               ticket1.getTax();
-                               System.out.println(ticket1.getTax());
-                                   Object f= new Float(Math.round(ticket1.getTax())-1);
-                                   String st= f.toString();
-                                   Double taxst= Double.parseDouble(st); 
-                                   amt=ticket1.getSubTotal()+taxst;
-                                   System.out.println(taxst);
-                          }else{
-                              
-                                amt=ticket1.getTotal();
-                                 
-                            }
-                         
-                       Object od = (Formats.CURRENCY.parseValue(m_jTotalEuros.getText()));
-                         
-                         amt = Double.parseDouble(od.toString());
-                         System.out.println("Amount Before Discount : "+ amt);
-                         
-                         
-                         amt=amt-DiscountAmt;               //// Edited By Akash
-                         
-                         
-                          System.out.println("Amount After Discount : "+ amt);
-                         
-                         
-                         
-                         
-                String cust=m_oTicket.getCustomerId();
-                String id=cust;
-                
-      Object[] objm = (Object[]) new StaticSentence(m_App.getSession(), "SELECT MEMTYPE FROM CUSTOMERS where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(id.toString());
-    //    String memtype = objm[0].toString();
-     
-        if(objm==null){
-             String a = m_oTicket.getCustomerId();
-                String a1 = a.substring(0,36);
-                String gname ="Credit check for Guests";
-                Object[] gobjm = (Object[]) new StaticSentence(m_App.getSession(), "SELECT MEMTYPE FROM CUSTOMERS where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(a1.toString());
-                String memtype = gobjm[0].toString();
-           
-            Object[] gobj1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CAST((CURROPB)AS DECIMAL(10,2)) FROM billingmember where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(id.toString());
-                String gopb=gobj1[0].toString();
-                   Double GOPB = new Double(gopb);
-                   
-                   
-                   roundTwoDecimals(GOPB);
-                  
-                    Double GSum = GOPB+amt;
-                         // added by shweta
-                     Object[] gobj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
-                     String dMax = gobj2[0].toString();
-                  Double debtMax = new Double(dMax);
-                  
-                   
-                  /* Object[] objstotal1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT FROMDATE,TODATE,ADDAMOUNT FROM QTCR_LIMITAUTH WHERE CUSTOMER=? AND ACTIVE IS TRUE",
+                        //           if(x==0){  
+                        System.out.println("Discounted Amount : " + DiscountAmt);
+
+                        Double amt = 0.0;
+                        //////////////////////////////////////shiv
+                        System.out.println(ticket1.getTax());
+
+                        Object[] obj4 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT RATEROUNDOFF FROM TAXES WHERE ID=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(name);
+                        if (obj4[0].equals("yes")) {
+                            ticket1.getTax();
+                            Object f = new Float(Math.round(ticket1.getTax()));
+                            String st = f.toString();
+                            Double taxst = Double.parseDouble(st);
+                            amt = ticket1.getSubTotal() + taxst;
+                            System.out.println(taxst);
+
+                        } else if (obj4[0].equals("yesnearest")) {
+                            ticket1.getTax();
+                            System.out.println(ticket1.getTax());
+                            Object f = new Float(Math.round(ticket1.getTax()));
+                            String st = f.toString();
+                            Double taxst = Double.parseDouble(st);
+                            amt = ticket1.getSubTotal() + taxst;
+                            System.out.println(taxst);
+                        } else if (obj4[0].equals("yesnext")) {
+                            ticket1.getTax();
+                            System.out.println(ticket1.getTax());
+                            Object f = new Float(Math.round(ticket1.getTax()) + 1);
+                            String st = f.toString();
+                            Double taxst = Double.parseDouble(st);
+                            amt = ticket1.getSubTotal() + taxst;
+                            System.out.println(taxst);
+                        } else if (obj4[0].equals("yesprevious")) {
+                            ticket1.getTax();
+                            System.out.println(ticket1.getTax());
+                            Object f = new Float(Math.round(ticket1.getTax()) - 1);
+                            String st = f.toString();
+                            Double taxst = Double.parseDouble(st);
+                            amt = ticket1.getSubTotal() + taxst;
+                            System.out.println(taxst);
+                        } else {
+
+                            amt = ticket1.getTotal();
+
+                        }
+
+                        Object od = (Formats.CURRENCY.parseValue(m_jTotalEuros.getText()));
+
+                        amt = Double.parseDouble(od.toString());
+                        System.out.println("Amount Before Discount : " + amt);
+
+                        amt = amt - DiscountAmt;               //// Edited By Akash
+
+                        System.out.println("Amount After Discount : " + amt);
+
+                        String cust = m_oTicket.getCustomerId();
+                        String id = cust;
+
+                        Object[] objm = (Object[]) new StaticSentence(m_App.getSession(), "SELECT MEMTYPE FROM CUSTOMERS where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(id.toString());
+                        //    String memtype = objm[0].toString();
+
+                        if (objm == null) {
+                            String a = m_oTicket.getCustomerId();
+                            String a1 = a.substring(0, 36);
+                            String gname = "Credit check for Guests";
+                            Object[] gobjm = (Object[]) new StaticSentence(m_App.getSession(), "SELECT MEMTYPE FROM CUSTOMERS where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(a1.toString());
+                            String memtype = gobjm[0].toString();
+
+                            Object[] gobj1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CAST((CURROPB)AS DECIMAL(10,2)) FROM billingmember where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(id.toString());
+                            String gopb = gobj1[0].toString();
+                            Double GOPB = new Double(gopb);
+
+                            roundTwoDecimals(GOPB);
+
+                            Double GSum = GOPB + amt;
+                            // added by shweta
+                            Object[] gobj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
+                            String dMax = gobj2[0].toString();
+                            Double debtMax = new Double(dMax);
+
+                            /* Object[] objstotal1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT FROMDATE,TODATE,ADDAMOUNT FROM QTCR_LIMITAUTH WHERE CUSTOMER=? AND ACTIVE IS TRUE",
                                         new SerializerWriteBasic(new Datas[]{Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.TIMESTAMP,Datas.TIMESTAMP,Datas.DOUBLE})).find(new Object[]{id});
                
                               Date fromdate=new Date();
@@ -2464,70 +2398,61 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     else{
                          GSum=GSum+addmnt1;                          
                      }
-                                   }        */                        
-                                
-                    
-                    
-                    GSum=roundTwoDecimals(GSum);
-                    
-                    Object[] gobjqt = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM generaltable where NAME=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find(gname);
-                    Boolean GQTcheck = (Boolean)gobjqt[0];
-                    
-           if(GQTcheck==true){///Start of check
-                        
-               
-                     //Object[] gobj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
-                  //   String dMax = gobj2[0].toString();
-               //   Double debtMax = new Double(dMax);
-                  
-                     
-                          
+                                   }        */
+                            GSum = roundTwoDecimals(GSum);
 
-                  if((GSum>debtMax)){
-                     
-                       
-                      //make a method for msg
-              //to overcome the products reduction
-                int s = 0;
-                while (s < size) {
-                    TicketLineInfo tl = ticket1.getLine(s);
-                    if (tl.isStockCheckRequired()) {
-                    //    Object o = dlSales.getStockVolume(tl.getProductID());
-                        Double sqty = 0.0;
-                        if (stk[s] != null) {
-                            sqty = Double.parseDouble(stk[s].toString());
-                        }
-                        if (sqty >= tl.getMultiply()) {
-                            dlSales.updateStockVolume(tl.getMultiply(), tl.getProductID());
-                            dlSales.updateStockVolume1(tl.getMultiply(), tl.getProductID());
-                            s++;
-                        }
-                    }else{
-                        s++;
-                    }
-                     
-                }//end of while
-             JOptionPane.showMessageDialog(null, "Please clear the Balance.Cannot prepare QT for it", "Amount limit Exceeded", JOptionPane.WARNING_MESSAGE);
-         
-                  }else{
-                      amountUpdate(GSum,cust,ticket1,ticket2); 
-                  }
-           }else{
-               amountUpdate(GSum,cust,ticket1,ticket2); 
-           }
-        }else{
-        
-        String memtype = objm[0].toString();
-          Object[] obj1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CAST((CURROPB)AS DECIMAL(10,2)) FROM billingmember where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(id.toString());
-                String opb=obj1[0].toString();
-                   Double OPB = new Double(opb);
-                   roundTwoDecimals(OPB);
-                    Double Sum = OPB+amt;
-                    //addded by shweta
-                     Object[] obj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
-                  String dMax = obj2[0].toString();
-                  Double debtMax = new Double(dMax);
-             /*       Object[] objstotal1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT FROMDATE,TODATE,ADDAMOUNT FROM QTCR_LIMITAUTH WHERE CUSTOMER=? AND ACTIVE IS TRUE",
+                            Object[] gobjqt = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM generaltable where NAME=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find(gname);
+                            Boolean GQTcheck = (Boolean) gobjqt[0];
+
+                            if (GQTcheck == true) {///Start of check
+
+                                //Object[] gobj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
+                                //   String dMax = gobj2[0].toString();
+                                //   Double debtMax = new Double(dMax);
+                                if ((GSum > debtMax)) {
+
+                                    //make a method for msg
+                                    //to overcome the products reduction
+                                    int s = 0;
+                                    while (s < size) {
+                                        TicketLineInfo tl = ticket1.getLine(s);
+                                        if (tl.isStockCheckRequired()) {
+                                            //    Object o = dlSales.getStockVolume(tl.getProductID());
+                                            Double sqty = 0.0;
+                                            if (stk[s] != null) {
+                                                sqty = Double.parseDouble(stk[s].toString());
+                                            }
+                                            if (sqty >= tl.getMultiply()) {
+                                                dlSales.updateStockVolume(tl.getMultiply(), tl.getProductID());
+                                                dlSales.updateStockVolume1(tl.getMultiply(), tl.getProductID());
+                                                s++;
+                                            }
+                                        } else {
+                                            s++;
+                                        }
+
+                                    }//end of while
+                                    JOptionPane.showMessageDialog(null, "Please clear the Balance.Cannot prepare QT for it", "Amount limit Exceeded", JOptionPane.WARNING_MESSAGE);
+
+                                } else {
+                                    amountUpdate(GSum, cust, ticket1, ticket2);
+                                }
+                            } else {
+                                amountUpdate(GSum, cust, ticket1, ticket2);
+                            }
+                        } else {
+
+                            String memtype = objm[0].toString();
+                            Object[] obj1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT CAST((CURROPB)AS DECIMAL(10,2)) FROM billingmember where ID=? ", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(id.toString());
+                            String opb = obj1[0].toString();
+                            Double OPB = new Double(opb);
+                            roundTwoDecimals(OPB);
+                            Double Sum = OPB + amt;
+                            //addded by shweta
+                            Object[] obj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
+                            String dMax = obj2[0].toString();
+                            Double debtMax = new Double(dMax);
+                            /*       Object[] objstotal1 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT FROMDATE,TODATE,ADDAMOUNT FROM QTCR_LIMITAUTH WHERE CUSTOMER=? AND ACTIVE IS TRUE",
                                         new SerializerWriteBasic(new Datas[]{Datas.STRING}), new SerializerReadBasic(new Datas[]{Datas.TIMESTAMP,Datas.TIMESTAMP,Datas.DOUBLE})).find(new Object[]{id});
                
                               Date fromdate=new Date();
@@ -2556,231 +2481,188 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 //                    else{
 //                         Sum=Sum+addmnt1;                          
 //                     }
-                                   }     */                          
-                                
-                  
-                  
-                 
-                    
-                    Sum=roundTwoDecimals(Sum);
-                   String name ="Credit check for QT";
-          Object[] objqt = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM generaltable where NAME=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find(name);
-                    Boolean QTcheck = (Boolean)objqt[0];
-                    
-           if(QTcheck==true){///Start of check
-                        
-             
-                     //Object[] gobj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
-                    // String dMax = gobj2[0].toString();
-                  //Double debtMax = new Double(dMax);
-                  
-                    
-                   
-           if((Sum>debtMax)){///LimitCross>>>Start
-                //to overcome the products reduction
-               
-                int s = 0;
-                while (s < size) {
-                    TicketLineInfo tl = ticket1.getLine(s);
-                    if (tl.isStockCheckRequired()) {
-                    //    Object o = dlSales.getStockVolume(tl.getProductID());
-                        Double sqty = 0.0;
-                        if (stk[s] != null) {
-                            sqty = Double.parseDouble(stk[s].toString());
+                                   }     */
+
+                            Sum = roundTwoDecimals(Sum);
+                            String name = "Credit check for QT";
+                            Object[] objqt = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM generaltable where NAME=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find(name);
+                            Boolean QTcheck = (Boolean) objqt[0];
+
+                            if (QTcheck == true) {///Start of check
+
+                                //Object[] gobj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT DEBTMAX FROM memtype where id=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(memtype);
+                                // String dMax = gobj2[0].toString();
+                                //Double debtMax = new Double(dMax);
+                                if ((Sum > debtMax)) {///LimitCross>>>Start
+                                    //to overcome the products reduction
+
+                                    int s = 0;
+                                    while (s < size) {
+                                        TicketLineInfo tl = ticket1.getLine(s);
+                                        if (tl.isStockCheckRequired()) {
+                                            //    Object o = dlSales.getStockVolume(tl.getProductID());
+                                            Double sqty = 0.0;
+                                            if (stk[s] != null) {
+                                                sqty = Double.parseDouble(stk[s].toString());
+                                            }
+                                            if (sqty >= tl.getMultiply()) {
+                                                dlSales.updateStockVolume(tl.getMultiply(), tl.getProductID());
+                                                dlSales.updateStockVolume1(tl.getMultiply(), tl.getProductID());
+                                                s++;
+                                            }
+                                        } else {
+                                            s++;
+                                        }
+                                    }//end of while
+                                    JOptionPane.showMessageDialog(null, "Please clear the Balance.Cannot prepare QT for it", "Amount limit Exceeded", JOptionPane.WARNING_MESSAGE);
+                                } else {
+                                    amountUpdate(Sum, cust, ticket1, ticket2);
+
+                                }//End of else //if(Sum>5000)End
+                            } else {//if(gsa.checkQT()==true){////End of check
+                                amountUpdate(Sum, cust, ticket1, ticket2);
+                            }
+
                         }
-                        if (sqty >= tl.getMultiply()) {
-                            dlSales.updateStockVolume(tl.getMultiply(), tl.getProductID());
-                            dlSales.updateStockVolume1(tl.getMultiply(), tl.getProductID());
-                            s++;
-                        }
-                    }else{
-                        s++;
-                    }
-                }//end of while
-             JOptionPane.showMessageDialog(null, "Please clear the Balance.Cannot prepare QT for it", "Amount limit Exceeded", JOptionPane.WARNING_MESSAGE);
-         }else{
-               amountUpdate(Sum,cust,ticket1,ticket2);
-               
-             }//End of else //if(Sum>5000)End
-            }else{//if(gsa.checkQT()==true){////End of check
-                        amountUpdate(Sum,cust,ticket1,ticket2);
-                }
-            
-             
-            }
 //        } /////End of If(x==0);//Just to overcome the again initialization of printTotal
 ////////aaa..End
-        
-            } else {
-                if (berror == true) {
-                    JOptionPane.showMessageDialog(null, "Please reset the system time or consult your system admin", "Sorry Cannot login", JOptionPane.OK_OPTION);
+
+                    } else {
+                        if (berror == true) {
+                            JOptionPane.showMessageDialog(null, "Please reset the system time or consult your system admin", "Sorry Cannot login", JOptionPane.OK_OPTION);
+                        }
+                    }
+
+                    return null;
                 }
-            }
-                
-                
-                
-                
-                
-                return null;
-            }
-        };
-        t.execute();
-        // JOptionPane.showMessageDialog(this, "Qt Created..!!");
-        
+            };
+            t.execute();
+            // JOptionPane.showMessageDialog(this, "Qt Created..!!");
+
         } catch (Exception e) {
             MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotcreateqt. \n Please Check  QT Bill Update  Button on main menu"), e);
             msg.show(this);
         }
-		
-        
+
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    public void amountUpdate(Double Sum,String cust,TicketInfo ticket1,TicketInfo ticket2) throws BasicException{
-        try{
-            
-            String BMName="Credit Check for billing member";
+    public void amountUpdate(Double Sum, String cust, TicketInfo ticket1, TicketInfo ticket2) throws BasicException {
+        try {
+
+            String BMName = "Credit Check for billing member";
             String BName2 = "Facility for billing member";
             Object[] FacObj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM GENERALTABLE where NAME=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.BOOLEAN})).find(BMName);
-            
-            if(FacObj!=null){
-                 Boolean v5 = (Boolean)FacObj[0];
-                  if(v5){
-                      
-                         ///////////       ///////////////////////     ////////////////////////////
-                        new PreparedSentence(m_App.getSession(), "UPDATE billingmember SET CURROPB=? WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE, Datas.STRING})).exec(new Object[]{Sum,cust});
-           
-                                  if(Sum>0){
 
-                                       jTextField1.setForeground(Color.red);
-                                      jTextField1.setText("Dr.  "+Sum);
-                                         }
-                                   else if(Sum<0){
-                                       jTextField1.setForeground(Color.green);
-                                       Sum = Sum*(-1);
-                                       jTextField1.setText("Cr.  "+Sum);
-                                           }
-                                    else{jTextField1.setForeground(Color.black);
-                                          jTextField1.setText(""+Sum);
-                                          }       
-                        ////////////////////////           ////////////////////////////////////      /////////////////////////
-                      
-                      
-                      
-                      
-                      
-                  }
-                  else{
-                      
-                      
-                      // code added by akash 
-                       ////////////////////////           ////////////////////////////////////      /////////////////////////
-                            String FacIDforBM = null;
-                            Object s5 = m_App.getAppUserView().getUser().getWarehouse();
-                            String warehouse5 = null;
-                            if (s5 != null) {
-                                String[] warehouses = s5.toString().split("#");
-                                warehouse5 = warehouses[0];
-                            }
-                            Object obj5 = new StaticSentence(m_App.getSession(), "SELECT FACILITY FROM LOCATIONS WHERE ID=?", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE).find(warehouse5);
-                            if (obj5 != null) {
-                                FacIDforBM = obj5.toString();
-                            }
-                     
-                             Object[] Fac2Obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM GENERALTABLE where NAME=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(BName2);
-                             String FacStrFull  = Fac2Obj[0].toString();
-                             String []strarr = FacStrFull.split("#");
-                             String FinFacId = strarr[0];
-                      
-                      
-                             
-                             if(FinFacId.equals(FacIDforBM)){
-                                 
-                                  
-                                    new PreparedSentence(m_App.getSession(), "UPDATE billingmember SET CURROPB=? WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE, Datas.STRING})).exec(new Object[]{Sum,cust});
+            if (FacObj != null) {
+                Boolean v5 = (Boolean) FacObj[0];
+                if (v5) {
 
-                                              if(Sum>0){
+                    ///////////       ///////////////////////     ////////////////////////////
+                    new PreparedSentence(m_App.getSession(), "UPDATE billingmember SET CURROPB=? WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE, Datas.STRING})).exec(new Object[]{Sum, cust});
 
-                                                   jTextField1.setForeground(Color.red);
-                                                  jTextField1.setText("Dr.  "+Sum);
-                                                     }
-                                               else if(Sum<0){
-                                                   jTextField1.setForeground(Color.green);
-                                                   Sum = Sum*(-1);
-                                                   jTextField1.setText("Cr.  "+Sum);
-                                                       }
-                                                else{jTextField1.setForeground(Color.black);
-                                                      jTextField1.setText(""+Sum);
-                                                      }       
-                                  
-                                 
-                                 
-                             }
-                            ////////////////////////           ////////////////////////////////////      /////////////////////////
-                      
-                      
-                      
-                      
-                      
-                  }
-                
-               
-            }
-            else{
-                
-                        ///////////       ///////////////////////     ////////////////////////////
-                        new PreparedSentence(m_App.getSession(), "UPDATE billingmember SET CURROPB=? WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE, Datas.STRING})).exec(new Object[]{Sum,cust});
+                    if (Sum > 0) {
 
-                                  if(Sum>0){
+                        jTextField1.setForeground(Color.red);
+                        jTextField1.setText("Dr.  " + Sum);
+                    } else if (Sum < 0) {
+                        jTextField1.setForeground(Color.green);
+                        Sum = Sum * (-1);
+                        jTextField1.setText("Cr.  " + Sum);
+                    } else {
+                        jTextField1.setForeground(Color.black);
+                        jTextField1.setText("" + Sum);
+                    }
+                    ////////////////////////           ////////////////////////////////////      /////////////////////////
 
-                                       jTextField1.setForeground(Color.red);
-                                      jTextField1.setText("Dr.  "+Sum);
-                                         }
-                                   else if(Sum<0){
-                                       jTextField1.setForeground(Color.green);
-                                       Sum = Sum*(-1);
-                                       jTextField1.setText("Cr.  "+Sum);
-                                           }
-                                    else{jTextField1.setForeground(Color.black);
-                                          jTextField1.setText(""+Sum);
-                                          }       
-                        ////////////////////////           ////////////////////////////////////      /////////////////////////
-                
-                
-            }
-            
-            
-            
-            
+                } else {
 
-          
-                
-                setActiveTicket(ticket2, m_oTicketExt);// set result ticket
-                dlReceipts.updateSharedTicket(ticket2.getCustomerId(), ticket2, m_App.getAppUserView().getUser().getRole());
-                //  dlReceipts.updateLastQtTimeOfSharedTicket(new Date(),ticket1.getCustomerId(), m_App.getAppUserView().getUser().getRole());
-                for (int i = 0; i < m_oTicket.getLinesCount(); i++) {
-                    m_ticketlines.removeTicketLine(0);
+                    // code added by akash 
+                    ////////////////////////           ////////////////////////////////////      /////////////////////////
+                    String FacIDforBM = null;
+                    Object s5 = m_App.getAppUserView().getUser().getWarehouse();
+                    String warehouse5 = null;
+                    if (s5 != null) {
+                        String[] warehouses = s5.toString().split("#");
+                        warehouse5 = warehouses[0];
+                    }
+                    Object obj5 = new StaticSentence(m_App.getSession(), "SELECT FACILITY FROM LOCATIONS WHERE ID=?", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE).find(warehouse5);
+                    if (obj5 != null) {
+                        FacIDforBM = obj5.toString();
+                    }
+
+                    Object[] Fac2Obj = (Object[]) new StaticSentence(m_App.getSession(), "SELECT VALUE FROM GENERALTABLE where NAME=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING})).find(BName2);
+                    String FacStrFull = Fac2Obj[0].toString();
+                    String[] strarr = FacStrFull.split("#");
+                    String FinFacId = strarr[0];
+
+                    if (FinFacId.equals(FacIDforBM)) {
+
+                        new PreparedSentence(m_App.getSession(), "UPDATE billingmember SET CURROPB=? WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE, Datas.STRING})).exec(new Object[]{Sum, cust});
+
+                        if (Sum > 0) {
+
+                            jTextField1.setForeground(Color.red);
+                            jTextField1.setText("Dr.  " + Sum);
+                        } else if (Sum < 0) {
+                            jTextField1.setForeground(Color.green);
+                            Sum = Sum * (-1);
+                            jTextField1.setText("Cr.  " + Sum);
+                        } else {
+                            jTextField1.setForeground(Color.black);
+                            jTextField1.setText("" + Sum);
+                        }
+
+                    }
+                    ////////////////////////           ////////////////////////////////////      /////////////////////////
+
                 }
-                createQTicket(ticket1);
-                
-       //         qtk.refreshQTModel(m_App);///aaa
-                //praveen:exit for every transaction for kiosk mode---start
-                if(m_App.getAppUserView().getUser().getTypeOfUser()==1)
+
+            } else {
+
+                ///////////       ///////////////////////     ////////////////////////////
+                new PreparedSentence(m_App.getSession(), "UPDATE billingmember SET CURROPB=? WHERE ID=?", new SerializerWriteBasic(new Datas[]{Datas.DOUBLE, Datas.STRING})).exec(new Object[]{Sum, cust});
+
+                if (Sum > 0) {
+
+                    jTextField1.setForeground(Color.red);
+                    jTextField1.setText("Dr.  " + Sum);
+                } else if (Sum < 0) {
+                    jTextField1.setForeground(Color.green);
+                    Sum = Sum * (-1);
+                    jTextField1.setText("Cr.  " + Sum);
+                } else {
+                    jTextField1.setForeground(Color.black);
+                    jTextField1.setText("" + Sum);
+                }
+                ////////////////////////           ////////////////////////////////////      /////////////////////////
+
+            }
+
+            setActiveTicket(ticket2, m_oTicketExt);// set result ticket
+            dlReceipts.updateSharedTicket(ticket2.getCustomerId(), ticket2, m_App.getAppUserView().getUser().getRole());
+            //  dlReceipts.updateLastQtTimeOfSharedTicket(new Date(),ticket1.getCustomerId(), m_App.getAppUserView().getUser().getRole());
+            for (int i = 0; i < m_oTicket.getLinesCount(); i++) {
+                m_ticketlines.removeTicketLine(0);
+            }
+            createQTicket(ticket1);
+
+            //         qtk.refreshQTModel(m_App);///aaa
+            //praveen:exit for every transaction for kiosk mode---start
+            if (m_App.getAppUserView().getUser().getTypeOfUser() == 1) {
                 JPrincipalApp.m_approot.closeAppView();
-                //praveen:exit for every transaction for kiosk mode---end
-                
-                
-        }
-// edited for checking whether qtickets are duplicated or not.......... ## Akash        
-        catch(Exception e){
+            }
+            //praveen:exit for every transaction for kiosk mode---end
+
+        } // edited for checking whether qtickets are duplicated or not.......... ## Akash        
+        catch (Exception e) {
             //  CheckDuplicateQT();
-             //UpdateDuplicateQTCheck();
-             throw new BasicException(e.getMessage());
-        
-             
+            //UpdateDuplicateQTCheck();
+            throw new BasicException(e.getMessage());
+
         }
     }
-    
+
 private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
 // TODO add your handling code here:
 }//GEN-LAST:event_jTextField1ActionPerformed
@@ -2830,15 +2712,11 @@ private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JButton m_prTicket;
     // End of variables declaration//GEN-END:variables
 
-   
-    
-  public Double getTaxrateByCategory(String Category) throws BasicException, BasicException{
-      Double Taxrate=0.00;
-      Object[] obj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT RATE FROM TAXES where CATEGORY=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(Category);
-      Taxrate = (Double)obj2[0];
-      return Taxrate;
-  }
- 
-
+    public Double getTaxrateByCategory(String Category) throws BasicException, BasicException {
+        Double Taxrate = 0.00;
+        Object[] obj2 = (Object[]) new StaticSentence(m_App.getSession(), "SELECT RATE FROM TAXES where CATEGORY=?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.DOUBLE})).find(Category);
+        Taxrate = (Double) obj2[0];
+        return Taxrate;
+    }
 
 }

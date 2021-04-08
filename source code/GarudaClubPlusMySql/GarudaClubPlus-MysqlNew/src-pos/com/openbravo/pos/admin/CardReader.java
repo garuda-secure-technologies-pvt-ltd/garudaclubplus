@@ -23,17 +23,18 @@ public class CardReader {
     private CardSwipeNotifier cardSwipeNotifier;
     private boolean cardAccessOnly;
 
-    public CardReader(){
+    public CardReader() {
     }
+
     //public CardReader(String portname,JTextField text,JTextField fac,JTextField cardno) {
     public CardReader(String portname, boolean cardAccessOnly) {
         this.cardAccessOnly = cardAccessOnly;
         // defaultParameters= new SerialParameters (portname,110,0,0,5,1,0);
         //defaultParameters= new SerialParameters ("COM1",9600,0,0,8,1,0);
         defaultParameters = new SerialParameters(portname, 9600, 0, 0, 8, 1, 0);
-    // this.text=text;
-    //this.fac=fac;*
-    //his.cardno=cardno;
+        // this.text=text;
+        //this.fac=fac;*
+        //his.cardno=cardno;
     }
 
     public void ConfigurePort() throws UnsupportedCommOperationException, PortInUseException, SerialConnectionException {
@@ -49,8 +50,9 @@ public class CardReader {
     public String getData() {
         return mySerial.getIncommingString();
     }
+
     public void setData(String data) {
-         mySerial.setIncommingString(data);
+        mySerial.setIncommingString(data);
     }
 
     public SerialConnection getSerialConnection() {
@@ -68,6 +70,6 @@ public class CardReader {
     public void setCardSwipeNotifier(CardSwipeNotifier cardSwipeNotifier) {
         //if (mySerial == null || !mySerial.isOpen()) {
         mySerial.setCardSwipeNotifier(cardSwipeNotifier);
-    // }
+        // }
     }
 }
