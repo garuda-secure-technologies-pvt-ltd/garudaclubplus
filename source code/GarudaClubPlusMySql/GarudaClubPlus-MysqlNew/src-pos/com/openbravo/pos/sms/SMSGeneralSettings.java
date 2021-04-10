@@ -99,6 +99,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         text_area_guest.setLineWrap(true);
         text_area_account.setLineWrap(true);
         text_area_cc.setLineWrap(true);
+        text_area_facility.setLineWrap(true);
+        text_area_pendingBill.setLineWrap(true);
         
         text_area_qt.setWrapStyleWord(true);
         text_area_bill.setWrapStyleWord(true);
@@ -106,6 +108,8 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         text_area_guest.setWrapStyleWord(true);
         text_area_account.setWrapStyleWord(true);
         text_area_cc.setWrapStyleWord(true);
+        text_area_facility.setWrapStyleWord(true);
+        text_area_pendingBill.setWrapStyleWord(true);
         
     }
     
@@ -166,6 +170,13 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 predefine_list.put("Due Date", SMSgeneralDBSettings.SMS_DUE_DATE_KEY);  
                 break;
                 
+            }
+            case 6: 
+            {
+                predefine_list.put("Total Amount", SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY);
+                predefine_list.put("Net balance", SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE);
+                predefine_list.put("Cash / Cheque", SMSgeneralDBSettings.SMS_CASH_CHEQUE);
+                break;
             }
             
         }
@@ -234,7 +245,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                         text_area_cc.setText(list.get(i).getMessage());
                         break;
                     }
-                    case SMSgeneralDBSettings.SMS_FACILITY_MEMBER_ID:
+                    case SMSgeneralDBSettings.SMS_MEMBER_RECEIPT_BILLING_AND_CASH_MNGT_ID:
                     {
                         if(list.get(i).getActive().equals("0"))
                             facility_radio_button_no.setSelected(true);
@@ -243,6 +254,18 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                         text_area_facility.setText(list.get(i).getMessage());
                         break;
                     }
+                    
+                    case SMSgeneralDBSettings.SMS_MEMBER_PENDING_BILLS_ID:
+                    {
+                        pendingBill_radio_button_no.setSelected(true);
+                        if(list.get(i).getActive().equals("0"))
+                            pendingBill_radio_button_no.setSelected(true);
+                        else
+                             pendingBill_radio_button_yes.setSelected(true);
+                        text_area_pendingBill.setText(list.get(i).getMessage());
+                        break;
+                    }
+                    
                 }
             }
             
@@ -353,6 +376,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         ButtonGroup FacilityGroup = new ButtonGroup();
         FacilityGroup.add(facility_radio_button_no);
         FacilityGroup.add(facility_radio_button_yes);
+        
+        ButtonGroup memberReceiptGroup = new ButtonGroup();
+        FacilityGroup.add(pendingBill_radio_button_no);
+        FacilityGroup.add(pendingBill_radio_button_yes);
         
     }
     
@@ -503,6 +530,18 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
         clear_button_facility = new javax.swing.JButton();
         jScrollPane9 = new javax.swing.JScrollPane();
         text_area_facility = new javax.swing.JTextArea();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jPanel8 = new javax.swing.JPanel();
+        jLabel19 = new javax.swing.JLabel();
+        pendingBill_radio_button_yes = new javax.swing.JRadioButton();
+        pendingBill_radio_button_no = new javax.swing.JRadioButton();
+        pendingBill_facility_btn = new javax.swing.JButton();
+        pendingBill_panel = new javax.swing.JPanel();
+        pendingBill_button_facility = new javax.swing.JButton();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        text_area_pendingBill = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         combo_box_smsPrefix = new javax.swing.JComboBox<>();
         add_text_button = new javax.swing.JButton();
@@ -1243,23 +1282,40 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
+        jLabel16.setForeground(new java.awt.Color(204, 0, 0));
+        jLabel16.setText("Note : Cash and Cheque token  text  are as below.");
+
+        jLabel17.setForeground(new java.awt.Color(204, 0, 0));
+        jLabel17.setText("Cash : Cash");
+
+        jLabel18.setForeground(new java.awt.Color(204, 0, 0));
+        jLabel18.setText("Cheque : Cheque subjected to realisation ");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(275, 275, 275)
-                        .addComponent(save_facility_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(facility_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addGap(275, 275, 275)
+                                .addComponent(save_facility_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(facility_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(facility_radio_button_yes)
+                                .addGap(18, 18, 18)
+                                .addComponent(facility_radio_button_no))))
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(facility_radio_button_yes)
-                        .addGap(18, 18, 18)
-                        .addComponent(facility_radio_button_no)))
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel17)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel18))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
@@ -1274,10 +1330,114 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 .addComponent(facility_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(save_facility_btn)
-                .addContainerGap(119, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel18)
+                .addContainerGap(47, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Member Receipts Billing & Cash Mgmt", jPanel7);
+
+        jLabel19.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 51, 0));
+        jLabel19.setText("Send SMS while clearing pending bills");
+
+        pendingBill_radio_button_yes.setText("Yes");
+        pendingBill_radio_button_yes.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                pendingBill_radio_button_yesItemStateChanged(evt);
+            }
+        });
+        pendingBill_radio_button_yes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pendingBill_radio_button_yesActionPerformed(evt);
+            }
+        });
+
+        pendingBill_radio_button_no.setText("No");
+        pendingBill_radio_button_no.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                pendingBill_radio_button_noItemStateChanged(evt);
+            }
+        });
+
+        pendingBill_facility_btn.setText("Save");
+        pendingBill_facility_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pendingBill_facility_btnActionPerformed(evt);
+            }
+        });
+
+        pendingBill_button_facility.setText("Clear Message");
+        pendingBill_button_facility.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pendingBill_button_facilityActionPerformed(evt);
+            }
+        });
+
+        text_area_pendingBill.setColumns(20);
+        text_area_pendingBill.setRows(5);
+        jScrollPane10.setViewportView(text_area_pendingBill);
+
+        javax.swing.GroupLayout pendingBill_panelLayout = new javax.swing.GroupLayout(pendingBill_panel);
+        pendingBill_panel.setLayout(pendingBill_panelLayout);
+        pendingBill_panelLayout.setHorizontalGroup(
+            pendingBill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pendingBill_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pendingBill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pendingBill_button_facility)
+                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pendingBill_panelLayout.setVerticalGroup(
+            pendingBill_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pendingBill_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pendingBill_button_facility)
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGap(275, 275, 275)
+                        .addComponent(pendingBill_facility_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(pendingBill_radio_button_yes)
+                        .addGap(18, 18, 18)
+                        .addComponent(pendingBill_radio_button_no))
+                    .addComponent(pendingBill_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(43, Short.MAX_VALUE))
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel19)
+                    .addComponent(pendingBill_radio_button_yes)
+                    .addComponent(pendingBill_radio_button_no))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(pendingBill_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pendingBill_facility_btn)
+                .addContainerGap(128, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("SMS Against pending bill", jPanel8);
 
         jLabel1.setFont(new java.awt.Font("Arabic Typesetting", 1, 24)); // NOI18N
         jLabel1.setText("SMS settings");
@@ -1525,6 +1685,26 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
                 String text = SPACE_TEXT+ myText +SPACE_TEXT;
                 text_area_cc.insert(text, text_area_cc.getCaretPosition());
                 text_area_cc.requestFocus();
+               
+                break;
+            }
+            case 6: 
+            {
+                // SMS FOR MEMBER RECEIPT (BILLING AND CASH mANAGMENT)
+                String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
+                String text = SPACE_TEXT+ myText +SPACE_TEXT;
+                text_area_facility.insert(text, text_area_facility.getCaretPosition());
+                text_area_facility.requestFocus();
+               
+                break;
+            }
+            case 7 :
+            {
+                // SMS against pending bill 
+                String myText = predefine_list.get(combo_box_smsPrefix.getSelectedItem().toString());
+                String text = SPACE_TEXT+ myText +SPACE_TEXT;
+                text_area_pendingBill.insert(text, text_area_pendingBill.getCaretPosition());
+                text_area_pendingBill.requestFocus();
                
                 break;
             }
@@ -1794,7 +1974,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
             }
                  
         }
-        setSMSFlag(SMSgeneralDBSettings.SMS_FACILITY_MEMBER_ID , SMSgeneralDBSettings.SMS_FACILITY_MEMBER_NAME , isActive, message, null);
+        setSMSFlag(SMSgeneralDBSettings.SMS_MEMBER_RECEIPT_BILLING_AND_CASH_MNGT_ID , SMSgeneralDBSettings.SMS_MEMBER_RECEIPT_BILLING_AND_CASH_MNGT , isActive, message, null);
     }//GEN-LAST:event_save_facility_btnActionPerformed
 
     private void clear_button_facilityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clear_button_facilityActionPerformed
@@ -1804,6 +1984,49 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private void facility_radio_button_yesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facility_radio_button_yesActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_facility_radio_button_yesActionPerformed
+
+    private void pendingBill_radio_button_yesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_pendingBill_radio_button_yesItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_pendingBill_radio_button_yesItemStateChanged
+
+    private void pendingBill_radio_button_yesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pendingBill_radio_button_yesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_pendingBill_radio_button_yesActionPerformed
+
+    private void pendingBill_radio_button_noItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_pendingBill_radio_button_noItemStateChanged
+        if(evt.getStateChange() == ItemEvent.SELECTED)
+        {
+            pendingBill_panel.setVisible(false);
+        }
+        else
+        {
+            pendingBill_panel.setVisible(true);
+        }
+    }//GEN-LAST:event_pendingBill_radio_button_noItemStateChanged
+
+    private void pendingBill_facility_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pendingBill_facility_btnActionPerformed
+        String message = text_area_pendingBill.getText().trim();
+        String isActive = null;
+        if(pendingBill_radio_button_no.isSelected())
+        {
+            isActive = "0";
+        }
+        else
+        {
+            isActive = "1";
+            if(message.isEmpty())
+            {
+                JOptionPane.showMessageDialog(SMSGeneralSettings.this,EMTPTY_ERROR_MESSAGE, "Error" , JOptionPane.ERROR_MESSAGE);  
+                return;
+            }
+
+        }
+        setSMSFlag(SMSgeneralDBSettings.SMS_MEMBER_PENDING_BILLS_ID , SMSgeneralDBSettings.SMS_MEMBER_PENDING_BILL , isActive, message, null);
+    }//GEN-LAST:event_pendingBill_facility_btnActionPerformed
+
+    private void pendingBill_button_facilityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pendingBill_button_facilityActionPerformed
+         text_area_pendingBill.setText("");
+    }//GEN-LAST:event_pendingBill_button_facilityActionPerformed
         
    
     
@@ -1847,6 +2070,10 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1862,7 +2089,9 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -1872,6 +2101,11 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JButton pendingBill_button_facility;
+    private javax.swing.JButton pendingBill_facility_btn;
+    private javax.swing.JPanel pendingBill_panel;
+    private javax.swing.JRadioButton pendingBill_radio_button_no;
+    private javax.swing.JRadioButton pendingBill_radio_button_yes;
     private javax.swing.JButton qt_fac_add_btn;
     private javax.swing.JButton qt_fac_remove_btn;
     private javax.swing.JList<String> qt_facility_jList;
@@ -1891,6 +2125,7 @@ public class SMSGeneralSettings extends javax.swing.JPanel implements JPanelView
     private javax.swing.JTextArea text_area_cc;
     private javax.swing.JTextArea text_area_facility;
     private javax.swing.JTextArea text_area_guest;
+    private javax.swing.JTextArea text_area_pendingBill;
     private javax.swing.JTextArea text_area_qt;
     private javax.swing.JTextArea text_area_st;
     // End of variables declaration//GEN-END:variables

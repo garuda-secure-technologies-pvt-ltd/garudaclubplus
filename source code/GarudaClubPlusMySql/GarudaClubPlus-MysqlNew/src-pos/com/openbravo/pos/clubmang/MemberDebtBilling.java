@@ -95,6 +95,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 //import javax.swing.table.TableColumnModel;
 import com.openbravo.pos.customers.memberPhotoInfo;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import java.text.DecimalFormat;
 /**
  *
@@ -122,6 +123,8 @@ public class MemberDebtBilling extends javax.swing.JPanel implements JPanelView,
     private int operator;
     private CaluculateLimit climit;
     private CardReader cr; 
+    private SMSgeneralDBSettings smsDBSettings;
+
   //  private   String BalStr = null;
   DecimalFormat decimalFormat = new DecimalFormat("#0.00");  
   
@@ -141,6 +144,7 @@ public class MemberDebtBilling extends javax.swing.JPanel implements JPanelView,
         dmang = (DataLogicFacilities) app.getBean("com.openbravo.pos.clubmang.DataLogicFacilitiesCreate");
         dlCustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomersCreate");
         m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSalesCreate");
+        smsDBSettings = (SMSgeneralDBSettings) app.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
         jTable1.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         dlsystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystemCreate");
         ttp = new TicketParser(app.getDeviceTicket(), dlsystem);
@@ -1389,15 +1393,18 @@ public class MemberDebtBilling extends javax.swing.JPanel implements JPanelView,
                                             FinalAmt = FinalAmt +amt;
                                             FinalAmt = dmang.roundTwoDecimals(FinalAmt);
                                           String BalStr = null;
+                                          String netBalance = null;
                                             FinalAmtForPrint = FinalAmt;
                                             if(FinalAmt<0){
                                                 FinalAmt = FinalAmt *(-1);
                                                 BalStr = "Balance Rs "+FinalAmt+" DR.";
+                                                netBalance = FinalAmt+" DR.";
                                            //jTextField1.setText(decimalFormat.format(FinalAmt) +"dr.");
                                            // finalamt.setText(BalStr);
                                             }
                                             else{
                                                 BalStr = "Balance Rs "+FinalAmt+" CR."; 
+                                                netBalance = FinalAmt+" CR.";
                                                 // finalamt.setText(BalStr);
                                               //   jTextField1.setText(decimalFormat.format(FinalAmt) +"cr.");
                                             } 
@@ -1406,11 +1413,16 @@ public class MemberDebtBilling extends javax.swing.JPanel implements JPanelView,
                                           //  jTextField7.setText(decimalFormat.format(GrandTotal1));
                                           // finalamt.setText(BalStr);
                                             
+                                          
+                                          
+                                          
                                             String smsmsg = "Dear Member,\rRecvd pymt on ur a/c "+customerInfo.getSearchkey() + " of Rs." + dmang.roundTwoDecimals(amt) + " vide recp no. " + rnum + ".";
 
+                                            String paymentMethod = "CASH";
                                             for (PaymentInfo p1 : pinfo) {
                                                 if (p1.getName().equals("cheque")) {
                                                     smsmsg += "Cheque subjected to realisation. ";
+                                                    paymentMethod = "CHEQUE";
                                                     break;
                                                 }
                                                 
@@ -1422,8 +1434,13 @@ public class MemberDebtBilling extends javax.swing.JPanel implements JPanelView,
                                             
                                             //smsmsg+="-BUSC";
                                             if (customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() == 10) {
-                                                dmang.updatetosendMsg(smsmsg, cinfo.getId(), customerInfo.getMobile(), 2);
+                                                // REMOVING THIS METHOD AS WE ALREADY HAVE ANOTHER IMPLEMENTED 
+                                               // dmang.updatetosendMsg(smsmsg, cinfo.getId(), customerInfo.getMobile(), 2);
                                             }
+                                            
+                                            // SEND NEW SMS
+                                            createSMS(SMSgeneralDBSettings.SMS_MEMBER_RECEIPT_BILLING_AND_CASH_MNGT_ID, rnum+"" , dmang.roundTwoDecimals(amt)+"" , customerInfo, paymentMethod, netBalance);
+                                            
                                         }
                                         printTicket(list, rnum, cinfo.getName(), pinfo, amt, dbmodel.getCreditList(), cinfo.getSearchkey() , FinalAmtForPrint);
                                         //  JPanelPrinter jpp = new JPanelPrinter(m_App);
@@ -1594,6 +1611,47 @@ public class MemberDebtBilling extends javax.swing.JPanel implements JPanelView,
 
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    
+     public void createSMS(String messageID, String receiptNo, String FacilityAmount, CustomerInfo customerInfo, String paymentMethod, String netBalance)
+    {
+        String smsString = smsDBSettings.getMessage(messageID);
+        if(smsString != null)
+        {
+            
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, receiptNo);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , Formats.TIMESTAMP.formatValue(new Date()));
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY , FacilityAmount);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY , "");
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY , "");
+            
+            if(paymentMethod.equals("CASH")) {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_CASH_CHEQUE , "cash");
+            } else {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_CASH_CHEQUE , "Cheque subjected to realisation");
+            }
+             
+            String x = m_App.getAppUserView().getUser().getRole();
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY ,  LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString());
+            
+            if(customerInfo != null)
+            {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, customerInfo.getName()); 
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, customerInfo.getSearchkey()); 
+            }
+            
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_BEFORE, netBalance);
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_CUST_BAL_AFTER, "");
+           
+            if(customerInfo != null && customerInfo.getMobile() != null && customerInfo.getMobile().trim().length() > 0)
+            {
+                smsDBSettings.insertSMStoActiveMsgTable(smsString, customerInfo.getMobile(), customerInfo.getId());
+            }
+        }
+        
+        
+    }
+    
+    
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         int selectedrowno = jTable1.getSelectedRow();

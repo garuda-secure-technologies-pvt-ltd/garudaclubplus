@@ -48,7 +48,8 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_GUEST_CHRG_DEBIT_ID =  "sms-104";
     public static final String SMS_GUEST_CHRG_CASH_ID =  "sms-105";
     public static final String SMS_CREDIT_CONF_ID = "sms-106";
-    public static final String SMS_FACILITY_MEMBER_ID = "sms-107";
+    public static final String SMS_MEMBER_RECEIPT_BILLING_AND_CASH_MNGT_ID = "sms-107";
+    public static final String SMS_MEMBER_PENDING_BILLS_ID = "sms-108";
     
     public static final String SMS_QT_NAME =  "Master message for QT";
     public static final String SMS_BILL_NAME =  "Mastre message for BILL";
@@ -56,7 +57,8 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_GUEST_CHRG_DEBIT_NAME =  "Master message for Guest charges - A/c debit";
     public static final String SMS_GUEST_CHRG_CASH_NAME =  "Master message for Guest Charges - Cash";
     public static final String SMS_CREDIT_CONF_NAME =  "Master message for credit confirmation";
-    public static final String SMS_FACILITY_MEMBER_NAME =  "Master message for facility member";
+    public static final String SMS_MEMBER_RECEIPT_BILLING_AND_CASH_MNGT =  "Master message for facility member";
+    public static final String SMS_MEMBER_PENDING_BILL =  "Master message while clearing pending bill";
     
     public static final String SMS_BILL_KEY = "###BILLNO###";
     public static final String SMS_DTM_KEY = "###DTM###";
@@ -70,6 +72,8 @@ public class SMSgeneralDBSettings extends BeanFactoryDataSingle
     public static final String SMS_CUST_BAL_BEFORE = "###CUSTBALBEFORE###";
     public static final String SMS_CUST_BAL_AFTER = "###CUSTBALAFTER###";
     public static final String SMS_DUE_DATE_KEY = "###DUEDATE###";
+    public static final String SMS_CASH_CHEQUE = "###CASHCHEQUE###";
+    
     
     private List<SmsMasterInfo> smsMasterClassList; 
     
