@@ -20,10 +20,14 @@ import com.openbravo.data.loader.StaticSentence;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.clubmang.DataSourceProvider;
 import com.openbravo.pos.clubmang.JasperReportNew;
+import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
 import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.LookupUtilityImpl;
+import com.openbravo.pos.sales.JPanelTicket;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.math.BigDecimal;
@@ -81,6 +85,7 @@ public class TrialBalanceNew extends javax.swing.JPanel implements JPanelView, B
     private AccountMasterKey accmaster;
     private String sk=null;
     private waitDialog w;
+    private SMSgeneralDBSettings smsDBsettings;
     
     
     
@@ -861,20 +866,46 @@ public class TrialBalanceNew extends javax.swing.JPanel implements JPanelView, B
                     String AmountStr = roundTwoDecimals(lst1ForSMS.get(i).getAmount())+" "+CreditDebitStr;
 
 
-                    String TemSmsStr = "Dear Member, Your balance with "+ClubName+" M.No: "+SearchKey+
-                            " as on "+DateStr+" is "+AmountStr+" Plz pay at the earliest. Ignore if already paid.";
+                    boolean sendSMSwhileBill =  smsDBsettings.getSMSvalue(SMSgeneralDBSettings.SMS_MAIN_HEAD_ID);
+                    if(sendSMSwhileBill) {
+                         String smsString = smsDBsettings.getMessage(SMSgeneralDBSettings.SMS_MAIN_HEAD_ID);
 
 
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, "");
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , DateStr);
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY,"");
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY, "");
+                        AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+                        String x = m_App.getAppUserView().getUser().getRole();
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString()); 
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY, AmountStr);
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, "");
+                        smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, SearchKey);
 
-                    try {
-                            new PreparedSentence(myapp.getSession(), "INSERT INTO activemsgtable(ID,Message,SENDTO,WITHNAME,PRIORITY,CNT) VALUES (?,?,?,?,?,?) "
-                            ,new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING,Datas.BOOLEAN,Datas.INT,Datas.INT})
-                            ).exec(new Object[]{UUID.randomUUID().toString(),TemSmsStr,MobileNo,withname,0,0});
-                    } catch (BasicException ex) {
-                        ex.printStackTrace();
-                        Logger.getLogger(dueListTable.class.getName()).log(Level.SEVERE, null, ex);
-                        w.hideDialog();
+                        if(MobileNo != null && !MobileNo.isEmpty())
+                        {
+
+                           smsDBsettings.insertSMStoActiveMsgTable(smsString, MobileNo, SearchKey);
+                           Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
+                        }  
                     }
+                        
+                    
+                    
+//                    String TemSmsStr = "Dear Member, Your balance with "+ClubName+" M.No: "+SearchKey+
+//                            " as on "+DateStr+" is "+AmountStr+" Plz pay at the earliest. Ignore if already paid.";
+//
+//
+//
+//                    try {
+//                            new PreparedSentence(myapp.getSession(), "INSERT INTO activemsgtable(ID,Message,SENDTO,WITHNAME,PRIORITY,CNT) VALUES (?,?,?,?,?,?) "
+//                            ,new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING,Datas.BOOLEAN,Datas.INT,Datas.INT})
+//                            ).exec(new Object[]{UUID.randomUUID().toString(),TemSmsStr,MobileNo,withname,0,0});
+//                    } catch (BasicException ex) {
+//                        ex.printStackTrace();
+//                        Logger.getLogger(dueListTable.class.getName()).log(Level.SEVERE, null, ex);
+//                        w.hideDialog();
+//                    }
 
 
 
@@ -998,16 +1029,16 @@ public class TrialBalanceNew extends javax.swing.JPanel implements JPanelView, B
     public void init(AppView app) throws BeanFactoryException {
         myapp=app;
         
-      List<String> levels=new ArrayList<String>();
-      levels.add("Main Head- C");
-      levels.add("Breakdown- D");
+        List<String> levels=new ArrayList<String>();
+        levels.add("Main Head- C");
+        levels.add("Breakdown- D");
+        smsDBsettings = (SMSgeneralDBSettings) app.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
         
         cmodel1=new ComboBoxValModel(levels);
         jComboBox1.setModel(cmodel1);
-         jComboBox1.setSelectedIndex(-1);
-         jComboBox2.setSelectedIndex(-1);
-       // jComboBox2.setSelectedIndex(-1);
-         jComboBox1.setModel(cmodel1);
+        jComboBox1.setSelectedIndex(-1);
+        jComboBox2.setSelectedIndex(-1);
+        jComboBox1.setModel(cmodel1);
         tfamount.setText(null);
 
         radioCredit.setSelected(false);

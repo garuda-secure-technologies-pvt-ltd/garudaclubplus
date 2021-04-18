@@ -1627,7 +1627,7 @@ public class MemberDebtBilling extends javax.swing.JPanel implements JPanelView,
             if(paymentMethod.equals("CASH")) {
                 smsString = smsString.replace(SMSgeneralDBSettings.SMS_CASH_CHEQUE , "cash");
             } else {
-                smsString = smsString.replace(SMSgeneralDBSettings.SMS_CASH_CHEQUE , "Cheque subjected to realisation");
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_CASH_CHEQUE , "Cheque subject to realisation");
             }
              
             String x = m_App.getAppUserView().getUser().getRole();

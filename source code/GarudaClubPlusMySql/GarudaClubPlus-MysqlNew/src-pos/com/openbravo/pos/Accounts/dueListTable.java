@@ -14,28 +14,24 @@ package com.openbravo.pos.Accounts;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.Datas;
 import com.openbravo.data.loader.PreparedSentence;
-import com.openbravo.data.loader.SerializerReadBasic;
 import com.openbravo.data.loader.SerializerReadString;
 import com.openbravo.data.loader.SerializerWriteBasic;
 import com.openbravo.data.loader.SerializerWriteString;
-import com.openbravo.data.loader.StaticSentence;
-import com.openbravo.format.Formats;
-import com.openbravo.pos.Accounts.DueListNoticeTableModel.FacilityLine;
 import com.openbravo.pos.Accounts.DueListTableModel.ReportLine;
 import com.openbravo.pos.clubmang.DataLogicFacilities;
 import com.openbravo.pos.clubmang.DataSourceProvider;
 import com.openbravo.pos.clubmang.Facility;
 import com.openbravo.pos.clubmang.JasperReportNew;
 import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.LookupUtilityImpl;
+import com.openbravo.pos.sales.JPanelTicket;
+import com.openbravo.pos.sms.SMSgeneralDBSettings;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,10 +40,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
-import org.eclipse.swt.widgets.DateTime;
 
 /**
  *
@@ -63,15 +56,20 @@ public class dueListTable extends javax.swing.JDialog {
     private String header;
     private String secretary;
     private String treasurer;
-   private DataLogicFacilities dlfac;
+    private DataLogicFacilities dlfac;
     private String getDueAmount;
     private double  DueAmount=0.0,OverDue=0.0;
+    private SMSgeneralDBSettings smsDBsettings;
     
     DecimalFormat decimalFormat=new DecimalFormat("0.00");
-        private Object obj;
-      public dueListTable(java.awt.Frame parent, boolean modal) {
+    private Object obj;
+    public dueListTable(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        AppView app = LookupUtilityImpl.getInstance(null).getAppView();
+        smsDBsettings = (SMSgeneralDBSettings) app.getBean("com.openbravo.pos.sms.SMSgeneralDBSettings");
+        
         jLabel1.setText("DueList");
         jLabel2.setText("Please see Cr.Avbl column,Adjust credit and regenerate report if requiered. If ok tick yes to print it");
         jLabel3.setText("No Of Facilities to be displayed in a report page");
@@ -305,7 +303,7 @@ public class dueListTable extends javax.swing.JDialog {
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(sendSms_Btn)
                     .add(sendSmsCheck))
-                .add(15, 15, 15))
+                .add(30, 30, 30))
         );
 
         pack();
@@ -379,52 +377,24 @@ public class dueListTable extends javax.swing.JDialog {
     
         if(jCheckBox1.isSelected()){
             jButton1.setEnabled(jCheckBox1.isSelected());
-             jButton1.setEnabled(jCheckBox1.isSelected());
+            jButton1.setEnabled(jCheckBox1.isSelected());
         
-             Object obj1=null;
-             try {
-                // Object obj= (Object) new StaticSentence(m_App.getSession(), "select ID, URL, USERNAME, PASSWORD, ACTIVE, SENDERID, URLREF, API_KEY from smsurl_table where active=true and urlref='send_url'", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING,Datas.STRING,Datas.BOOLEAN,Datas.STRING,Datas.STRING,Datas.STRING})).find();
-                  obj1 = (Object[]) new StaticSentence(m_App.getSession(), "select ID, URL, USERNAME, PASSWORD, ACTIVE, SENDERID, URLREF, API_KEY from smsurl_table where active=true and urlref='send_url'",SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING,Datas.STRING,Datas.BOOLEAN,Datas.STRING,Datas.STRING,Datas.STRING})).find();
-
-
-                  } catch (BasicException ex) {
-                      Logger.getLogger(dueListTable.class.getName()).log(Level.SEVERE, null, ex);
-                  }
-        
-            
-             if(obj1!=null){
-                 
+            boolean sendSMSwhileBill =  smsDBsettings.getSMSvalue(SMSgeneralDBSettings.SMS_DUE_LIST_ID);
+            if(sendSMSwhileBill) {
                 sendSmsCheck.setVisible(true);
-               
                 sendSmsCheck.setSelected(false);
-                
-             }
-             else{
-                sendSmsCheck.setVisible(false);
-                sendSms_Btn.setVisible(false);
-             }
-            
-            
-            
-            
-            
-            
+            }
+            else{
+               sendSmsCheck.setVisible(false);
+               sendSms_Btn.setVisible(false);
+            }
+             
         }
         else{
-            
              jButton1.setEnabled(false);
              sendSmsCheck.setVisible(false);
              sendSms_Btn.setVisible(false);
-            
-            
         }
-        
-        
-       
-          
-        
-        
-     
     }//GEN-LAST:event_jCheckBox1ItemStateChanged
 
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
@@ -433,73 +403,73 @@ public class dueListTable extends javax.swing.JDialog {
 
     private void sendSms_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendSms_BtnActionPerformed
  
-        try {
-      // Object obj= (Object) new StaticSentence(m_App.getSession(), "select ID, URL, USERNAME, PASSWORD, ACTIVE, SENDERID, URLREF, API_KEY from smsurl_table where active=true and urlref='send_url'", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING,Datas.STRING,Datas.BOOLEAN,Datas.STRING,Datas.STRING,Datas.STRING})).find();
-        obj = (Object[]) new StaticSentence(m_App.getSession(), "select ID, URL, USERNAME, PASSWORD, ACTIVE, SENDERID, URLREF, API_KEY from smsurl_table where active=true and urlref='send_url'",SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING,Datas.STRING,Datas.BOOLEAN,Datas.STRING,Datas.STRING,Datas.STRING})).find();
-       
-      
-        } catch (BasicException ex) {
-            Logger.getLogger(dueListTable.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    if(obj!=null)
-    {
-       String mobilelist = null;
-       String pattern = "dd/MM/yyyy";
+    boolean sendSMSwhileBill =  smsDBsettings.getSMSvalue(SMSgeneralDBSettings.SMS_DUE_LIST_ID);
+    if(sendSMSwhileBill) {
+        String mobilelist = null;
+        String pattern = "dd/MM/yyyy";
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         // formatting
         System.out.println(format.format(new Date()));
      
-     String sendtype=null;
-     boolean withname=false;
-     UUID.randomUUID().toString();
-     String fid;
+        String sendtype=null;
+        boolean withname=false;
+        UUID.randomUUID().toString();
+        String fid;
     
       
-            List<ReportLine> list1 = dmodel.getReportList1();
-       
-           for (ReportLine reportLine : list1) {
-           System.out.println(reportLine.getSearchkey()); 
-           List<DueListTableModel.FacilityLine> faclist=reportLine.getFacilityList();
-             
+        List<ReportLine> list1 = dmodel.getReportList1();
+
+        for (ReportLine reportLine : list1) {
+            System.out.println(reportLine.getSearchkey()); 
+            List<DueListTableModel.FacilityLine> faclist=reportLine.getFacilityList();
+
             try {
                 mobilelist=(String)new PreparedSentence(m_App.getSession(), "SELECT C.MOBILE,c.searchkey FROM CUSTOMERS C WHERE C.MOBILE IS NOT NULL AND (LENGTH(C.MOBILE)=10 OR LENGTH(C.MOBILE)=13) and c.searchkey=? order by searchkey", SerializerWriteString.INSTANCE ,SerializerReadString.INSTANCE).find(reportLine.getSearchkey());
             } catch (BasicException ex) {
                 Logger.getLogger(dueListTable.class.getName()).log(Level.SEVERE, null, ex);
             }
-              for (DueListTableModel.FacilityLine facilityLine : faclist) {
-                  if(mobilelist!=null)
-                  {
-                         double due=facilityLine.getDueAmount();
-                         double overdue=facilityLine.getOverDueAmount();
-                         double Total=due+ overdue;
+            for (DueListTableModel.FacilityLine facilityLine : faclist) {
+                if(mobilelist!=null)
+                {
+                    double due=facilityLine.getDueAmount();
+                    double overdue=facilityLine.getOverDueAmount();
+                    double Total=due+ overdue;
+                    String memberNo = reportLine.getSearchkey();
+                    String memberName = reportLine.getName();
+                    String FacilityName = facilityLine.getFacilityName();
+
+                    String msg="Dear Member,Bal for ALL facility as on "+format.format(new Date())+ " for due on "+format.format(date)+ " is "+decimalFormat.format(due)+ " and overdue is "+decimalFormat.format(overdue)+" total "+ decimalFormat.format(Total)+" plz pay at earliest.Ignore if paid";
+
+
+
+
+                    String smsString = smsDBsettings.getMessage(SMSgeneralDBSettings.SMS_DUE_LIST_ID);
+             
+             
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_DUE_DATE_KEY, format.format(date));
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , format.format(new Date()));
+                    AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+                    String x = m_App.getAppUserView().getUser().getRole();
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString()); 
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY, decimalFormat.format(due));
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_OVER_DUE_AMOUNT_KEY, decimalFormat.format(overdue));
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_DUE_PLUS_OVER_DUE_AMOUNT_KEY, decimalFormat.format(Total));
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, memberName);
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, memberNo);
+                    smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, FacilityName);
+                    
+                    
+                 
                        
-                         String msg="Dear Member,Bal for ALL facility as on "+format.format(new Date())+ " for due on "+format.format(date)+ " is "+decimalFormat.format(due)+ " and overdue is "+decimalFormat.format(overdue)+" total "+ decimalFormat.format(Total)+" plz pay at earliest.Ignore if paid";
-                       
-                    try {
-                        new PreparedSentence(m_App.getSession(), "INSERT INTO activemsgtable(ID,Message,SENDTO,WITHNAME,PRIORITY,CNT) VALUES (?,?,?,?,?,?) "
-                        ,new SerializerWriteBasic(new Datas[]{Datas.STRING,Datas.STRING,Datas.STRING,Datas.BOOLEAN,Datas.INT,Datas.INT})
-                        ).exec(new Object[]{UUID.randomUUID().toString(),msg,mobilelist,withname,0,0});
-                        } catch (BasicException ex) {
-                        Logger.getLogger(dueListTable.class.getName()).log(Level.SEVERE, null, ex);
-                                                    }
-                       
-                  }
-              }
+                    smsDBsettings.insertSMStoActiveMsgTable(smsString, mobilelist, memberNo);
+                    Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);   
+                }
+            }
           
-            
-            
-            System.out.println(reportLine); 
         }
-        
-           
-           JOptionPane.showMessageDialog(new JOptionPane(), " Message Sent Successfully..!! ", "Success Message", JOptionPane.INFORMATION_MESSAGE);  
-           sendSmsCheck.setSelected(false);
-           sendSms_Btn.setVisible(false);
+            
     }
-    else
-    {
-       JOptionPane.showMessageDialog(new JOptionPane(), "Plz contact Garuda Secure Technologies Pvt Ltd office.......!!!", "Error", JOptionPane.OK_OPTION);
-    }
+    
     }//GEN-LAST:event_sendSms_BtnActionPerformed
 
     private void sendSmsCheckItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_sendSmsCheckItemStateChanged

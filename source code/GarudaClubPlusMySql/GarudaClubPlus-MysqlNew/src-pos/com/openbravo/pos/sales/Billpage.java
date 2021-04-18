@@ -817,13 +817,12 @@ public class Billpage extends javax.swing.JDialog {
     
     public void checkForSMS( BillInfo ticket, Object ticketext)
     {
-         boolean sendSMSwhileBill =  smsDBsettings.getSMSvalue(SMSgeneralDBSettings.SMS_BILL_ID);
-         boolean isFacilityEnable = smsDBsettings.isFacilityEnable(SMSgeneralDBSettings.SMS_BILL_ID, smsDBsettings.getFacilityId(ticket.getWarehouse()) );
-         if(sendSMSwhileBill && isFacilityEnable)
-       {
-           String smsString = smsDBsettings.getMessage(SMSgeneralDBSettings.SMS_BILL_ID);
-           createSMS(smsString, ticket);
-       }
+        boolean sendSMSwhileBill =  smsDBsettings.getSMSvalue(SMSgeneralDBSettings.SMS_BILL_ID);
+        boolean isFacilityEnable = smsDBsettings.isFacilityEnable(SMSgeneralDBSettings.SMS_BILL_ID, smsDBsettings.getFacilityId(ticket.getWarehouse()) );
+        if(sendSMSwhileBill && isFacilityEnable) {
+               String smsString = smsDBsettings.getMessage(SMSgeneralDBSettings.SMS_BILL_ID);
+               createSMS(smsString, ticket);
+        }
     }
 
     public void createSMS(String smsString,  BillInfo ticket)
@@ -1827,13 +1826,17 @@ List<PaymentInfo> l = new ArrayList<PaymentInfo>();
         return resultok;
  
     }
+        
+        
+        
+        
         //Added methods closeTicket2 and closeTicket3 for reciept purpose
         
-     private boolean closeTicket2(BillInfo ticket, Object ticketext) throws BasicException {
-    /////////////////////////////////////////////pratima: intrest check
-    Double ticketandIntrestTotal=ticket.getTotal();
-    Double intrest=0.00;
-    Double amtplustax =0.00;
+    private boolean closeTicket2(BillInfo ticket, Object ticketext) throws BasicException {
+        /////////////////////////////////////////////pratima: intrest check
+        Double ticketandIntrestTotal=ticket.getTotal();
+        Double intrest=0.00;
+        Double amtplustax =0.00;
      
        if( getPendingBillIntrestDetails()==1){
            if(iLocList.contains(ticket.getWarehouse())){
@@ -2052,6 +2055,7 @@ List<PaymentInfo> l = new ArrayList<PaymentInfo>();
              
             
             resultok = true;
+            createSMS(ticket, ticketext);
                     } 
               }
                     else {
@@ -2077,32 +2081,7 @@ List<PaymentInfo> l = new ArrayList<PaymentInfo>();
       private boolean closeTicket3(BillInfo ticket, Object ticketext) throws BasicException {
     /////////////////////////////////////////////pratima: intrest check
     Double ticketandIntrestTotal=ticket.getTotal();
-//    Double intrest=0.00;
-//    Double amtplustax =0.00;
-//     
-//       if( getPendingBillIntrestDetails()==1){
-//           if(iLocList.contains(ticket.getWarehouse())){
-//        Date date=new Date();
-//         long diff = date.getTime() - ticket.getCreatedDate().getTime();
-//         int days1=(int)(diff / 1000 / 60 / 60 / 24);
-//        System.out.println ("Days: " + (diff / 1000 / 60 / 60 / 24));
-//        if( days1>iDays){
-//        intrest= ticket.getAmountPlusTax()*(iRate/36500)*(days1);
-//     
-        
-        
-//        PaymentInfoCash pi=new PaymentInfoCash();
-//        pi.setM_dIntrest(interest1);
-        
-      // new TicketInfoCash(interest1);
-          //ticketandIntrestTotal=ticket.getTotal()+intrest;
-//        }
-//        interest1=intrest;
-//        amtplustax = ticket.getTax()+ ticket.getTotal();
-//        Grandtotal=amtplustax+interest1;
-//           }
-//        }
-//            
+
         ////////////////////////////////////////////////////////////////////
         jBtnPay.setEnabled(false);
         boolean resultok = false;
@@ -2296,6 +2275,7 @@ List<PaymentInfo> l = new ArrayList<PaymentInfo>();
              
             
             resultok = true;
+            createSMS(ticket, ticketext);
                     } 
               }
                     else {
@@ -2316,5 +2296,76 @@ List<PaymentInfo> l = new ArrayList<PaymentInfo>();
         }
         return resultok;
  
+    }
+      
+    public void createSMS(BillInfo ticket, Object ticketext) {
+        boolean sendSMSwhileBill =  smsDBsettings.getSMSvalue(SMSgeneralDBSettings.SMS_MEMBER_PENDING_BILLS_ID);
+        if(sendSMSwhileBill) {
+            String smsString = smsDBsettings.getMessage(SMSgeneralDBSettings.SMS_MEMBER_PENDING_BILLS_ID);
+             
+             
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_BILL_KEY, ticket.getID());
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_DTM_KEY , ticket.printDate());
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_FACILITY_KEY, getFacilityName(ticket.getWarehouse()));
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_WHAREHOUSE_NAME_KEY, getRDisplayName(ticket.getWarehouse()));
+            AppView m_App = LookupUtilityImpl.getInstance(null).getAppView();
+            String x = m_App.getAppUserView().getUser().getRole();
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_ROLE_KEY, LookupUtilityImpl.getInstance(null).getRoleMap().get(x).toString()); 
+            smsString = smsString.replace(SMSgeneralDBSettings.SMS_TOT_AMOUNT_KEY, ticket.printGrandTotal()+"");
+            
+            
+            
+            
+            if(ticket.getPayments().get(0).getName() == "cash") {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_CASH_CHEQUE , "cash");
+            } else {
+                smsString = smsString.replace(SMSgeneralDBSettings.SMS_CASH_CHEQUE , "Cheque subject to realisation");
+            }
+            
+            
+            
+            
+            
+            // check if customer is guest
+            if(ticket.getCustomer().getId().contains("Guest"))
+            {
+                String custID = smsDBsettings.getCustIdFromGuestID(ticket.getCustomer());
+                 if(custID != null)
+                 {
+                    try 
+                    {
+                        CustomerInfoExt custInfo =  dlSales.loadCustomerExt(custID);
+                        if(custInfo != null )
+                        {
+                            smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, custInfo.getName());
+                            smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, custInfo.getSearchkey()); 
+                            if(custInfo.getmobile() != null && !custInfo.getmobile().isEmpty())
+                            {
+                               smsDBsettings.insertSMStoActiveMsgTable(smsString, custInfo.getmobile(), custInfo.getId()); 
+                            }
+                        }
+                    } 
+                    catch (BasicException ex)
+                    {
+                        Logger.getLogger(JPanelTicket.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            else
+            {
+                if(ticket.getCustomer().getmobile() != null && !ticket.getCustomer().getmobile().isEmpty())
+                {
+                   smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NAME_KEY, ticket.getCustomer().getName());
+                   smsString = smsString.replace(SMSgeneralDBSettings.SMS_MEMBER_NO_KEY, ticket.getCustomer().getSearchkey());
+                   smsDBsettings.insertSMStoActiveMsgTable(smsString, ticket.getCustomer().getmobile(), ticket.getCustomer().getId());
+                   Logger.getLogger(JPanelTicket.class.getName()).log(Level.INFO,  "SMS sent successfully : "+smsString);
+                }  
+            }
+            
+            
+            
+            
+             
+        }
     }
 }
